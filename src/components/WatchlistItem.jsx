@@ -31,13 +31,12 @@ function PosterCard({
         }
       }}
       aria-label={`View details for ${title}`}
-      className={`relative w-full aspect-[2/3] bg-[#0c0d10] border overflow-hidden group/img cursor-pointer transition-all duration-300 shimmer-card ${
-        isWatched
+      className={`relative w-full aspect-[2/3] bg-[#0c0d10] border overflow-hidden group/img cursor-pointer transition-all duration-300 shimmer-card ${isWatched
           ? 'border-[#22C55E]/50 shadow-[0_0_15px_rgba(34,197,94,0.15)]'
           : isNextWatch
-          ? 'border-[#E62429] ring-2 ring-[#E62429]/50 shadow-[0_0_20px_rgba(230,36,41,0.3)] incursion-pulse'
-          : 'border-[#1E2024] hover:border-[#E62429]/60 hover:shadow-[0_8px_20px_rgba(0,0,0,0.8)]'
-      }`}
+            ? 'border-[#E62429] ring-2 ring-[#E62429]/50 shadow-[0_0_20px_rgba(230,36,41,0.3)] incursion-pulse'
+            : 'border-[#1E2024] hover:border-[#E62429]/60 hover:shadow-[0_8px_20px_rgba(0,0,0,0.8)]'
+        }`}
     >
       {!hasError ? (
         <>
@@ -115,25 +114,24 @@ export default function WatchlistItem({
 
   const handleStandardClick = (e) => {
     e.stopPropagation();
-    try { clockAudio.tick(0); } catch (err) {}
+    try { clockAudio.tick(0); } catch (err) { }
     onToggleStandard(item.id);
   };
 
   const handleLokiClick = (seasonId, e) => {
     e.stopPropagation();
-    try { clockAudio.tick(0); } catch (err) {}
+    try { clockAudio.tick(0); } catch (err) { }
     onToggleLokiSeason(seasonId);
   };
 
   return (
     <article
-      className={`flex flex-col group relative bg-[#111216] border p-2.5 sm:p-3 transition-all duration-300 shadow-md ${
-        isCompleted
+      className={`flex flex-col group relative bg-[#111216] border p-2.5 sm:p-3 transition-all duration-300 shadow-md ${isCompleted
           ? 'border-[#22C55E]/30 bg-[#0E1310]/70'
           : isNextWatch
-          ? 'border-[#E62429]/70 bg-[#161214]'
-          : 'border-[#1E2024] hover:border-[#3A3D45]'
-      }`}
+            ? 'border-[#E62429]/70 bg-[#161214]'
+            : 'border-[#1E2024] hover:border-[#3A3D45]'
+        }`}
       aria-label={`${item.number}. ${item.title}`}
     >
       {/* ── Poster Area ── */}
@@ -189,9 +187,8 @@ export default function WatchlistItem({
         >
           {/* Title — high legibility */}
           <p
-            className={`text-xs sm:text-[13px] font-cinematic font-bold leading-snug line-clamp-2 min-h-[2.2rem] transition-colors ${
-              isCompleted ? 'text-[#8C9098]' : 'text-[#F5F5F5] group-hover:text-white'
-            }`}
+            className={`text-xs sm:text-[13px] font-cinematic font-bold leading-snug line-clamp-2 min-h-[2.2rem] transition-colors ${isCompleted ? 'text-[#8C9098]' : 'text-[#F5F5F5] group-hover:text-white'
+              }`}
           >
             {isLoki ? 'Loki — Season 1 & 2' : item.title}
           </p>
@@ -213,9 +210,8 @@ export default function WatchlistItem({
 
         {/* ── Completion Checkbox & Status Row ── */}
         <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-[#1E2024]">
-          <span className={`text-[8px] xs:text-[9px] font-mono tracking-wider uppercase font-semibold ${
-            isCompleted ? 'text-[#22C55E]' : 'text-[#777A80]'
-          }`}>
+          <span className={`text-[8px] xs:text-[9px] font-mono tracking-wider uppercase font-semibold ${isCompleted ? 'text-[#22C55E]' : 'text-[#777A80]'
+            }`}>
             {isCompleted ? '✓ VERIFIED' : 'CH. ' + item.number}
           </span>
 
@@ -227,11 +223,10 @@ export default function WatchlistItem({
                 onClick={(e) => handleLokiClick('s1', e)}
                 aria-pressed={!!lokiSeasons?.s1}
                 aria-label="Toggle Loki Season 1"
-                className={`px-2 py-0.5 border flex items-center gap-1 transition-all duration-200 text-[9px] font-mono cursor-pointer ${
-                  lokiSeasons?.s1
+                className={`px-2 py-0.5 border flex items-center gap-1 transition-all duration-200 text-[9px] font-mono cursor-pointer ${lokiSeasons?.s1
                     ? 'border-[#22C55E] bg-[#22C55E] text-black font-bold shadow-[0_0_8px_rgba(34,197,94,0.4)]'
                     : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036]'
-                }`}
+                  }`}
               >
                 {lokiSeasons?.s1 && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                 <span>S1</span>
@@ -241,11 +236,10 @@ export default function WatchlistItem({
                 onClick={(e) => handleLokiClick('s2', e)}
                 aria-pressed={!!lokiSeasons?.s2}
                 aria-label="Toggle Loki Season 2"
-                className={`px-2 py-0.5 border flex items-center gap-1 transition-all duration-200 text-[9px] font-mono cursor-pointer ${
-                  lokiSeasons?.s2
+                className={`px-2 py-0.5 border flex items-center gap-1 transition-all duration-200 text-[9px] font-mono cursor-pointer ${lokiSeasons?.s2
                     ? 'border-[#22C55E] bg-[#22C55E] text-black font-bold shadow-[0_0_8px_rgba(34,197,94,0.4)]'
                     : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036]'
-                }`}
+                  }`}
               >
                 {lokiSeasons?.s2 && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                 <span>S2</span>
@@ -257,11 +251,10 @@ export default function WatchlistItem({
               onClick={handleStandardClick}
               aria-pressed={isCompleted}
               aria-label={`Mark ${item.title} as ${isCompleted ? 'unwatched' : 'watched'}`}
-              className={`shrink-0 w-5 h-5 border flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                isCompleted
+              className={`shrink-0 w-5 h-5 border flex items-center justify-center transition-all duration-200 cursor-pointer ${isCompleted
                   ? 'border-[#22C55E] bg-[#22C55E] text-black shadow-[0_0_10px_rgba(34,197,94,0.4)]'
                   : 'border-[#1E2024] bg-[#08090B] hover:border-[#E62429] hover:bg-[#E62429]/10'
-              }`}
+                }`}
             >
               {isCompleted && <Check className="w-3.5 h-3.5 stroke-[3]" />}
             </button>

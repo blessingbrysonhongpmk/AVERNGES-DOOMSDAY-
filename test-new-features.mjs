@@ -28,27 +28,32 @@ async function fetchHttp(url) {
 
 async function run() {
   console.log('=== VERIFYING CHARACTER DATABASE & MULTIVERSE CAST ===');
-  assert(CHARACTERS_DATA.length === 20, `Contains all 20 confirmed Multiverse characters (got ${CHARACTERS_DATA.length})`);
+  assert(CHARACTERS_DATA.length === 51, `Contains all 51 confirmed Multiverse characters (got ${CHARACTERS_DATA.length})`);
   const names = CHARACTERS_DATA.map(c => c.name);
   assert(names.includes('Doctor Doom'), 'Includes Doctor Doom');
   assert(names.includes('Mister Fantastic'), 'Includes Mister Fantastic');
   assert(names.includes('Invisible Woman'), 'Includes Invisible Woman');
   assert(names.includes('Human Torch'), 'Includes Human Torch');
   assert(names.includes('The Thing'), 'Includes The Thing');
-  assert(names.includes('Thor Odinson'), 'Includes Thor Odinson');
+  assert(names.includes('Iron Man'), 'Includes Iron Man');
   assert(names.includes('Captain America'), 'Includes Captain America');
-  assert(names.includes('The Winter Soldier'), 'Includes The Winter Soldier');
+  assert(names.includes('Thor Odinson'), 'Includes Thor Odinson');
+  assert(names.includes('Smart Hulk'), 'Includes Smart Hulk');
+  assert(names.includes('Black Widow'), 'Includes Black Widow');
+  assert(names.includes('Hawkeye'), 'Includes Hawkeye');
   assert(names.includes('Doctor Strange'), 'Includes Doctor Strange');
   assert(names.includes('Spider-Man'), 'Includes Spider-Man');
-  assert(names.includes('Smart Hulk'), 'Includes Smart Hulk');
   assert(names.includes('Scarlet Witch'), 'Includes Scarlet Witch');
   assert(names.includes('Wolverine'), 'Includes Wolverine');
   assert(names.includes('Deadpool'), 'Includes Deadpool');
-  assert(names.includes('Shang-Chi'), 'Includes Shang-Chi');
-  assert(names.includes('Hawkeye'), 'Includes Hawkeye');
-  assert(names.includes('Ant-Man'), 'Includes Ant-Man');
-  assert(names.includes('Black Panther'), 'Includes Black Panther');
-  assert(names.includes('White Widow'), 'Includes White Widow');
+  assert(names.includes('Star-Lord'), 'Includes Star-Lord');
+  assert(names.includes('Rocket Raccoon'), 'Includes Rocket Raccoon');
+  assert(names.includes('Daredevil'), 'Includes Daredevil');
+  assert(names.includes('The Punisher'), 'Includes The Punisher');
+  assert(names.includes('Moon Knight'), 'Includes Moon Knight');
+  assert(names.includes('The Sentry'), 'Includes The Sentry');
+  assert(names.includes('Galactus'), 'Includes Galactus');
+  assert(names.includes('Thanos'), 'Includes Thanos');
 
   CHARACTERS_DATA.forEach(c => {
     assert(c.capabilities && c.capabilities.length >= 3, `${c.name} has documented capabilities`);

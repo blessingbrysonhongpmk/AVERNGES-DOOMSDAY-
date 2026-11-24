@@ -20,9 +20,8 @@ export default function App() {
 
   return (
     <div
-      className={`relative min-h-screen bg-[#08090B] text-[#F5F5F5] overflow-x-hidden ${
-        ambientMode === 'cinematic' ? 'ambient-cinematic' : ''
-      }`}
+      className={`relative min-h-screen bg-[#08090B] text-[#F5F5F5] overflow-x-hidden ${ambientMode === 'cinematic' ? 'ambient-cinematic' : ''
+        }`}
     >
       {/* Atmospheric restrained film grain */}
       <div className="film-grain" aria-hidden="true" />

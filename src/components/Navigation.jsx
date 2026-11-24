@@ -52,14 +52,13 @@ export default function Navigation() {
 
   return (
     <header
-      className={`sticky top-0 left-0 right-0 z-40 h-13 sm:h-14 transition-all duration-300 ${
-        scrolled
+      className={`sticky top-0 left-0 right-0 z-40 h-13 sm:h-14 transition-all duration-300 ${scrolled
           ? 'bg-[#08090B]/95 backdrop-blur-md border-b border-[#1E2024] shadow-lg'
           : 'bg-[#08090B]/85 backdrop-blur-sm border-b border-[#1E2024]/60'
-      }`}
+        }`}
     >
       <div className="container-fluid container-xl mx-auto px-3 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-        
+
         {/* Left: Brand Identity */}
         <a
           href="#overview"
@@ -79,9 +78,8 @@ export default function Navigation() {
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={(e) => scrollToSection(e, item.id)}
-                className={`relative py-1 text-[11px] font-mono tracking-[0.16em] uppercase transition-colors duration-200 ${
-                  isActive ? 'text-white font-semibold' : 'text-[#777A80] hover:text-[#D8D9DC]'
-                }`}
+                className={`relative py-1 text-[11px] font-mono tracking-[0.16em] uppercase transition-colors duration-200 ${isActive ? 'text-white font-semibold' : 'text-[#777A80] hover:text-[#D8D9DC]'
+                  }`}
               >
                 {item.label}
                 {isActive && (
@@ -124,9 +122,8 @@ export default function Navigation() {
                   key={item.id}
                   href={`#${item.id}`}
                   onClick={(e) => scrollToSection(e, item.id)}
-                  className={`flex items-center justify-between min-h-[44px] px-3 py-2 text-xs font-mono tracking-[0.2em] uppercase transition-colors border-b border-[#1E2024]/40 ${
-                    isActive ? 'text-[#E62429] font-bold bg-[#111216]' : 'text-[#777A80] hover:text-white'
-                  }`}
+                  className={`flex items-center justify-between min-h-[44px] px-3 py-2 text-xs font-mono tracking-[0.2em] uppercase transition-colors border-b border-[#1E2024]/40 ${isActive ? 'text-[#E62429] font-bold bg-[#111216]' : 'text-[#777A80] hover:text-white'
+                    }`}
                 >
                   <span>{item.label}</span>
                   {isActive && <span className="text-[10px]">●</span>}

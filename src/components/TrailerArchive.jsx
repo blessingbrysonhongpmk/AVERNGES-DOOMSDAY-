@@ -84,11 +84,11 @@ export default function TrailerArchive() {
                 type="button"
                 onClick={() => {
                   setFilter(cat);
-                  try { clockAudio.tick(0); } catch (e) {}
+                  try { clockAudio.tick(0); } catch (e) { }
                 }}
                 className={`px-3 py-1 text-[9px] xs:text-[10px] font-mono tracking-wider uppercase transition-all duration-200 cursor-pointer border ${filter === cat
-                    ? 'border-[#E62429] bg-[#E62429]/20 text-white shadow-[0_0_12px_rgba(230,36,41,0.3)] font-bold'
-                    : 'border-[#1E2024] bg-[#111216]/60 text-[#777A80] hover:text-[#D8D9DC] hover:border-[#2D3036]'
+                  ? 'border-[#E62429] bg-[#E62429]/20 text-white shadow-[0_0_12px_rgba(230,36,41,0.3)] font-bold'
+                  : 'border-[#1E2024] bg-[#111216]/60 text-[#777A80] hover:text-[#D8D9DC] hover:border-[#2D3036]'
                   }`}
               >
                 {cat} <span className="opacity-60 text-[8px]">({count})</span>
@@ -106,7 +106,7 @@ export default function TrailerArchive() {
                 <div
                   onClick={() => {
                     setActiveVideo(trailer);
-                    try { clockAudio.tick(0); } catch (e) {}
+                    try { clockAudio.tick(0); } catch (e) { }
                   }}
                   className="relative aspect-video w-full bg-black overflow-hidden cursor-pointer"
                 >
@@ -150,7 +150,7 @@ export default function TrailerArchive() {
                     <h3
                       onClick={() => {
                         setActiveVideo(trailer);
-                        try { clockAudio.tick(0); } catch (e) {}
+                        try { clockAudio.tick(0); } catch (e) { }
                       }}
                       className="text-xs xs:text-sm sm:text-base font-cinematic font-bold text-white group-hover:text-white transition-colors leading-snug cursor-pointer mb-2"
                     >
@@ -165,7 +165,7 @@ export default function TrailerArchive() {
                     type="button"
                     onClick={() => {
                       setActiveVideo(trailer);
-                      try { clockAudio.tick(0); } catch (e) {}
+                      try { clockAudio.tick(0); } catch (e) { }
                     }}
                     className="mt-3 sm:mt-4 inline-flex items-center gap-1.5 text-[9px] xs:text-[10px] font-mono tracking-widest text-[#E62429] hover:text-[#F0383D] uppercase font-bold cursor-pointer transition-colors"
                   >
