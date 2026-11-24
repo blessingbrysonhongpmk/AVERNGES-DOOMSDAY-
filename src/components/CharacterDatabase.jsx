@@ -16,14 +16,14 @@ export default function CharacterDatabase() {
 
         {/* Section Header */}
         <div className="mb-6 sm:mb-8 text-center max-w-2xl mx-auto px-2">
-          <div className="inline-flex items-center gap-2 mb-2 px-3 py-1 border border-[#1E2024] bg-[#111216]/80 text-[9px] xs:text-[10px] font-mono tracking-[0.24em] text-[#22C55E] uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] shrink-0" />
-            CHARACTER ROSTER // {CHARACTERS_DATA.length} MARVEL HEROES & SOVEREIGNS
+          <div className="inline-flex items-center gap-2 mb-2 px-3 py-1 border border-[#10B981]/40 bg-[#10B981]/10 text-[9px] xs:text-[10px] font-mono tracking-[0.24em] text-[#34D399] uppercase shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] shrink-0 animate-pulse" />
+            DOOMSDAY DOSSIER // {CHARACTERS_DATA.length} MULTIVERSE ENTITIES ASSEMBLED
           </div>
           <h2 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-cinematic font-black tracking-tight text-white uppercase mb-2">
             CHARACTER DATABASE
           </h2>
-          <p className="text-xs sm:text-sm font-body text-[#777A80] leading-relaxed">
+          <p className="text-xs sm:text-sm font-body text-[#9CA3AF] leading-relaxed">
             The definitive Multiverse Saga dossier: Avengers, Fantastic Four, Thunderbolts*, Guardians, X-Men, Street Knights, and Cosmic Sovereigns.
           </p>
         </div>

@@ -141,12 +141,10 @@
   left: -150%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%);
   transform: skewX(-20deg);
   transition: left 0.75s ease;
   pointer-events: none;
@@ -159,10 +157,13 @@
 
 /* Pulsating Arc Reactor / Incursion Glow */
 @keyframes incursionPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 15px rgba(230, 36, 41, 0.25), inset 0 0 15px rgba(230, 36, 41, 0.1);
     border-color: rgba(230, 36, 41, 0.5);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(230, 36, 41, 0.6), inset 0 0 20px rgba(230, 36, 41, 0.25);
     border-color: rgba(230, 36, 41, 0.9);
@@ -175,12 +176,10 @@
 
 /* Multiverse Timeline Spine Glow */
 .timeline-track-glow {
-  background: linear-gradient(
-    180deg,
-    rgba(230, 36, 41, 0.8) 0%,
-    rgba(34, 197, 94, 0.6) 50%,
-    rgba(230, 36, 41, 0.9) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(230, 36, 41, 0.8) 0%,
+      rgba(34, 197, 94, 0.6) 50%,
+      rgba(230, 36, 41, 0.9) 100%);
   box-shadow: 0 0 12px rgba(230, 36, 41, 0.5);
 }
 
@@ -190,10 +189,12 @@
     opacity: 0;
     transform: translate3d(0, 100px, -250px) scale(0.15) rotate(0deg);
   }
+
   50% {
     opacity: 1;
     transform: translate3d(var(--tx), calc(var(--ty) - 40px), 80px) scale(1.15) rotate(var(--rot));
   }
+
   100% {
     opacity: 1;
     transform: translate3d(var(--tx), var(--ty), 0px) scale(1) rotate(var(--rot));
@@ -208,9 +209,9 @@
 .card-fan-item {
   transform: translate3d(var(--tx), var(--ty), 0px) rotate(var(--rot));
   transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 0.35s ease,
-              border-color 0.3s ease,
-              z-index 0.1s ease;
+    box-shadow 0.35s ease,
+    border-color 0.3s ease,
+    z-index 0.1s ease;
 }
 
 .card-fan-item:hover {
@@ -221,10 +222,13 @@
 }
 
 @keyframes deckBoxPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 0 20px rgba(230, 36, 41, 0.3), inset 0 0 15px rgba(230, 36, 41, 0.15);
   }
+
   50% {
     transform: scale(1.02);
     box-shadow: 0 0 45px rgba(230, 36, 41, 0.7), inset 0 0 25px rgba(34, 197, 94, 0.3);
@@ -235,63 +239,94 @@
   animation: deckBoxPulse 2.4s infinite ease-in-out;
 }
 
-/* ── AVENGERS THEMED VAULT & CARD DEALING ANIMATIONS ── */
-@keyframes avengersRingRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* ── AVENGERS: DOOMSDAY DARK & CREATIVE THEME ANIMATIONS ── */
+@keyframes doomsdayVaultBreathing {
 
-@keyframes avengersRingCounterRotate {
-  0% { transform: rotate(360deg); }
-  100% { transform: rotate(0deg); }
-}
-
-@keyframes avengersVaultPulse {
-  0%, 100% {
-    box-shadow: 0 0 30px rgba(230, 36, 41, 0.35), inset 0 0 20px rgba(0, 229, 255, 0.15);
-    border-color: rgba(230, 36, 41, 0.6);
+  0%,
+  100% {
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.25), 0 0 60px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.45);
   }
+
   50% {
-    box-shadow: 0 0 60px rgba(230, 36, 41, 0.8), inset 0 0 40px rgba(0, 229, 255, 0.35), 0 0 90px rgba(34, 197, 94, 0.3);
-    border-color: rgba(0, 229, 255, 0.85);
+    box-shadow: 0 0 55px rgba(16, 185, 129, 0.6), 0 0 90px rgba(0, 0, 0, 0.95), inset 0 0 35px rgba(16, 185, 129, 0.25), 0 0 25px rgba(230, 36, 41, 0.3);
+    border-color: rgba(16, 185, 129, 0.85);
   }
 }
 
-@keyframes avengersArcPulse {
-  0%, 100% {
-    opacity: 0.6;
+@keyframes doomsdayRunicSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes doomsdayRunicCounter {
+  0% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes doomsdaySorceryPulse {
+
+  0%,
+  100% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
     transform: scale(1);
   }
+
   50% {
     opacity: 1;
-    transform: scale(1.08);
-    filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.9));
+    filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.9)) drop-shadow(0 0 35px rgba(16, 185, 129, 0.5));
+    transform: scale(1.05);
   }
 }
 
-@keyframes avengersHoloSweep {
-  0% { transform: translateX(-150%) skewX(-25deg); }
-  100% { transform: translateX(250%) skewX(-25deg); }
+@keyframes doomsdayEmeraldSweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
 }
 
-.avengers-vault-glow {
-  animation: avengersVaultPulse 2.8s infinite ease-in-out;
+.doomsday-vault-glow {
+  animation: doomsdayVaultBreathing 3.2s infinite ease-in-out;
 }
 
-.avengers-arc-pulse {
-  animation: avengersArcPulse 2s infinite ease-in-out;
+.doomsday-rune-spin {
+  animation: doomsdayRunicSpin 24s linear infinite;
 }
 
-.avengers-ring-spin {
-  animation: avengersRingRotate 20s linear infinite;
+.doomsday-rune-counter {
+  animation: doomsdayRunicCounter 32s linear infinite;
 }
 
-.avengers-ring-counter-spin {
-  animation: avengersRingCounterRotate 28s linear infinite;
+.doomsday-sorcery-pulse {
+  animation: doomsdaySorceryPulse 2.4s infinite ease-in-out;
 }
 
-.avengers-holo-sweep {
-  animation: avengersHoloSweep 3s infinite ease-in-out;
+.doomsday-emerald-sweep {
+  animation: doomsdayEmeraldSweep 3.2s infinite ease-in-out;
+}
+
+/* Stained glass gothic lattice background */
+.doomsday-stained-glass-bg {
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 65%),
+    linear-gradient(45deg, rgba(16, 185, 129, 0.04) 25%, transparent 25%, transparent 75%, rgba(16, 185, 129, 0.04) 75%),
+    linear-gradient(-45deg, rgba(16, 185, 129, 0.04) 25%, transparent 25%, transparent 75%, rgba(16, 185, 129, 0.04) 75%);
+  background-size: 100% 100%, 36px 36px, 36px 36px;
 }
 
 /* Film Perforation Motif for Watchlist */
