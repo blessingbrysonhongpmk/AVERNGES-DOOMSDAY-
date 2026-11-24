@@ -6,9 +6,8 @@ const CompactUnit = memo(function CompactUnit({ value, label, isGreen = false })
   return (
     <div className="flex flex-col items-center justify-center min-w-[28px] xs:min-w-[36px] sm:min-w-[54px] md:min-w-[70px]">
       <span
-        className={`text-base xs:text-xl sm:text-3xl md:text-4xl font-sans font-bold leading-none select-none tabular-nums ${
-          isGreen ? 'text-[#22C55E]' : 'text-white'
-        }`}
+        className={`text-base xs:text-xl sm:text-3xl md:text-4xl font-sans font-bold leading-none select-none tabular-nums ${isGreen ? 'text-[#22C55E]' : 'text-white'
+          }`}
       >
         {value}
       </span>

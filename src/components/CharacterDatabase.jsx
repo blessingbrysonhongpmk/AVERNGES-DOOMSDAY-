@@ -47,11 +47,10 @@ export default function CharacterDatabase() {
               key={cat}
               type="button"
               onClick={() => setFilter(cat)}
-              className={`px-2.5 xs:px-3 sm:px-4 py-1.5 text-[9px] xs:text-[10px] font-mono tracking-wider sm:tracking-widest uppercase transition-colors cursor-pointer border ${
-                filter === cat
+              className={`px-2.5 xs:px-3 sm:px-4 py-1.5 text-[9px] xs:text-[10px] font-mono tracking-wider sm:tracking-widest uppercase transition-colors cursor-pointer border ${filter === cat
                   ? 'border-[#E62429] bg-[#E62429]/15 text-white'
                   : 'border-[#1E2024] bg-[#111216]/60 text-[#777A80] hover:text-[#D8D9DC] hover:border-[#2D3036]'
-              }`}
+                }`}
             >
               {cat}
             </button>

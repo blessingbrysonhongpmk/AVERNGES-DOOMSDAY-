@@ -12,11 +12,10 @@ const DigitBlock = memo(function DigitBlock({ value, label, isGreen = false }) {
   return (
     <div className="flex flex-col items-center justify-center min-w-[28px] xs:min-w-[34px] sm:min-w-[56px] md:min-w-[76px] lg:min-w-[92px]">
       <span
-        className={`text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-sans font-bold leading-none select-none tabular-nums transition-colors duration-150 ${
-          isGreen
-            ? 'text-[#22C55E] sm:text-[#38E54D] drop-shadow-[0_0_16px_rgba(34,197,94,0.65)]'
-            : 'text-white'
-        }`}
+        className={`text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-sans font-bold leading-none select-none tabular-nums transition-colors duration-150 ${isGreen
+          ? 'text-[#22C55E] sm:text-[#38E54D] drop-shadow-[0_0_16px_rgba(34,197,94,0.65)]'
+          : 'text-white'
+          }`}
         style={{ letterSpacing: '-0.02em' }}
       >
         {value}
@@ -35,11 +34,10 @@ const ColonSeparator = memo(function ColonSeparator({ isGreen = false }) {
   return (
     <div className="flex flex-col items-center justify-start self-start pt-0.5 sm:pt-1 md:pt-1.5 px-0.5 sm:px-1 md:px-1.5 shrink-0 select-none" aria-hidden="true">
       <span
-        className={`text-base xs:text-lg sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold leading-none ${
-          isGreen
-            ? 'text-[#22C55E] sm:text-[#38E54D] drop-shadow-[0_0_12px_rgba(34,197,94,0.5)]'
-            : 'text-white/80'
-        }`}
+        className={`text-base xs:text-lg sm:text-3xl md:text-4xl lg:text-5xl font-sans font-bold leading-none ${isGreen
+          ? 'text-[#22C55E] sm:text-[#38E54D] drop-shadow-[0_0_12px_rgba(34,197,94,0.5)]'
+          : 'text-white/80'
+          }`}
       >
         :
       </span>

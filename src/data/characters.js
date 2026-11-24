@@ -14,7 +14,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'Avengers: Doomsday (2026)',
     status: 'CONFIRMED ANTAGONIST',
     roleTag: 'PRIMARY ANTAGONIST',
-    poster: '/doctor-doom-portrait.jpg',
+    poster: '/characters/doctor-doom.jpg',
     summary: 'The technological and sorcerous sovereign of Latveria. A figure of supreme intellect and unyielding willpower, seeking dominion across the destabilized Multiverse.',
     biography: 'Unveiled by Marvel Studios President Kevin Feige and the Russo Brothers at San Diego Comic-Con 2024. Robert Downey Jr. returns to lead the climax of the Multiverse Saga as Doctor Doom, one of the most formidable and complex figures in Marvel publishing history.',
     capabilities: [
@@ -34,7 +34,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'The Fantastic Four: First Steps (2025)',
     status: 'OFFICIALLY CONFIRMED',
     roleTag: 'PROTAGONIST',
-    poster: '/posters/fantastic-four.webp',
+    poster: '/characters/reed-richards.jpg',
     summary: 'The intellectual patriarch of Marvel’s First Family. Possessing absolute hyper-elasticity and cosmic-tier scientific brilliance.',
     biography: 'Confirmed by Kevin Feige to feature prominently across both Avengers: Doomsday and Avengers: Secret Wars alongside the entire Fantastic Four ensemble, bringing their retro-futuristic 1960s multiversal reality directly into conflict with Doctor Doom.',
     capabilities: [
@@ -53,7 +53,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'The Fantastic Four: First Steps (2025)',
     status: 'OFFICIALLY CONFIRMED',
     roleTag: 'PROTAGONIST',
-    poster: '/posters/fantastic-four.webp',
+    poster: '/characters/sue-storm.jpg',
     summary: 'The formidable emotional anchor and tactical powerhouse of the Fantastic Four, commanding invisible psionic forcefields.',
     biography: 'Vanessa Kirby portrays Sue Storm, who transitions directly from First Steps into Doomsday. Her psionic shields represent one of the rare terrestrial defenses capable of withstanding incursion-level kinetic forces.',
     capabilities: [
@@ -72,7 +72,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'The Fantastic Four: First Steps (2025)',
     status: 'OFFICIALLY CONFIRMED',
     roleTag: 'PROTAGONIST',
-    poster: '/posters/fantastic-four.webp',
+    poster: '/characters/johnny-storm.jpg',
     summary: 'The audacious, plasma-wielding hotshot of the Fantastic Four, capable of achieving atmospheric ignition and flight.',
     biography: 'Joseph Quinn portrays Johnny Storm in the alternate retro-futuristic Earth. Confirmed to join the Avengers coalition in Doomsday as realities converge.',
     capabilities: [
@@ -91,7 +91,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'The Fantastic Four: First Steps (2025)',
     status: 'OFFICIALLY CONFIRMED',
     roleTag: 'PROTAGONIST',
-    poster: '/posters/fantastic-four.webp',
+    poster: '/characters/ben-grimm.jpg',
     summary: 'The rocky powerhouse with an unbreakable golden heart and superhuman durability, engineered via practical performance capture.',
     biography: 'Ebon Moss-Bachrach brings Ben Grimm to life with deep emotional grit. Alongside Reed, Sue, and Johnny, The Thing steps into the prime timeline to confront the existential threat of Doom.',
     capabilities: [
@@ -110,7 +110,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'Loki — Season 1 & Season 2',
     status: 'CRUCIAL SAGA CORNERSTONE',
     roleTag: 'MULTIVERSAL ANCHOR',
-    poster: '/posters/loki-season-2.webp',
+    poster: '/characters/loki.jpg',
     summary: 'Transformed from the God of Mischief into the supreme living pillar of the Multiverse, seated on the throne at the End of Time holding all timelines alive.',
     biography: 'Loki replaced the mechanical Temporal Loom with his own immortal bio-magic, weaving the dying timelines into Yggdrasil—the World Tree. His existence is the barrier preventing premature multiversal collapse before Victor von Doom makes his strike.',
     capabilities: [
@@ -129,7 +129,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'Captain America: Brave New World (2025)',
     status: 'OFFICIALLY CONFIRMED',
     roleTag: 'AVENGERS LEADER',
-    poster: '/posters/brave-new-world.webp',
+    poster: '/characters/sam-wilson.jpg',
     summary: 'The newly inaugurated Captain America, wielding the indestructible vibranium shield and advanced Wakandan flight exoskeleton.',
     biography: 'Anthony Mackie leads the reconstructed Avengers team heading into the incursion crisis. Testing his resolve against global espionage and the Red Hulk in Brave New World before marshaling earth’s heroes for Doomsday.',
     capabilities: [
@@ -148,7 +148,7 @@ export const CHARACTERS_DATA = [
     associatedMovie: 'Thunderbolts* (2025)',
     status: 'OFFICIALLY CONFIRMED',
     roleTag: 'COALITION TACTICIAN',
-    poster: '/posters/thunderbolts.webp',
+    poster: '/characters/bucky-barnes.jpg',
     summary: 'The century-tested supersoldier and veteran of the Infinity War, leading the covert strike operations of the Thunderbolts*.',
     biography: 'Sebastian Stan continues his storied MCU tenure spanning over a decade, linking the covert geopolitics of Thunderbolts* directly to the cosmic frontline of Avengers: Doomsday.',
     capabilities: [

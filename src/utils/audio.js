@@ -50,7 +50,7 @@ class ClockAudioEngine {
     this.subscribers.forEach((cb) => {
       try {
         cb(this.enabled);
-      } catch {}
+      } catch { }
     });
   }
 
@@ -60,7 +60,7 @@ class ClockAudioEngine {
     const unlock = () => {
       this.hasUserInteracted = true;
       if (this.ctx && this.ctx.state === 'suspended') {
-        this.ctx.resume().catch(() => {});
+        this.ctx.resume().catch(() => { });
       }
       window.removeEventListener('click', unlock);
       window.removeEventListener('keydown', unlock);
@@ -75,7 +75,7 @@ class ClockAudioEngine {
   init() {
     if (this.ctx) {
       if (this.ctx.state === 'suspended') {
-        this.ctx.resume().catch(() => {});
+        this.ctx.resume().catch(() => { });
       }
       return this.ctx;
     }
@@ -163,7 +163,7 @@ class ClockAudioEngine {
           gainHigh.disconnect();
           gainBody.disconnect();
           gainThud.disconnect();
-        } catch {}
+        } catch { }
       }, 150);
     } catch (e) {
       // Failsafe
@@ -178,7 +178,7 @@ class ClockAudioEngine {
     if (this.enabled) {
       const ctx = this.init();
       if (ctx && ctx.state === 'suspended') {
-        ctx.resume().catch(() => {});
+        ctx.resume().catch(() => { });
       }
       this.tick(0);
     }
