@@ -111,6 +111,85 @@
   background: #2D3036;
 }
 
+/* ── 3D Card Shuffler & Cinematic Transitions ── */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Metallic shimmer sweep effect on hover */
+.shimmer-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.shimmer-card:hover::before {
+  left: 200%;
+}
+
+/* Pulsating Arc Reactor / Incursion Glow */
+@keyframes incursionPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(230, 36, 41, 0.25), inset 0 0 15px rgba(230, 36, 41, 0.1);
+    border-color: rgba(230, 36, 41, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(230, 36, 41, 0.6), inset 0 0 20px rgba(230, 36, 41, 0.25);
+    border-color: rgba(230, 36, 41, 0.9);
+  }
+}
+
+.incursion-pulse {
+  animation: incursionPulse 2.8s infinite ease-in-out;
+}
+
+/* Multiverse Timeline Spine Glow */
+.timeline-track-glow {
+  background: linear-gradient(
+    180deg,
+    rgba(230, 36, 41, 0.8) 0%,
+    rgba(34, 197, 94, 0.6) 50%,
+    rgba(230, 36, 41, 0.9) 100%
+  );
+  box-shadow: 0 0 12px rgba(230, 36, 41, 0.5);
+}
+
+/* Film Perforation Motif for Watchlist */
+.film-edge {
+  background-image: radial-gradient(circle at 50% 50%, #08090B 35%, transparent 40%);
+  background-size: 10px 14px;
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 

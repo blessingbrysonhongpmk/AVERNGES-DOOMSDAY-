@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Countdown from './components/Countdown';
-import Intelligence from './components/Intelligence';
 import CharacterDatabase from './components/CharacterDatabase';
 import Watchlist from './components/Watchlist';
 import TrailerArchive from './components/TrailerArchive';
@@ -36,10 +35,7 @@ export default function App() {
         {/* 1. Hero & Live Broadcast Countdown */}
         <Countdown />
 
-        {/* 2. Doomsday Intelligence Dossier */}
-        <Intelligence />
-
-        {/* 3. Confirmed Character Database */}
+        {/* 2. Confirmed Character Database */}
         <CharacterDatabase />
 
         {/* 4. Road to Doomsday — Theatrical Watchlist */}

@@ -1,7 +1,7 @@
 /**
  * TRAILER & FOOTAGE ARCHIVE DATA
- * Verified official Marvel Studios teasers, hall H presentations, and theatrical trailers.
- * Zero unverified or concept fan videos.
+ * Official Marvel Studios teasers, theatrical trailers, and iconic character moments.
+ * Featuring Doctor Doom reveal, Thor, Captain America's shield, Fantastic Four, Thunderbolts*, and Deadpool & Wolverine.
  */
 
 export const TRAILERS_DATA = [
@@ -12,9 +12,46 @@ export const TRAILERS_DATA = [
     date: 'July 27, 2024',
     runtime: '3:45',
     thumbnail: '/doctor-doom-stained-glass.jpg',
-    youtubeId: '8Qn_spdM5Zg', // Official Marvel SDCC 2024 Announcement coverage
+    youtubeId: '8Qn_spdM5Zg',
     description: 'The monumental moment at San Diego Comic-Con Hall H when the Russo Brothers revealed Robert Downey Jr. stepping out as Victor von Doom for Avengers: Doomsday.',
     verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'DOCTOR DOOM',
+  },
+  {
+    id: 'thor-god-of-thunder',
+    title: 'Marvel Studios’ Thor — God of Thunder Arrives (Infinity War & Beyond)',
+    category: 'ICONIC HERO FOOTAGE',
+    date: 'Official Archive',
+    runtime: '3:15',
+    thumbnail: '/characters/thor.jpg',
+    youtubeId: 'aWzlQ2N6qqg', // Iconic Thor entrance & lightning summon
+    description: 'Chris Hemsworth as the God of Thunder unleashing the full fury of Stormbreaker and celestial lightning across the cosmic battlefield.',
+    verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'THOR ODINSON',
+  },
+  {
+    id: 'captain-america-shield',
+    title: 'Captain America: Brave New World — The Shield in Flight',
+    category: 'OFFICIAL THEATRICAL TRAILER',
+    date: 'November 9, 2024',
+    runtime: '2:38',
+    thumbnail: '/posters/brave-new-world.webp',
+    youtubeId: '1pHDWnXmK7Y',
+    description: 'Anthony Mackie takes flight as Captain America, hurling the indestructible Vibranium shield against Red Hulk and conspiratorial air-strikes.',
+    verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'CAPTAIN AMERICA & SHIELD',
+  },
+  {
+    id: 'endgame-shield-assemble',
+    title: 'Avengers: Endgame — Captain America Wields the Shield & Mjolnir',
+    category: 'LEGENDARY MOMENT',
+    date: 'Official Vault',
+    runtime: '4:20',
+    thumbnail: '/posters/endgame.webp',
+    youtubeId: 'ee1172_Sy90', // "Avengers Assemble" iconic sequence
+    description: 'The legendary climax where the Vibranium shield stands unbreakable against Thanos, leading into the immortal rallying cry: "Avengers... Assemble."',
+    verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'THE SHIELD & AVENGERS',
   },
   {
     id: 'fantastic-four-first-look',
@@ -23,20 +60,10 @@ export const TRAILERS_DATA = [
     date: 'August 10, 2024',
     runtime: '2:15',
     thumbnail: '/posters/fantastic-four.webp',
-    youtubeId: '1aD16QvB2z8', // Fantastic Four First Steps D23/Comic-Con teaser
+    youtubeId: '1aD16QvB2z8',
     description: 'First official look at the retro-futuristic 1960s universe of Marvel’s First Family, directed by Matt Shakman, leading into Doomsday.',
     verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
-  },
-  {
-    id: 'brave-new-world-trailer',
-    title: 'Captain America: Brave New World — Official Theatrical Trailer',
-    category: 'OFFICIAL TRAILER',
-    date: 'November 9, 2024',
-    runtime: '2:38',
-    thumbnail: '/posters/brave-new-world.webp',
-    youtubeId: '1pHDWnXmK7Y', // Captain America: Brave New World Official Trailer
-    description: 'Anthony Mackie takes flight as Captain America against Thaddeus Ross and global conspiracies setting the stage for the geopolitical tensions before the multiversal incursion.',
-    verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'FANTASTIC FOUR',
   },
   {
     id: 'thunderbolts-teaser',
@@ -45,8 +72,21 @@ export const TRAILERS_DATA = [
     date: 'September 23, 2024',
     runtime: '3:10',
     thumbnail: '/posters/thunderbolts.webp',
-    youtubeId: '-sAOWhv6Goo', // Thunderbolts* Official Teaser Trailer
+    youtubeId: '-sAOWhv6Goo',
     description: 'An irreverent band of anti-heroes and reformed operatives assembled by Valentina Allegra de Fontaine, featuring Bucky Barnes, Yelena Belova, and Red Guardian.',
     verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'WINTER SOLDIER & THUNDERBOLTS',
+  },
+  {
+    id: 'deadpool-wolverine-teaser',
+    title: 'Marvel Studios’ Deadpool & Wolverine — Official Teaser Trailer',
+    category: 'MULTIVERSE BLOCKBUSTER',
+    date: 'February 11, 2024',
+    runtime: '2:25',
+    thumbnail: '/posters/deadpool-wolverine.webp',
+    youtubeId: 'uJMCNP2ipVO',
+    description: 'Wade Wilson enters the TVA and unites with Hugh Jackman’s Wolverine to reshape the destiny of the Marvel Cinematic Universe.',
+    verifiedBadge: 'OFFICIAL MARVEL STUDIOS',
+    featuredHero: 'WOLVERINE & DEADPOOL',
   },
 ];
