@@ -49,12 +49,12 @@ export default function App() {
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-[#1E2024] py-12 px-5 sm:px-8 bg-[#060608]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
             <span className="text-[10px] font-cinematic tracking-[0.2em] text-[#777A80] uppercase">
               AVENGERS: DOOMSDAY
             </span>
-            <span className="text-[#2D3036] text-xs">•</span>
+            <span className="hidden sm:inline text-[#2D3036] text-xs">•</span>
             {/* Ambient mode lighting switch */}
             <button
               type="button"
@@ -65,7 +65,22 @@ export default function App() {
               ✦ LIGHTING: {ambientMode === 'cinematic' ? 'CINEMATIC' : 'STANDARD'}
             </button>
           </div>
-          <p className="text-[10px] font-mono text-[#55585E] leading-relaxed text-center sm:text-right max-w-md">
+
+          {/* Developer Credit & Portfolio Link per user specification */}
+          <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-center">
+            <span className="text-[#8C9098]">DEVELOPED BY</span>
+            <a
+              href="https://blessingbrysonhong.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-[#22C55E] font-bold border-b border-[#3A3D45] hover:border-[#22C55E] transition-all pb-0.5 inline-flex items-center gap-1"
+            >
+              <span>BLESSINGBRYSONHONG</span>
+              <span className="text-[10px] text-[#22C55E]">↗</span>
+            </a>
+          </div>
+
+          <p className="text-[10px] font-mono text-[#55585E] leading-relaxed text-center md:text-right max-w-sm">
             Fan-made cinematic countdown experience. All Marvel trademarks and characters are property of Marvel Studios and Disney.
           </p>
         </div>
