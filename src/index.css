@@ -239,94 +239,30 @@
   animation: deckBoxPulse 2.4s infinite ease-in-out;
 }
 
-/* ── AVENGERS: DOOMSDAY DARK & CREATIVE THEME ANIMATIONS ── */
-@keyframes doomsdayVaultBreathing {
-
-  0%,
-  100% {
-    box-shadow: 0 0 30px rgba(16, 185, 129, 0.25), 0 0 60px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(16, 185, 129, 0.12);
-    border-color: rgba(16, 185, 129, 0.45);
-  }
-
-  50% {
-    box-shadow: 0 0 55px rgba(16, 185, 129, 0.6), 0 0 90px rgba(0, 0, 0, 0.95), inset 0 0 35px rgba(16, 185, 129, 0.25), 0 0 25px rgba(230, 36, 41, 0.3);
-    border-color: rgba(16, 185, 129, 0.85);
-  }
+/* ── PREMIUM CINEMATIC EDITORIAL CARD STYLING ── */
+.premium-card-surface {
+  background: #0D0E12;
+  border: 1px solid #1E2026;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-@keyframes doomsdayRunicSpin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+.premium-card-surface:hover {
+  border-color: #2F333E;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
 }
 
-@keyframes doomsdayRunicCounter {
-  0% {
-    transform: rotate(360deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
+.hero-card-fan-item {
+  transform: translate3d(var(--tx), var(--ty), 0px) rotate(var(--rot));
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
-@keyframes doomsdaySorceryPulse {
-
-  0%,
-  100% {
-    opacity: 0.7;
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.9)) drop-shadow(0 0 35px rgba(16, 185, 129, 0.5));
-    transform: scale(1.05);
-  }
-}
-
-@keyframes doomsdayEmeraldSweep {
-  0% {
-    transform: translateX(-150%) skewX(-20deg);
-  }
-
-  100% {
-    transform: translateX(250%) skewX(-20deg);
-  }
-}
-
-.doomsday-vault-glow {
-  animation: doomsdayVaultBreathing 3.2s infinite ease-in-out;
-}
-
-.doomsday-rune-spin {
-  animation: doomsdayRunicSpin 24s linear infinite;
-}
-
-.doomsday-rune-counter {
-  animation: doomsdayRunicCounter 32s linear infinite;
-}
-
-.doomsday-sorcery-pulse {
-  animation: doomsdaySorceryPulse 2.4s infinite ease-in-out;
-}
-
-.doomsday-emerald-sweep {
-  animation: doomsdayEmeraldSweep 3.2s infinite ease-in-out;
-}
-
-/* Stained glass gothic lattice background */
-.doomsday-stained-glass-bg {
-  background-image:
-    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 65%),
-    linear-gradient(45deg, rgba(16, 185, 129, 0.04) 25%, transparent 25%, transparent 75%, rgba(16, 185, 129, 0.04) 75%),
-    linear-gradient(-45deg, rgba(16, 185, 129, 0.04) 25%, transparent 25%, transparent 75%, rgba(16, 185, 129, 0.04) 75%);
-  background-size: 100% 100%, 36px 36px, 36px 36px;
+.hero-card-fan-item:hover {
+  transform: translate3d(var(--tx), calc(var(--ty) - 40px), 80px) scale(1.16) rotate(0deg) !important;
+  z-index: 80 !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.95), 0 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+  border-color: #D8D9DC !important;
 }
 
 /* Film Perforation Motif for Watchlist */
