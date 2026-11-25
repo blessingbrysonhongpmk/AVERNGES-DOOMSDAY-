@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Countdown from './components/Countdown';
+import HulkSmashBanner from './components/HulkSmashBanner';
+import HulkSmashGame from './components/HulkSmashGame';
 import Watchlist from './components/Watchlist';
 import CharacterDatabase from './components/CharacterDatabase';
-import FinalCountdown from './components/FinalCountdown';
+import Intelligence from './components/Intelligence';
 import { loadAmbientMode, saveAmbientMode } from './utils/storage';
 
 export default function App() {
   const [ambientMode, setAmbientMode] = useState(() => loadAmbientMode());
+  const [isGameOpen, setIsGameOpen] = useState(false);
 
   useEffect(() => {
     saveAmbientMode(ambientMode);
@@ -33,14 +36,17 @@ export default function App() {
         {/* 1. Hero & Live Broadcast Countdown (PROTECTED) */}
         <Countdown />
 
-        {/* 2. Road to Doomsday — Theatrical Watchlist (Inspired by reference UI) */}
+        {/* 2. Hulk Smash Mayhem — Premium Mini Arcade Game Entry (Immediately Below Hero) */}
+        <HulkSmashBanner onPlay={() => setIsGameOpen(true)} />
+
+        {/* 3. Road to Doomsday — Theatrical Watchlist */}
         <Watchlist />
 
-        {/* 3. Confirmed Character Database */}
+        {/* 4. Confirmed Character Database */}
         <CharacterDatabase />
 
-        {/* 4. The Final Countdown Monolith (Inspired by reference UI) */}
-        <FinalCountdown />
+        {/* 5. Doomsday Intelligence & The Final Countdown (Matching Image 4) */}
+        <Intelligence />
       </main>
 
       {/* ── FOOTER ── */}
@@ -81,6 +87,11 @@ export default function App() {
           </p>
         </div>
       </footer>
+
+      {/* ── HULK SMASH MAYHEM FULL INTERACTIVE MINI-GAME EXPERIENCE ── */}
+      {isGameOpen && (
+        <HulkSmashGame onClose={() => setIsGameOpen(false)} />
+      )}
     </div>
   );
 }

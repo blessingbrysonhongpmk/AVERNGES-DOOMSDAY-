@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Home, Film, Users, Clock } from 'lucide-react';
+import { Volume2, VolumeX, Home, Film, Users, Newspaper, Gamepad2 } from 'lucide-react';
 import { useClockAudio } from '../utils/audio.js';
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Home', icon: Home },
   { id: 'watchlist', label: 'Road to Doomsday', icon: Film },
   { id: 'characters', label: 'Character Database', icon: Users },
-  { id: 'final-countdown', label: 'The Final Countdown', icon: Clock },
+  { id: 'intelligence', label: 'Doomsday Intelligence', icon: Newspaper },
+  { id: 'game-mayhem', label: 'Game Zone', icon: Gamepad2 },
 ];
 
 export default function Navigation() {

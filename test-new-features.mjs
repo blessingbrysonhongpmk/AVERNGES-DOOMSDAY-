@@ -60,6 +60,14 @@ async function run() {
     assert(fs.existsSync('public' + c.poster), `Poster exists on disk: ${c.poster}`);
   });
 
+  console.log('\n=== VERIFYING HULK SMASH MAYHEM MINI-GAME ASSETS ===');
+  const { SMASH_TARGETS, DECOYS, HULK_DIALOGUES, COMIC_WORDS } = await import('./src/data/hulkGameData.js');
+  assert(SMASH_TARGETS.length >= 6, `Smash targets defined: ${SMASH_TARGETS.length}`);
+  assert(DECOYS.length >= 4, `Decoys defined: ${DECOYS.length}`);
+  assert(HULK_DIALOGUES.intro.length > 0, 'Hulk intro dialogues defined in English');
+  assert(HULK_DIALOGUES.correct.every(d => !d.includes('machan') && !d.includes('da')), 'Hulk dialogues strictly in English');
+  assert(COMIC_WORDS.includes('SMASH!'), 'Comic word SMASH! included');
+
   console.log('\n=== VERIFYING HTTP RESPONSE ON PORT 3000 ===');
   const home = await fetchHttp('http://localhost:3000/');
   assert(home.status === 200, 'HTTP 200 returned on /');

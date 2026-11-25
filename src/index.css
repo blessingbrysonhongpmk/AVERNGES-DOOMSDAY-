@@ -295,6 +295,56 @@
   background-size: 10px 14px;
 }
 
+/* ── HULK SMASH MAYHEM MINI-GAME ANIMATIONS ── */
+@keyframes hulkScreenShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+  40% { transform: translate(4px, -3px) rotate(0.5deg); }
+  60% { transform: translate(-3px, -2px) rotate(-0.25deg); }
+  80% { transform: translate(2px, 2px) rotate(0.25deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.screen-shake-smash {
+  animation: hulkScreenShake 0.25s ease-out;
+}
+
+@keyframes comicWordPop {
+  0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(1.35) rotate(5deg); opacity: 1; }
+  80% { transform: scale(1.1) rotate(0deg); opacity: 0.9; }
+  100% { transform: scale(0.9) translateY(-20px); opacity: 0; }
+}
+
+.comic-word-burst {
+  animation: comicWordPop 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes floatingScore {
+  0% { transform: translateY(0) scale(0.8); opacity: 1; }
+  50% { transform: translateY(-25px) scale(1.15); opacity: 1; }
+  100% { transform: translateY(-50px) scale(1); opacity: 0; }
+}
+
+.floating-score {
+  animation: floatingScore 0.6s ease-out forwards;
+}
+
+@keyframes gammaGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4), inset 0 0 10px rgba(34, 197, 94, 0.2);
+    border-color: rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(34, 197, 94, 0.8), inset 0 0 20px rgba(0, 255, 136, 0.4);
+    border-color: #00FF88;
+  }
+}
+
+.gamma-glow-pulse {
+  animation: gammaGlowPulse 2s infinite ease-in-out;
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 
