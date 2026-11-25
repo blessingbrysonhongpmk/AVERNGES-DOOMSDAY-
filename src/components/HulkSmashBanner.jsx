@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Trophy, ShieldAlert, ChevronRight, Volume2 } from 'lucide-react';
 import { clockAudio } from '../utils/audio.js';
-import { FEATURED_GAME_CAST } from '../data/hulkGameData.js';
+import { FEATURED_GAME_CAST, ALL_AVATARS, HULK_PROFILE } from '../data/hulkGameData.js';
 import { hulkAudio } from '../utils/hulkAudio.js';
 
 /**
  * Premium Game Promotion Banner immediately below Hero Section
- * Showcases Hulk alongside imported Marvel Heroes & Villains plus custom SFX audio.
+ * Showcases active Marvel Character Avatar alongside Hulk, Hero Team-Ups, and custom SFX audio.
  */
 export default function HulkSmashBanner({ onPlay, isGameOpen }) {
   const [highScore, setHighScore] = useState(0);
+  const [selectedAvatar, setSelectedAvatar] = useState(HULK_PROFILE);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem('hulk_smash_high_score_v1');
       if (saved) setHighScore(parseInt(saved, 10) || 0);
+      const savedAvatarId = localStorage.getItem('hulk_smash_avatar_v1');
+      if (savedAvatarId) {
+        const match = ALL_AVATARS.find((a) => a.id === savedAvatarId);
+        if (match) setSelectedAvatar(match);
+      }
     } catch { }
   }, [isGameOpen]);
 
@@ -66,15 +72,15 @@ export default function HulkSmashBanner({ onPlay, isGameOpen }) {
           <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-6 sm:gap-8 text-center sm:text-left z-10">
             <div className="relative w-28 h-36 xs:w-32 xs:h-44 sm:w-36 sm:h-48 shrink-0 rounded-sm overflow-hidden border-2 border-[#10B981]/70 group-hover:border-[#00FF88] shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-all duration-500 group-hover:scale-[1.04]">
               <img
-                src="/characters/hulk.jpg"
-                alt="Hulk in action"
+                src={selectedAvatar.poster}
+                alt={selectedAvatar.name}
                 loading="lazy"
                 className="w-full h-full object-cover object-top filter brightness-90 group-hover:brightness-100 transition-all duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
 
-              <span className="absolute bottom-1.5 left-1.5 right-1.5 text-center bg-black/85 border border-[#10B981]/40 text-[#00FF88] font-mono text-[8px] xs:text-[9px] font-bold py-0.5 uppercase tracking-wider rounded-sm">
-                WORLDBREAKER // TIER 1
+              <span className="absolute bottom-1.5 left-1.5 right-1.5 text-center bg-black/85 border border-[#10B981]/40 text-[#00FF88] font-mono text-[8px] xs:text-[9px] font-bold py-0.5 uppercase tracking-wider rounded-sm truncate px-1">
+                AVATAR: {selectedAvatar.name}
               </span>
             </div>
 
@@ -129,7 +135,7 @@ export default function HulkSmashBanner({ onPlay, isGameOpen }) {
                   ))}
                 </div>
                 <span className="text-[9.5px] font-mono text-[#8C9098] uppercase tracking-wider">
-                  MARVEL HEROES &amp; VILLAINS DEPLOYED
+                  51 MARVEL AVATARS &amp; HEROES READY
                 </span>
               </div>
             </div>

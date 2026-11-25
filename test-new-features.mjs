@@ -61,10 +61,11 @@ async function run() {
   });
 
   console.log('\n=== VERIFYING HULK SMASH MAYHEM MINI-GAME ASSETS ===');
-  const { SMASH_TARGETS, DECOYS, HERO_ASSISTS, HULK_DIALOGUES, HULK_PROFILE, COMIC_WORDS } = await import('./src/data/hulkGameData.js');
+  const { SMASH_TARGETS, DECOYS, HERO_ASSISTS, ALL_AVATARS, HULK_DIALOGUES, HULK_PROFILE, COMIC_WORDS } = await import('./src/data/hulkGameData.js');
   const { SOUND_CATALOG } = await import('./src/utils/hulkAudio.js');
   assert(SMASH_TARGETS.length >= 6, `Smash targets defined: ${SMASH_TARGETS.length}`);
-  assert(DECOYS.length >= 4, `Decoys defined: ${DECOYS.length}`);
+  assert(DECOYS.length >= 10, `Hero Allies (Decoys) defined: ${DECOYS.length}`);
+  assert(ALL_AVATARS.length === 51, `All 51 Marvel Character Avatars imported: ${ALL_AVATARS.length}`);
   assert(HERO_ASSISTS.length === 3, `Hero Team-Up Assists defined: ${HERO_ASSISTS.length}`);
   assert(fs.existsSync('public' + HULK_PROFILE.poster), `Hulk profile poster exists: ${HULK_PROFILE.poster}`);
   SMASH_TARGETS.forEach(t => {

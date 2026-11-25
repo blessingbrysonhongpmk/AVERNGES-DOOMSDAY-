@@ -1,5 +1,5 @@
 /**
- * Data, Marvel Character Roster Imports & Hulk Lore for HULK SMASH MAYHEM
+ * Data, 51 Imported Marvel Character Avatars & Hulk Lore for HULK SMASH MAYHEM
  * Directly imports characters from CHARACTERS_DATA so portraits, aliases, and factions stay unified.
  * All dialogues are strictly English.
  */
@@ -12,6 +12,30 @@ const fallbackChar = (id, name, poster) =>
   CHAR_MAP[id] || { id, name, alias: name, poster, affiliation: 'Marvel Multiverse', roleTag: 'COMBATANT' };
 
 export const HULK_PROFILE = fallbackChar('hulk', 'Smart Hulk', '/characters/hulk.jpg');
+
+/**
+ * Maps any Marvel character ID/category to the best matching imported WAV SFX in SOUND_CATALOG.
+ */
+export function getAvatarSoundKey(character) {
+  if (!character) return 'hulkRoar';
+  const id = character.id;
+  if (id === 'hulk' || id === 'she-hulk' || id === 'ben-grimm' || id === 'red-guardian') return 'hulkRoar';
+  if (id === 'iron-man' || id === 'war-machine' || id === 'captain-marvel' || id === 'monica-rambeau') return 'ironmanRepulsor';
+  if (id === 'thor' || id === 'valkyrie') return 'thorThunder';
+  if (id === 'steve-rogers' || id === 'sam-wilson' || id === 'bucky-barnes' || id === 'us-agent' || id === 'taskmaster') return 'capShield';
+  if (id === 'spider-man' || id === 'ms-marvel' || id === 'daredevil') return 'spideyThwip';
+  if (id === 'doctor-strange' || id === 'scarlet-witch' || id === 'america-chavez' || id === 'loki' || id === 'moon-knight') return 'strangeMystic';
+  if (id === 'doctor-doom' || id === 'thanos' || id === 'galactus' || id === 'magneto' || id === 'sentry') return 'doomLatveria';
+  return character.category === 'ANTAGONIST' ? 'doomLatveria' : 'hulkSmash';
+}
+
+/**
+ * All 51 Marvel Characters exported as selectable player Combat Avatars
+ */
+export const ALL_AVATARS = CHARACTERS_DATA.map((char) => ({
+  ...char,
+  soundKey: getAvatarSoundKey(char),
+}));
 
 /**
  * SMASH TARGETS (7 Marvel Threats & Incursion Hostiles)
@@ -120,7 +144,7 @@ export const SMASH_TARGETS = [
 ];
 
 /**
- * DECOYS — MARVEL HERO ALLIES (PROTECT / DO NOT SMASH!)
+ * DECOYS — 12 MARVEL HERO ALLIES (PROTECT / DO NOT SMASH!)
  * Highlighted with Crimson Hazard Frame & Shield Badge — Clicking resets combo & deducts points.
  */
 export const DECOYS = [
@@ -207,6 +231,90 @@ export const DECOYS = [
     badge: 'GAMMA • PROTECT',
     soundKey: 'hulkSmash',
     warningLine: 'COUSIN JENNIFER IS ON HULK TEAM!',
+  },
+  {
+    id: 'ally-doctor-strange',
+    characterId: 'doctor-strange',
+    name: 'Doctor Strange',
+    subtitle: 'Ally • Sorcerer Supreme',
+    poster: fallbackChar('doctor-strange', 'Doctor Strange', '/characters/doctor-strange.jpg').poster,
+    description: 'Opening Kamar-Taj evacuation portals!',
+    type: 'decoy',
+    penalty: -60,
+    accent: '#EF4444',
+    badge: 'MYSTIC • PROTECT',
+    soundKey: 'strangeMystic',
+    warningLine: 'WATCH THE CAPE, WIZARD!',
+  },
+  {
+    id: 'ally-wolverine',
+    characterId: 'wolverine',
+    name: 'Wolverine',
+    subtitle: 'Ally • Logan',
+    poster: fallbackChar('wolverine', 'Wolverine', '/characters/wolverine.jpg').poster,
+    description: 'Slicing incoming Doombots with Adamantium claws!',
+    type: 'decoy',
+    penalty: -60,
+    accent: '#EF4444',
+    badge: 'MUTANT • PROTECT',
+    soundKey: 'capShield',
+    warningLine: 'WATCH THOSE CLAWS — LOGAN IS FRIEND!',
+  },
+  {
+    id: 'ally-deadpool',
+    characterId: 'deadpool',
+    name: 'Deadpool',
+    subtitle: 'Ally • Wade Wilson',
+    poster: fallbackChar('deadpool', 'Deadpool', '/characters/deadpool.jpg').poster,
+    description: 'Breaking the fourth wall mid-evacuation!',
+    type: 'decoy',
+    penalty: -50,
+    accent: '#EF4444',
+    badge: 'ALLY • PROTECT',
+    soundKey: 'spideyThwip',
+    warningLine: 'WAIT — THAT IS NOT SPIDER-MAN! DO NOT SMASH WADE!',
+  },
+  {
+    id: 'ally-scarlet-witch',
+    characterId: 'scarlet-witch',
+    name: 'Scarlet Witch',
+    subtitle: 'Ally • Wanda Maximoff',
+    poster: fallbackChar('scarlet-witch', 'Scarlet Witch', '/characters/scarlet-witch.jpg').poster,
+    description: 'Containing Chaos Magic rifts across Midtown!',
+    type: 'decoy',
+    penalty: -60,
+    accent: '#EF4444',
+    badge: 'NEXUS • PROTECT',
+    soundKey: 'strangeMystic',
+    warningLine: 'STAY CLEAR OF WANDA CHAOS SHIELDS!',
+  },
+  {
+    id: 'ally-captain-marvel',
+    characterId: 'captain-marvel',
+    name: 'Captain Marvel',
+    subtitle: 'Ally • Carol Danvers',
+    poster: fallbackChar('captain-marvel', 'Captain Marvel', '/characters/captain-marvel.jpg').poster,
+    description: 'Intercepting orbital Chitauri carriers!',
+    type: 'decoy',
+    penalty: -60,
+    accent: '#EF4444',
+    badge: 'COSMIC • PROTECT',
+    soundKey: 'ironmanRepulsor',
+    warningLine: 'CAROL HAS BINARY SHIELDS UP — DO NOT SMASH!',
+  },
+  {
+    id: 'ally-groot',
+    characterId: 'groot',
+    name: 'King Groot',
+    subtitle: 'Ally • Guardians',
+    poster: fallbackChar('groot', 'King Groot', '/characters/groot.jpg').poster,
+    description: 'Forming a living bark barrier around civilians!',
+    type: 'decoy',
+    penalty: -50,
+    accent: '#EF4444',
+    badge: 'ALLY • PROTECT',
+    soundKey: 'hulkSmash',
+    warningLine: 'I AM GROOT! PROTECT THE TREE FRIEND!',
   },
 ];
 
@@ -327,7 +435,7 @@ export const RANKS = [
 export const COMIC_WORDS = ['SMASH!', 'PUNY BOT!', 'KRAKOOM!', 'THUNDER!', 'CRUSH!', 'GAMMA HIT!'];
 
 /**
- * Curated Marvel Cast Strip used in Banner & Soundboard
+ * Curated Marvel Cast Strip used in Banner & Loading Screen
  */
 export const FEATURED_GAME_CAST = [
   fallbackChar('hulk', 'Smart Hulk', '/characters/hulk.jpg'),
