@@ -345,6 +345,26 @@
   animation: gammaGlowPulse 2s infinite ease-in-out;
 }
 
+@keyframes countdownZoom {
+  0% { transform: scale(2.2); opacity: 0; }
+  35% { transform: scale(1.0); opacity: 1; }
+  80% { transform: scale(0.95); opacity: 1; }
+  100% { transform: scale(0.7); opacity: 0; }
+}
+
+.countdown-zoom {
+  animation: countdownZoom 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes energyScanner {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.energy-scanner-line {
+  animation: energyScanner 1.2s infinite linear;
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 

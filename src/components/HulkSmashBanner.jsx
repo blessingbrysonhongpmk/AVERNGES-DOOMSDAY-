@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Trophy, Zap, ShieldAlert, Sparkles, ChevronRight } from 'lucide-react';
+import { Play, Trophy, ShieldAlert, ChevronRight } from 'lucide-react';
 import { clockAudio } from '../utils/audio.js';
 
 /**
@@ -8,6 +8,7 @@ import { clockAudio } from '../utils/audio.js';
  */
 export default function HulkSmashBanner({ onPlay }) {
   const [highScore, setHighScore] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -17,8 +18,13 @@ export default function HulkSmashBanner({ onPlay }) {
   }, []);
 
   const handleLaunch = () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try { clockAudio.tick(0); } catch (e) {}
-    onPlay();
+    setTimeout(() => {
+      onPlay();
+      setIsLoading(false);
+    }, 250);
   };
 
   return (
@@ -51,31 +57,28 @@ export default function HulkSmashBanner({ onPlay }) {
             aria-hidden="true"
           />
 
-          {/* Left: Hulk Superhero Visual & Composition */}
-          <div className="flex items-center gap-6 sm:gap-8 w-full md:w-auto">
-            {/* Cinematic Hulk Avatar Container */}
-            <div className="relative w-28 xs:w-32 sm:w-40 aspect-[3/4] shrink-0 rounded-xs overflow-hidden border-2 border-[#10B981]/60 group-hover:border-[#00FF88] shadow-[0_0_30px_rgba(16,185,129,0.35)] transition-all duration-500 group-hover:scale-104">
+          {/* Left: Hulk Portrait & Theatrical Text */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-6 sm:gap-8 text-center sm:text-left z-10">
+            {/* Cinematic Hulk Portrait Thumbnail with glowing gamma rim */}
+            <div className="relative w-28 h-36 xs:w-32 xs:h-44 sm:w-36 sm:h-48 shrink-0 rounded-xs overflow-hidden border-2 border-[#10B981]/70 group-hover:border-[#00FF88] shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-all duration-500 group-hover:scale-104">
               <img
                 src="/characters/hulk.jpg"
-                alt="The Incredible Hulk"
-                className="w-full h-full object-cover filter brightness-95 contrast-110 group-hover:scale-110 transition-transform duration-700"
+                alt="Hulk in action"
+                loading="lazy"
+                className="w-full h-full object-cover filter brightness-90 group-hover:brightness-100 transition-all duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
 
-              {/* Gamma Badge */}
-              <div className="absolute bottom-2 left-2 right-2 bg-black/90 border border-[#22C55E]/50 px-1.5 py-0.5 rounded-xs text-center shadow-lg">
-                <span className="text-[8.5px] font-mono font-bold text-[#00FF88] tracking-widest uppercase">
-                  AVENGER // TIER 1
-                </span>
-              </div>
+              <span className="absolute bottom-1.5 left-1.5 right-1.5 text-center bg-black/85 border border-[#10B981]/40 text-[#00FF88] font-mono text-[8px] xs:text-[9px] font-bold py-0.5 uppercase tracking-wider rounded-xs">
+                AVENGER // TIER 1
+              </span>
             </div>
 
-            {/* Typography & Game Overview */}
-            <div className="flex-1 text-left">
-              {/* Badges */}
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#10B981]/20 border border-[#10B981]/60 text-[#34D399] text-[9px] sm:text-[10px] font-mono tracking-widest uppercase font-bold rounded-xs">
-                  <Zap className="w-3 h-3 text-[#00FF88]" />
+            {/* Title & Narrative Lead */}
+            <div className="max-w-xl">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2.5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#10B981]/15 border border-[#10B981]/50 text-[#00FF88] text-[9px] font-mono tracking-widest uppercase font-bold rounded-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-ping" />
                   <span>MINI ARCADE MINI-GAME</span>
                 </span>
 
@@ -114,15 +117,25 @@ export default function HulkSmashBanner({ onPlay }) {
             {/* Play Button */}
             <button
               type="button"
+              disabled={isLoading}
               onClick={(e) => {
                 e.stopPropagation();
                 handleLaunch();
               }}
               className="px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-[#10B981] via-[#22C55E] to-[#00FF88] text-black font-mono font-black text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 shadow-[0_0_25px_rgba(34,197,94,0.7)] group-hover:shadow-[0_0_40px_rgba(0,255,136,0.9)] group-hover:scale-105 inline-flex items-center gap-2.5 rounded-xs cursor-pointer select-none"
             >
-              <Play className="w-4 h-4 fill-black" />
-              <span>PLAY NOW</span>
-              <ChevronRight className="w-4 h-4 stroke-[3]" />
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  <span>LOADING ARENA...</span>
+                </span>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-black" />
+                  <span>PLAY NOW</span>
+                  <ChevronRight className="w-4 h-4 stroke-[3]" />
+                </>
+              )}
             </button>
 
             <span className="text-[9.5px] font-mono text-[#8C9098] tracking-widest uppercase text-center md:text-right">

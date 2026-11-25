@@ -180,7 +180,58 @@ class HulkAudioSynthesizer {
     osc.stop(now + 0.07);
   }
 
-  // 6. Game Over Triumphant Chord
+  // 6. Charging Energy Sweep (for Loading sequence)
+  playChargingSweep() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(140, now);
+    osc.frequency.exponentialRampToValueAtTime(880, now + 1.2);
+
+    gain.gain.setValueAtTime(0.05, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 1.0);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 1.25);
+  }
+
+  // 7. Arcade Countdown Beep (3, 2, 1, SMASH!)
+  playCountdownBeep(isFinal = false) {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = isFinal ? 'triangle' : 'sine';
+    osc.frequency.setValueAtTime(isFinal ? 880 : 520, now);
+    if (isFinal) {
+      osc.frequency.exponentialRampToValueAtTime(1200, now + 0.2);
+    }
+
+    gain.gain.setValueAtTime(isFinal ? 0.35 : 0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + (isFinal ? 0.3 : 0.15));
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + (isFinal ? 0.3 : 0.15));
+  }
+
+  // 8. Game Over Triumphant Chord
   playGameOver() {
     if (!this.enabled) return;
     this.init();
