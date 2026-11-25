@@ -344,23 +344,23 @@ export default function CharacterDatabase() {
                     })}
                   </div>
 
-                  {/* Circular Green Navigation Arrows matching Image 4 */}
+                  {/* Architectural Navigation Arrows */}
                   <button
                     type="button"
                     onClick={() => scrollCarousel('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#22C55E] bg-black/90 hover:bg-[#22C55E] text-[#22C55E] hover:text-black flex items-center justify-center transition-all shadow-[0_0_15px_rgba(34,197,94,0.6)] cursor-pointer z-10 shrink-0"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#2C333F] bg-[#0B0D11]/95 hover:border-[#34D399] text-white hover:text-[#34D399] flex items-center justify-center transition-colors shadow-xl cursor-pointer z-10 shrink-0"
                     aria-label="Scroll character reel prev"
                   >
-                    <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+                    <ChevronLeft className="w-5 h-5 stroke-[2]" />
                   </button>
 
                   <button
                     type="button"
                     onClick={() => scrollCarousel('right')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-[#22C55E] bg-black/90 hover:bg-[#22C55E] text-[#22C55E] hover:text-black flex items-center justify-center transition-all shadow-[0_0_15px_rgba(34,197,94,0.6)] cursor-pointer z-10 shrink-0"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#2C333F] bg-[#0B0D11]/95 hover:border-[#34D399] text-white hover:text-[#34D399] flex items-center justify-center transition-colors shadow-xl cursor-pointer z-10 shrink-0"
                     aria-label="Scroll character reel next"
                   >
-                    <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                    <ChevronRight className="w-5 h-5 stroke-[2]" />
                   </button>
                 </div>
               )}

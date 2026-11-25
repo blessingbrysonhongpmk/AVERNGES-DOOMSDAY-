@@ -172,25 +172,22 @@ The film unites the Avengers, Fantastic Four, Thunderbolts*, Guardians of the Ga
 
           {/* ── COLUMN 3 (Right): THE FINAL COUNTDOWN MONOLITH ── */}
           <div className="lg:col-span-4 flex flex-col">
-            <div className="h-full border border-[#10B981]/40 bg-gradient-to-br from-[#0A120E] via-[#080B0F] to-[#040507] p-5 sm:p-6 rounded-xs relative overflow-hidden flex flex-col justify-between shadow-2xl">
+            <div className="h-full border border-[#232934] bg-[#090B0E] p-5 sm:p-6 rounded-xs relative overflow-hidden flex flex-col justify-between shadow-2xl">
 
-              {/* Background Doctor Doom Portal Artwork with subtle glow */}
+              {/* Background Doctor Doom Portal Artwork with matte vignette */}
               <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
                 <img
                   src="/doctor-doom-stained-glass.jpg"
                   alt="Doctor Doom Portal"
-                  className="w-full h-full object-cover filter brightness-70 saturate-150"
+                  className="w-full h-full object-cover filter brightness-65 contrast-120"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#040507] via-transparent to-[#0A120E]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#090B0E] via-[#090B0E]/45 to-[#090B0E]" />
               </div>
-
-              {/* Glowing Corner Aura */}
-              <div className="absolute top-0 right-0 w-48 h-48 bg-[#10B981]/15 blur-2xl rounded-full pointer-events-none z-0" />
 
               {/* Content Deck */}
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 mb-2 px-2.5 py-0.5 border border-[#10B981]/30 bg-[#10B981]/10 text-[9px] font-mono tracking-[0.2em] text-[#34D399] uppercase rounded-xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-ping shrink-0" />
+                <div className="inline-flex items-center gap-2 mb-2 px-2.5 py-0.5 border border-[#26302B] bg-[#0E1311] text-[9px] font-mono tracking-[0.22em] text-[#9CA3AF] uppercase rounded-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] shrink-0" />
                   <span>THE FINAL COUNTDOWN</span>
                 </div>
 
@@ -198,13 +195,13 @@ The film unites the Avengers, Fantastic Four, Thunderbolts*, Guardians of the Ga
                   ONE DESTINATION. ONE DATE.
                 </p>
 
-                {/* Big Vibrant Emerald Green Date Display (Image 4) */}
-                <div className="text-2xl xs:text-3xl sm:text-4xl font-cinematic font-black text-[#22C55E] tracking-wider my-3 drop-shadow-[0_0_15px_rgba(34,197,94,0.65)]">
+                {/* Metallic Platinum Date Display */}
+                <div className="text-2xl xs:text-3xl sm:text-4xl font-cinematic font-black text-metallic tracking-wider my-3">
                   18 DECEMBER 2026
                 </div>
 
                 {/* Live Countdown Display */}
-                <div className="grid grid-cols-4 gap-2 mb-4 p-2 bg-black/50 border border-[#1E252D] rounded-xs text-center">
+                <div className="grid grid-cols-4 gap-2 mb-4 p-2.5 bg-[#060709]/85 border border-[#1E242D] rounded-xs text-center">
                   <div>
                     <span className="text-sm font-sans font-bold text-white block tabular-nums">{formatted.months}</span>
                     <span className="text-[7px] font-mono text-[#8C9098] uppercase">MONTHS</span>
@@ -218,20 +215,20 @@ The film unites the Avengers, Fantastic Four, Thunderbolts*, Guardians of the Ga
                     <span className="text-[7px] font-mono text-[#8C9098] uppercase">HOURS</span>
                   </div>
                   <div>
-                    <span className="text-sm font-sans font-bold text-[#22C55E] block tabular-nums">{formatted.seconds}</span>
-                    <span className="text-[7px] font-mono text-[#22C55E] uppercase">SECS</span>
+                    <span className="text-sm font-sans font-bold text-[#34D399] block tabular-nums">{formatted.seconds}</span>
+                    <span className="text-[7px] font-mono text-[#34D399] uppercase">SECS</span>
                   </div>
                 </div>
               </div>
 
               {/* Mark Your Calendar Action Button */}
-              <div className="relative z-10 pt-2 border-t border-[#1E252D]/80">
+              <div className="relative z-10 pt-2 border-t border-[#1C2027]">
                 <button
                   type="button"
                   onClick={handleMarkCalendar}
-                  className="w-full py-2.5 px-4 border border-[#10B981]/60 hover:border-[#00FF88] bg-[#0D1812] hover:bg-[#10B981]/25 text-white hover:text-[#00FF88] text-[11px] font-mono font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 cursor-pointer rounded-xs"
+                  className="w-full py-2.5 px-4 border border-[#2C3440] hover:border-[#34D399] bg-[#101318] hover:bg-[#141A18] text-white text-[11px] font-mono font-bold tracking-[0.2em] uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer rounded-xs"
                 >
-                  <Calendar className="w-3.5 h-3.5 text-[#22C55E]" />
+                  <Calendar className="w-3.5 h-3.5 text-[#34D399]" />
                   <span>MARK YOUR CALENDAR</span>
                 </button>
               </div>

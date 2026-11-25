@@ -229,16 +229,16 @@ export default function Watchlist() {
                     WATCHED: <span className="text-white font-bold font-sans text-sm sm:text-base">{watchedCount}</span> / {totalCount}
                   </span>
                   <span className="text-[#3A3D46]">•</span>
-                  <span className="text-[#22C55E] font-bold font-mono text-sm sm:text-base drop-shadow-[0_0_10px_rgba(34,197,94,0.7)]">
+                  <span className="text-[#34D399] font-semibold font-mono text-sm sm:text-base">
                     {percentage}% COMPLETE
                   </span>
                 </div>
 
-                {/* Glowing Emerald Progress Track */}
-                <div className="w-full h-2.5 sm:h-3 bg-[#0F1116] border border-[#232731] rounded-full overflow-hidden p-0.5 shadow-inner mb-4">
+                {/* Hairline Emerald Progress Track */}
+                <div className="w-full h-1.5 bg-[#11141A] border border-[#232731] rounded-[2px] overflow-hidden mb-4">
                   <div
-                    className="h-full bg-gradient-to-r from-[#10B981] via-[#22C55E] to-[#00FF88] rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(34,197,94,0.8)]"
-                    style={{ width: `${Math.max(percentage, 4)}%` }}
+                    className="h-full bg-[#22C55E] transition-all duration-500 ease-out"
+                    style={{ width: `${Math.max(percentage, 2)}%` }}
                   />
                 </div>
               </div>
@@ -279,15 +279,15 @@ export default function Watchlist() {
             {/* ── RIGHT COLUMN: HORIZONTAL MOVIE REEL WITH CIRCULAR GREEN ( > ) ARROW ── */}
             <div className="lg:col-span-8 relative flex items-center">
 
-              {/* Circular Green Arrow ( < ) on Left (When Scrolled) */}
+              {/* Navigation Arrow ( < ) on Left */}
               {canScrollLeft && (
                 <button
                   type="button"
                   onClick={() => scrollCarousel('left')}
-                  className="absolute -left-3 sm:-left-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#22C55E] hover:bg-[#10B981] text-black flex items-center justify-center transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.7)] hover:scale-110 cursor-pointer"
+                  className="absolute -left-3 sm:-left-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#0C0F14]/95 border border-[#2D3542] hover:border-[#34D399] text-white hover:text-[#34D399] flex items-center justify-center transition-colors duration-200 shadow-xl cursor-pointer"
                   title="Previous Chapters"
                 >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
                 </button>
               )}
 
@@ -368,14 +368,14 @@ export default function Watchlist() {
                 })}
               </div>
 
-              {/* Circular Green Arrow ( > ) on Right (from Image 4) */}
+              {/* Navigation Arrow ( > ) on Right */}
               <button
                 type="button"
                 onClick={() => scrollCarousel('right')}
-                className="absolute -right-2 sm:-right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#22C55E] hover:bg-[#10B981] text-black flex items-center justify-center transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.7)] hover:scale-110 cursor-pointer shrink-0"
+                className="absolute -right-2 sm:-right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#0C0F14]/95 border border-[#2D3542] hover:border-[#34D399] text-white hover:text-[#34D399] flex items-center justify-center transition-colors duration-200 shadow-xl cursor-pointer shrink-0"
                 title="Next Chapters"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </button>
             </div>
 
