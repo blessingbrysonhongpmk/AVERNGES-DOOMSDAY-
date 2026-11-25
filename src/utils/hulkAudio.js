@@ -106,6 +106,28 @@ const PRIORITY_CHAR_IDS = [
   'deadpool',
 ];
 
+const CUSTOM_DB_NAME = 'doomsday_custom_audio_v1';
+const CUSTOM_STORE_NAME = 'audioOverrides';
+
+function openCustomAudioDB() {
+  return new Promise((resolve) => {
+    if (typeof indexedDB === 'undefined') return resolve(null);
+    try {
+      const req = indexedDB.open(CUSTOM_DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(CUSTOM_STORE_NAME)) {
+          db.createObjectStore(CUSTOM_STORE_NAME, { keyPath: 'key' });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
 class HulkAudioEngine {
   constructor() {
     this.ctx = null;
@@ -115,11 +137,111 @@ class HulkAudioEngine {
     this.rawBuffers = new Map();
     this.charBuffers = new Map();
     this.charRawBuffers = new Map();
+    this.customNames = new Map();
     this.preloadPromise = null;
     this.activeVoiceSource = null;
     this.activeHtmlAudio = null;
     this.lastVoiceAt = 0;
     this.lastCharVoiceAt = 0;
+  }
+
+  getCustomOverrides() {
+    return Object.fromEntries(this.customNames.entries());
+  }
+
+  async loadCustomOverrides() {
+    const db = await openCustomAudioDB();
+    if (!db) return;
+    try {
+      const records = await new Promise((resolve) => {
+        const tx = db.transaction(CUSTOM_STORE_NAME, 'readonly');
+        const store = tx.objectStore(CUSTOM_STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      });
+      const ctx = this.init();
+      for (const rec of records) {
+        if (!rec?.key || !rec?.arrayBuffer) continue;
+        const isChar = rec.key.startsWith('char:');
+        const id = isChar ? rec.key.slice(5) : rec.key;
+        const rawMap = isChar ? this.charRawBuffers : this.rawBuffers;
+        const bufMap = isChar ? this.charBuffers : this.buffers;
+        rawMap.set(id, rec.arrayBuffer);
+        this.customNames.set(rec.key, rec.fileName || 'Custom Clip');
+        if (ctx && typeof ctx.decodeAudioData === 'function') {
+          try {
+            const decoded = await ctx.decodeAudioData(rec.arrayBuffer.slice(0));
+            bufMap.set(id, decoded);
+          } catch { }
+        }
+      }
+    } catch { }
+  }
+
+  async importCustomAudioFile(slotKey, file, isCharVoice = false) {
+    if (!file || typeof window === 'undefined') return { ok: false, error: 'Invalid file' };
+    const ctx = this.init();
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const rawMap = isCharVoice ? this.charRawBuffers : this.rawBuffers;
+      const bufMap = isCharVoice ? this.charBuffers : this.buffers;
+      const fullKey = isCharVoice ? `char:${slotKey}` : slotKey;
+
+      rawMap.set(slotKey, arrayBuffer);
+      if (ctx && typeof ctx.decodeAudioData === 'function') {
+        const decoded = await ctx.decodeAudioData(arrayBuffer.slice(0));
+        bufMap.set(slotKey, decoded);
+      }
+      this.customNames.set(fullKey, file.name);
+
+      const db = await openCustomAudioDB();
+      if (db) {
+        await new Promise((resolve) => {
+          const tx = db.transaction(CUSTOM_STORE_NAME, 'readwrite');
+          tx.objectStore(CUSTOM_STORE_NAME).put({ key: fullKey, fileName: file.name, arrayBuffer });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        });
+      }
+
+      if (isCharVoice) {
+        this.playCharacterVoice(slotKey, { gain: 0.95, force: true });
+      } else {
+        this.playSound(slotKey, { gain: 0.95 });
+      }
+      return { ok: true, fileName: file.name };
+    } catch (err) {
+      return { ok: false, error: err?.message || 'Unsupported audio format' };
+    }
+  }
+
+  async clearCustomAudio(slotKey, isCharVoice = false) {
+    const fullKey = isCharVoice ? `char:${slotKey}` : slotKey;
+    const rawMap = isCharVoice ? this.charRawBuffers : this.rawBuffers;
+    const bufMap = isCharVoice ? this.charBuffers : this.buffers;
+
+    this.customNames.delete(fullKey);
+    rawMap.delete(slotKey);
+    bufMap.delete(slotKey);
+
+    const db = await openCustomAudioDB();
+    if (db) {
+      try {
+        await new Promise((resolve) => {
+          const tx = db.transaction(CUSTOM_STORE_NAME, 'readwrite');
+          tx.objectStore(CUSTOM_STORE_NAME).delete(fullKey);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        });
+      } catch { }
+    }
+
+    const url = isCharVoice ? `/sounds/chars/${slotKey}.wav` : SOUND_BY_ID[slotKey]?.path;
+    if (url) {
+      await this._fetchAndDecode(url, bufMap, rawMap, slotKey);
+    }
+    return this.getCustomOverrides();
   }
 
   init() {
@@ -191,6 +313,7 @@ class HulkAudioEngine {
           bump(charId);
         }),
       ]);
+      await this.loadCustomOverrides();
       return { loaded, total };
     })();
 

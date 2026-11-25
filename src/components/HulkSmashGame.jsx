@@ -34,6 +34,8 @@ import {
   Users,
   Search,
   Check,
+  Upload,
+  Trash2,
 } from 'lucide-react';
 
 const GRID_SIZE = 9; // 3x3 Combat Arena Grid
@@ -161,6 +163,9 @@ export default function HulkSmashGame({ onClose }) {
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [pausedByModal, setPausedByModal] = useState(false);
   const [lastPreviewSound, setLastPreviewSound] = useState(null);
+  const [customAudioSlot, setCustomAudioSlot] = useState('hulkRoar');
+  const [customOverrides, setCustomOverrides] = useState(() => hulkAudio.getCustomOverrides());
+  const [uploadStatusMsg, setUploadStatusMsg] = useState('');
 
   const [highScore, setHighScore] = useState(() => {
     try {
@@ -197,7 +202,9 @@ export default function HulkSmashGame({ onClose }) {
   useEffect(() => {
     hulkAudio.preloadAll((progress) => {
       setAudioLoadCount({ loaded: progress.loaded, total: progress.total });
-    }, [activeAvatar?.id]);
+    }, [activeAvatar?.id]).then(() => {
+      setCustomOverrides(hulkAudio.getCustomOverrides());
+    });
   }, []);
 
   const clearAllTimers = useCallback(() => {
@@ -716,6 +723,29 @@ export default function HulkSmashGame({ onClose }) {
     setLastPreviewSound(`char-${charId}`);
     hulkAudio.init();
     hulkAudio.playCharacterVoice(charId, { gain: 0.95, force: true });
+  };
+
+  const handleImportCustomAudio = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isChar = customAudioSlot.startsWith('char:');
+    const targetId = isChar ? customAudioSlot.slice(5) : customAudioSlot;
+    const res = await hulkAudio.importCustomAudioFile(targetId, file, isChar);
+    if (res.ok) {
+      setCustomOverrides(hulkAudio.getCustomOverrides());
+      setUploadStatusMsg(`IMPORTED "${res.fileName}" — SAVED TO BROWSER!`);
+    } else {
+      setUploadStatusMsg(`FAILED: ${res.error}`);
+    }
+    e.target.value = '';
+  };
+
+  const handleResetCustomAudio = async () => {
+    const isChar = customAudioSlot.startsWith('char:');
+    const targetId = isChar ? customAudioSlot.slice(5) : customAudioSlot;
+    const next = await hulkAudio.clearCustomAudio(targetId, isChar);
+    setCustomOverrides(next);
+    setUploadStatusMsg('RESTORED DEFAULT BUILT-IN MCU-STYLE AUDIO');
   };
 
   const finalRank = useMemo(() => {
@@ -1535,11 +1565,80 @@ export default function HulkSmashGame({ onClose }) {
 
             <div className="flex items-center gap-2 text-[10px] font-mono text-[#00FF88] uppercase tracking-widest mb-1">
               <Music className="w-3.5 h-3.5" />
-              <span>IMPORTED WAV AUDIO BANKS &amp; MARVEL CAST</span>
+              <span>MCU-STYLE BIO-ACOUSTIC AUDIO &amp; 51 CHARACTER VOICES</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-cinematic font-black text-white uppercase mb-4">
+            <h3 className="text-xl sm:text-2xl font-cinematic font-black text-white uppercase mb-3">
               HULK &amp; AVENGERS SOUND VAULT
             </h3>
+
+            {/* Custom Local MP3/WAV Audio Importer */}
+            <div className="mb-5 p-3 sm:p-4 bg-[#06090D] border border-[#10B981]/50 rounded-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span className="text-[10px] font-mono font-bold text-[#00FF88] uppercase tracking-wider inline-flex items-center gap-1.5">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>IMPORT YOUR OWN HULK / MARVEL AUDIO (.MP3 / .WAV)</span>
+                </span>
+                {customOverrides[customAudioSlot] && (
+                  <span className="text-[9px] font-mono text-[#EAB308] uppercase truncate max-w-[220px]">
+                    ACTIVE: {customOverrides[customAudioSlot]}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <select
+                  value={customAudioSlot}
+                  onChange={(e) => {
+                    setCustomAudioSlot(e.target.value);
+                    setUploadStatusMsg('');
+                  }}
+                  aria-label="Select sound slot to customize"
+                  className="px-2.5 py-2 bg-[#0C1016] border border-[#232731] text-white text-xs font-mono rounded-sm outline-none focus:border-[#00FF88] flex-1"
+                >
+                  <option value="hulkRoar">Slot: Hulk Gamma Roar (Start / Combo)</option>
+                  <option value="hulkSmash">Slot: Hulk Seismic Ground Smash</option>
+                  <option value="hulkThunderclap">Slot: Hulk Thunderclap (Countdown / Team-Up)</option>
+                  <option value="char:hulk">Slot: Hulk Character Voice + Roar</option>
+                  <option value="char:iron-man">Slot: Iron Man Voice + Repulsor</option>
+                  <option value="char:thanos">Slot: Thanos Terror Voice</option>
+                  <option value="char:doctor-doom">Slot: Doctor Doom Voice</option>
+                  {activeAvatar?.id && !['hulk', 'iron-man', 'thanos', 'doctor-doom'].includes(activeAvatar.id) && (
+                    <option value={`char:${activeAvatar.id}`}>
+                      Slot: Active Avatar ({activeAvatar.name})
+                    </option>
+                  )}
+                </select>
+
+                <label className="px-4 py-2 bg-[#22C55E] hover:bg-[#10B981] text-black font-mono font-bold text-xs uppercase rounded-sm cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>CHOOSE MP3/WAV</span>
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={handleImportCustomAudio}
+                    className="sr-only"
+                  />
+                </label>
+
+                {customOverrides[customAudioSlot] && (
+                  <button
+                    type="button"
+                    onClick={handleResetCustomAudio}
+                    className="px-3 py-2 bg-[#161922] hover:bg-[#EF4444]/20 border border-[#EF4444]/50 text-[#EF4444] font-mono font-bold text-xs uppercase rounded-sm cursor-pointer inline-flex items-center justify-center gap-1 shrink-0"
+                    title="Restore built-in sound"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>RESET</span>
+                  </button>
+                )}
+              </div>
+
+              {uploadStatusMsg && (
+                <p className="mt-2 text-[10px] font-mono text-[#00FF88] uppercase">
+                  {uploadStatusMsg}
+                </p>
+              )}
+            </div>
 
             {/* Playable Sound Bank Grid */}
             <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 mb-6">
