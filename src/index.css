@@ -265,6 +265,30 @@
   border-color: #D8D9DC !important;
 }
 
+/* ── EDITORIAL SCROLL REVEAL MOTION SYSTEM ── */
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-fade-up.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger-1 { transition-delay: 0.08s; }
+.reveal-stagger-2 { transition-delay: 0.16s; }
+.reveal-stagger-3 { transition-delay: 0.24s; }
+
+/* Subtle cinematic section divider */
+.cinematic-section-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #1E2024 25%, #2A2D35 50%, #1E2024 75%, transparent 100%);
+}
+
 /* Film Perforation Motif for Watchlist */
 .film-edge {
   background-image: radial-gradient(circle at 50% 50%, #08090B 35%, transparent 40%);

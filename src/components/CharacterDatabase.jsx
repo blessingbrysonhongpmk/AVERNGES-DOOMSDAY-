@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CHARACTERS_DATA } from '../data/characters.js';
 import CharacterModal from './CharacterModal';
 import CharacterShuffler from './CharacterShuffler';
+import CinematicAtmosphere from './CinematicAtmosphere';
 
 export default function CharacterDatabase() {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
@@ -10,9 +11,16 @@ export default function CharacterDatabase() {
     <section
       id="characters"
       aria-label="Avengers Doomsday Character Database"
-      className="relative py-12 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-[#1E2024] bg-[#0A0B0E]"
+      className="relative py-12 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-[#1E2024] bg-[#0A0B0E] overflow-hidden"
     >
-      <div className="container-fluid container-xl mx-auto px-0">
+      {/* Background Cinematic Atmosphere */}
+      <CinematicAtmosphere
+        poster="/doctor-doom-portrait.jpg"
+        overlayOpacity="bg-[#0A0B0E]/94"
+        accentGlow="emerald"
+      />
+
+      <div className="container-fluid container-xl mx-auto px-0 relative z-10">
 
         {/* Section Header */}
         <div className="mb-6 sm:mb-8 text-center max-w-2xl mx-auto px-2">

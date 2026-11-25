@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'OVERVIEW' },
+  { id: 'intelligence', label: 'INTELLIGENCE' },
   { id: 'characters', label: 'CHARACTERS' },
   { id: 'watchlist', label: 'ROAD TO DOOMSDAY' },
-  { id: 'trailers', label: 'ARCHIVE' },
+  { id: 'game-zone', label: 'GAME ZONE' },
   { id: 'final-countdown', label: 'COUNTDOWN' },
 ];
 

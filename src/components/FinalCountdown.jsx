@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { useCountdown } from '../hooks/useCountdown';
 import { CONFIG } from '../data/config.js';
+import CinematicAtmosphere from './CinematicAtmosphere';
 
 const CompactUnit = memo(function CompactUnit({ value, label, isGreen = false }) {
   return (
@@ -25,8 +26,15 @@ export default function FinalCountdown() {
     <section
       id="final-countdown"
       aria-label="Final Doomsday Countdown"
-      className="relative py-16 sm:py-24 px-3 sm:px-6 border-t border-[#1E2024] bg-gradient-to-b from-[#08090B] via-[#0B0C10] to-[#050507] text-center overflow-hidden"
+      className="relative py-16 sm:py-24 px-3 sm:px-6 border-t border-[#1E2024] bg-[#08090B] text-center overflow-hidden"
     >
+      {/* Background Cinematic Atmosphere */}
+      <CinematicAtmosphere
+        poster="/doctor-doom-stained-glass.jpg"
+        overlayOpacity="bg-[#08090B]/92"
+        accentGlow="emerald"
+      />
+
       <div className="container max-w-4xl mx-auto relative z-10 flex flex-col items-center px-2">
 
         {/* Closing Monolith Emblem */}

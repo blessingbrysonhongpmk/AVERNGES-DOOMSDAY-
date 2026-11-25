@@ -1,7 +1,7 @@
 import http from 'http';
 import fs from 'fs';
 import { CHARACTERS_DATA } from './src/data/characters.js';
-import { TRAILERS_DATA } from './src/data/trailers.js';
+import { TRIVIA_QUESTIONS, GUESS_HEROES } from './src/data/games.js';
 
 let passed = 0;
 let failed = 0;
@@ -61,13 +61,19 @@ async function run() {
     assert(fs.existsSync('public' + c.poster), `Poster exists on disk: ${c.poster}`);
   });
 
-  console.log('\n=== VERIFYING TRAILER ARCHIVE (THOR & CAPTAIN SHIELD INCLUDED) ===');
-  assert(TRAILERS_DATA.length >= 6, `Contains expanded video footage (got ${TRAILERS_DATA.length})`);
-  assert(TRAILERS_DATA.some(t => t.title.includes('Thor')), 'Includes Thor video footage');
-  assert(TRAILERS_DATA.some(t => t.title.includes('Shield')), 'Includes Captain America Shield video footage');
-  TRAILERS_DATA.forEach(t => {
-    assert(t.youtubeId && t.youtubeId.length > 5, `${t.title} has valid YouTube embed ID`);
-    assert(t.verifiedBadge === 'OFFICIAL MARVEL STUDIOS', `${t.title} has official verification badge`);
+  console.log('\n=== VERIFYING GAME ZONE (TRIVIA & GUESS HERO) ===');
+  assert(TRIVIA_QUESTIONS.length >= 6, `Trivia contains 6 questions (got ${TRIVIA_QUESTIONS.length})`);
+  TRIVIA_QUESTIONS.forEach(t => {
+    assert(t.question && t.options.length === 4, `Question ${t.id} has 4 options`);
+    assert(typeof t.answer === 'number' && t.answer >= 0 && t.answer <= 3, `Question ${t.id} has valid answer index`);
+    assert(t.explanation, `Question ${t.id} has debrief explanation`);
+  });
+
+  assert(GUESS_HEROES.length >= 6, `Guess Hero contains 6 hero dossiers (got ${GUESS_HEROES.length})`);
+  GUESS_HEROES.forEach(g => {
+    assert(g.name && g.clues.length >= 3, `Hero ${g.name} has clues`);
+    assert(fs.existsSync('public' + g.poster), `Hero ${g.name} portrait exists on disk`);
+    assert(g.options.includes(g.name), `Hero ${g.name} options include correct answer`);
   });
 
   console.log('\n=== VERIFYING HTTP RESPONSE ON PORT 3000 ===');

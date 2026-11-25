@@ -7,6 +7,8 @@ import ResetDialog from './ResetDialog';
 import MovieDetailModal from './MovieDetailModal';
 import { ChevronRight, Sparkles, LayoutGrid, GitCommit } from 'lucide-react';
 import { clockAudio } from '../utils/audio.js';
+import CinematicAtmosphere from './CinematicAtmosphere';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Watchlist() {
   const [progress, setProgress] = useState(() => loadWatchlistProgress());
@@ -115,9 +117,16 @@ export default function Watchlist() {
     <section
       id="watchlist"
       aria-label="Road to Doomsday Watchlist"
-      className="relative z-10 bg-[#08090B] border-t border-[#1E2024] px-3 sm:px-6 lg:px-10 xl:px-16 py-14 sm:py-20"
+      className="relative z-10 bg-[#08090B] border-t border-[#1E2024] px-3 sm:px-6 lg:px-10 xl:px-16 py-14 sm:py-20 overflow-hidden"
     >
-      <div className="container-fluid container-xl mx-auto px-0">
+      {/* Background Cinematic Atmosphere */}
+      <CinematicAtmosphere
+        poster="/doomsday-ensemble-poster.jpg"
+        overlayOpacity="bg-[#08090B]/92"
+        accentGlow="crimson"
+      />
+
+      <div className="container-fluid container-xl mx-auto px-0 relative z-10">
         
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-10 max-w-2xl mx-auto px-2">

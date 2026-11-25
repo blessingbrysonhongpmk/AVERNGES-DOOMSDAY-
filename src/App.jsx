@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Countdown from './components/Countdown';
+import Intelligence from './components/Intelligence';
 import CharacterDatabase from './components/CharacterDatabase';
 import Watchlist from './components/Watchlist';
-import TrailerArchive from './components/TrailerArchive';
+import GameZone from './components/GameZone';
 import FinalCountdown from './components/FinalCountdown';
 import { loadAmbientMode, saveAmbientMode } from './utils/storage';
 
@@ -31,17 +32,20 @@ export default function App() {
 
       {/* ── SECTIONS ── */}
       <main>
-        {/* 1. Hero & Live Broadcast Countdown */}
+        {/* 1. Hero & Live Broadcast Countdown (PROTECTED) */}
         <Countdown />
 
-        {/* 2. Confirmed Character Database */}
+        {/* 2. Official Doomsday Intelligence */}
+        <Intelligence />
+
+        {/* 3. Confirmed Character Database */}
         <CharacterDatabase />
 
         {/* 4. Road to Doomsday — Theatrical Watchlist */}
         <Watchlist />
 
-        {/* 5. Official Trailer & Footage Archive */}
-        <TrailerArchive />
+        {/* 5. Tactical Game Zone (Marvel Trivia & Guess the Hero) */}
+        <GameZone />
 
         {/* 6. Closing Final Countdown Monolith */}
         <FinalCountdown />
