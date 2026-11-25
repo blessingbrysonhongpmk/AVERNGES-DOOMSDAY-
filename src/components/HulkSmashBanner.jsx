@@ -6,7 +6,7 @@ import { clockAudio } from '../utils/audio.js';
  * Premium Game Promotion Banner immediately below Hero Section
  * Large cinematic Hulk superhero visual with green gamma lighting and tactile PLAY NOW trigger.
  */
-export default function HulkSmashBanner({ onPlay }) {
+export default function HulkSmashBanner({ onPlay, isGameOpen }) {
   const [highScore, setHighScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -14,13 +14,13 @@ export default function HulkSmashBanner({ onPlay }) {
     try {
       const saved = localStorage.getItem('hulk_smash_high_score_v1');
       if (saved) setHighScore(parseInt(saved, 10) || 0);
-    } catch (e) {}
-  }, []);
+    } catch (e) { }
+  }, [isGameOpen]);
 
   const handleLaunch = () => {
     if (isLoading) return;
     setIsLoading(true);
-    try { clockAudio.tick(0); } catch (e) {}
+    try { clockAudio.tick(0); } catch (e) { }
     setTimeout(() => {
       onPlay();
       setIsLoading(false);
@@ -77,9 +77,9 @@ export default function HulkSmashBanner({ onPlay }) {
             {/* Title & Narrative Lead */}
             <div className="max-w-xl">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2.5">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#10B981]/15 border border-[#10B981]/50 text-[#00FF88] text-[9px] font-mono tracking-widest uppercase font-bold rounded-xs">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#10B981]/15 border border-[#10B981]/50 text-[#00FF88] text-[9px] font-mono tracking-widest uppercase font-bold rounded-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-ping" />
-                  <span>MINI ARCADE MINI-GAME</span>
+                  <span>MARVEL ARCADE MINI-GAME</span>
                 </span>
 
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-black/80 border border-[#1E252D] text-[#8C9098] text-[9px] font-mono tracking-wider uppercase rounded-xs">

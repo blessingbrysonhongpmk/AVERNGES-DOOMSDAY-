@@ -37,7 +37,7 @@ export default function App() {
         <Countdown />
 
         {/* 2. Hulk Smash Mayhem — Premium Mini Arcade Game Entry (Immediately Below Hero) */}
-        <HulkSmashBanner onPlay={() => setIsGameOpen(true)} />
+        <HulkSmashBanner onPlay={() => setIsGameOpen(true)} isGameOpen={isGameOpen} />
 
         {/* 3. Road to Doomsday — Theatrical Watchlist */}
         <Watchlist />
