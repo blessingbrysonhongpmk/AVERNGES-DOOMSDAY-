@@ -1,7 +1,6 @@
 import http from 'http';
 import fs from 'fs';
 import { CHARACTERS_DATA } from './src/data/characters.js';
-import { TRIVIA_QUESTIONS, GUESS_HEROES } from './src/data/games.js';
 
 let passed = 0;
 let failed = 0;
@@ -59,21 +58,6 @@ async function run() {
     assert(c.capabilities && c.capabilities.length >= 3, `${c.name} has documented capabilities`);
     assert(c.confirmedSources, `${c.name} has verified official source attribution`);
     assert(fs.existsSync('public' + c.poster), `Poster exists on disk: ${c.poster}`);
-  });
-
-  console.log('\n=== VERIFYING GAME ZONE (TRIVIA & GUESS HERO) ===');
-  assert(TRIVIA_QUESTIONS.length >= 6, `Trivia contains 6 questions (got ${TRIVIA_QUESTIONS.length})`);
-  TRIVIA_QUESTIONS.forEach(t => {
-    assert(t.question && t.options.length === 4, `Question ${t.id} has 4 options`);
-    assert(typeof t.answer === 'number' && t.answer >= 0 && t.answer <= 3, `Question ${t.id} has valid answer index`);
-    assert(t.explanation, `Question ${t.id} has debrief explanation`);
-  });
-
-  assert(GUESS_HEROES.length >= 6, `Guess Hero contains 6 hero dossiers (got ${GUESS_HEROES.length})`);
-  GUESS_HEROES.forEach(g => {
-    assert(g.name && g.clues.length >= 3, `Hero ${g.name} has clues`);
-    assert(fs.existsSync('public' + g.poster), `Hero ${g.name} portrait exists on disk`);
-    assert(g.options.includes(g.name), `Hero ${g.name} options include correct answer`);
   });
 
   console.log('\n=== VERIFYING HTTP RESPONSE ON PORT 3000 ===');
