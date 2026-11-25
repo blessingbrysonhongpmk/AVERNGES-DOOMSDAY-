@@ -365,6 +365,27 @@
   animation: energyScanner 1.2s infinite linear;
 }
 
+@keyframes gammaShockwaveRing {
+  0% { transform: scale(0.25); opacity: 0.95; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+.gamma-shockwave-ring {
+  animation: gammaShockwaveRing 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes targetLifespanDrain {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+.target-fuse-bar {
+  transform-origin: left center;
+  animation-name: targetLifespanDrain;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 

@@ -61,9 +61,25 @@ async function run() {
   });
 
   console.log('\n=== VERIFYING HULK SMASH MAYHEM MINI-GAME ASSETS ===');
-  const { SMASH_TARGETS, DECOYS, HULK_DIALOGUES, COMIC_WORDS } = await import('./src/data/hulkGameData.js');
+  const { SMASH_TARGETS, DECOYS, HERO_ASSISTS, HULK_DIALOGUES, HULK_PROFILE, COMIC_WORDS } = await import('./src/data/hulkGameData.js');
+  const { SOUND_CATALOG } = await import('./src/utils/hulkAudio.js');
   assert(SMASH_TARGETS.length >= 6, `Smash targets defined: ${SMASH_TARGETS.length}`);
   assert(DECOYS.length >= 4, `Decoys defined: ${DECOYS.length}`);
+  assert(HERO_ASSISTS.length === 3, `Hero Team-Up Assists defined: ${HERO_ASSISTS.length}`);
+  assert(fs.existsSync('public' + HULK_PROFILE.poster), `Hulk profile poster exists: ${HULK_PROFILE.poster}`);
+  SMASH_TARGETS.forEach(t => {
+    assert(fs.existsSync('public' + t.poster), `Smash target poster exists: ${t.name} -> ${t.poster}`);
+  });
+  DECOYS.forEach(d => {
+    assert(fs.existsSync('public' + d.poster), `Hero ally poster exists: ${d.name} -> ${d.poster}`);
+  });
+  HERO_ASSISTS.forEach(a => {
+    assert(fs.existsSync('public' + a.poster), `Team-Up assist poster exists: ${a.heroName} -> ${a.poster}`);
+  });
+  assert(SOUND_CATALOG.length === 10, `Imported Hulk & Marvel SFX sound bank defined: ${SOUND_CATALOG.length}`);
+  SOUND_CATALOG.forEach(sfx => {
+    assert(fs.existsSync('public' + sfx.path), `WAV sound asset exists on disk: ${sfx.path}`);
+  });
   assert(HULK_DIALOGUES.intro.length > 0, 'Hulk intro dialogues defined in English');
   assert(HULK_DIALOGUES.correct.every(d => !d.includes('machan') && !d.includes('da')), 'Hulk dialogues strictly in English');
   assert(COMIC_WORDS.includes('SMASH!'), 'Comic word SMASH! included');
@@ -73,6 +89,10 @@ async function run() {
   assert(home.status === 200, 'HTTP 200 returned on /');
   assert(home.body.includes('AVENGERS: DOOMSDAY'), 'HTML includes brand title');
   assert(home.body.includes('root'), 'HTML includes root container');
+  const roarRes = await fetchHttp('http://localhost:3000/sounds/hulk-roar.wav');
+  assert(roarRes.status === 200, 'HTTP 200 returned on /sounds/hulk-roar.wav');
+  const repulsorRes = await fetchHttp('http://localhost:3000/sounds/ironman-repulsor.wav');
+  assert(repulsorRes.status === 200, 'HTTP 200 returned on /sounds/ironman-repulsor.wav');
 
   console.log(`\n========================================`);
   console.log(`NEW FEATURES TESTS PASSED: ${passed}`);
