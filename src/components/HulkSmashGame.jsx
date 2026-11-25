@@ -197,7 +197,7 @@ export default function HulkSmashGame({ onClose }) {
   useEffect(() => {
     hulkAudio.preloadAll((progress) => {
       setAudioLoadCount({ loaded: progress.loaded, total: progress.total });
-    });
+    }, [activeAvatar?.id]);
   }, []);
 
   const clearAllTimers = useCallback(() => {
@@ -282,13 +282,12 @@ export default function HulkSmashGame({ onClose }) {
     } catch { }
     try {
       hulkAudio.init();
-      hulkAudio.playSound(char.soundKey || 'hulkRoar', { gain: 0.85 });
-      hulkAudio.speakHulkLine(`${char.name} ready!`);
+      hulkAudio.playCharacterVoice(char.id, { gain: 0.95, force: true });
     } catch { }
     setDialogue(
       char.id === 'hulk'
         ? 'HULK IS ALWAYS ANGRY. LET US SMASH!'
-        : `${char.name.toUpperCase()} LINKED WITH HULK — SMASH TIME!`
+        : `${char.name.toUpperCase()}: "${char.voiceLine}"`
     );
     closeModalsSafely();
   };
@@ -299,11 +298,8 @@ export default function HulkSmashGame({ onClose }) {
     clearTimeout(overchargeTimeoutRef.current);
     clearTimeout(freezeTimeoutRef.current);
     try {
-      hulkAudio.playGameStart();
-      if (activeAvatar?.soundKey && activeAvatar.soundKey !== 'hulkRoar') {
-        setTimeout(() => hulkAudio.playSound(activeAvatar.soundKey, { gain: 0.55 }), 160);
-      }
-      hulkAudio.speakHulkLine('Hulk smash!');
+      hulkAudio.playGameStart(activeAvatar?.id);
+      hulkAudio.speakHulkLine(activeAvatar?.voiceLine || 'Hulk smash!');
     } catch { }
 
     setScore(0);
@@ -498,7 +494,7 @@ export default function HulkSmashGame({ onClose }) {
       triggerScreenShake();
 
       try {
-        hulkAudio.playHeroAssist(assist.soundKey);
+        hulkAudio.playHeroAssist(assist.soundKey, assist.characterId);
         hulkAudio.speakHulkLine(assist.abilityName);
       } catch { }
 
@@ -716,6 +712,12 @@ export default function HulkSmashGame({ onClose }) {
     }
   };
 
+  const handleAuditionCharacterVoice = (charId) => {
+    setLastPreviewSound(`char-${charId}`);
+    hulkAudio.init();
+    hulkAudio.playCharacterVoice(charId, { gain: 0.95, force: true });
+  };
+
   const finalRank = useMemo(() => {
     for (const rank of RANKS) {
       if (score >= rank.minScore) return rank;
@@ -735,15 +737,14 @@ export default function HulkSmashGame({ onClose }) {
       role="dialog"
       aria-modal="true"
       aria-label="Hulk Smash Mayhem Mini-Game"
-      className={`fixed inset-0 z-50 bg-[#040608]/98 backdrop-blur-xl flex flex-col justify-between overflow-hidden select-none transition-shadow duration-300 ${
-        isTimeFrozen
-          ? 'ring-4 ring-inset ring-[#00FF88]/50 shadow-[inset_0_0_90px_rgba(0,255,136,0.2)]'
-          : isOverchargeActive
-            ? 'ring-4 ring-inset ring-[#F59E0B]/50 shadow-[inset_0_0_90px_rgba(245,158,11,0.18)]'
-            : isWorldbreakerAura
-              ? 'shadow-[inset_0_0_80px_rgba(16,185,129,0.18)]'
-              : ''
-      }`}
+      className={`fixed inset-0 z-50 bg-[#040608]/98 backdrop-blur-xl flex flex-col justify-between overflow-hidden select-none transition-shadow duration-300 ${isTimeFrozen
+        ? 'ring-4 ring-inset ring-[#00FF88]/50 shadow-[inset_0_0_90px_rgba(0,255,136,0.2)]'
+        : isOverchargeActive
+          ? 'ring-4 ring-inset ring-[#F59E0B]/50 shadow-[inset_0_0_90px_rgba(245,158,11,0.18)]'
+          : isWorldbreakerAura
+            ? 'shadow-[inset_0_0_80px_rgba(16,185,129,0.18)]'
+            : ''
+        }`}
     >
       {/* Ambient Radial Containment Grid */}
       <div
@@ -816,11 +817,10 @@ export default function HulkSmashGame({ onClose }) {
             type="button"
             onClick={() => setVoiceEnabled((prev) => !prev)}
             aria-label={voiceEnabled ? 'Disable Hulk voice lines' : 'Enable Hulk voice lines'}
-            className={`hidden sm:inline-flex items-center gap-1 px-2 py-1.5 border rounded-sm text-[10px] font-mono uppercase transition-colors cursor-pointer ${
-              voiceEnabled
-                ? 'border-[#00FF88]/60 bg-[#00FF88]/15 text-[#00FF88]'
-                : 'border-[#232731] bg-[#12141A] text-[#777A80] hover:text-white'
-            }`}
+            className={`hidden sm:inline-flex items-center gap-1 px-2 py-1.5 border rounded-sm text-[10px] font-mono uppercase transition-colors cursor-pointer ${voiceEnabled
+              ? 'border-[#00FF88]/60 bg-[#00FF88]/15 text-[#00FF88]'
+              : 'border-[#232731] bg-[#12141A] text-[#777A80] hover:text-white'
+              }`}
             title="Toggle English Hulk Voice Callouts"
           >
             {voiceEnabled ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5" />}
@@ -952,11 +952,10 @@ export default function HulkSmashGame({ onClose }) {
 
           <div
             key={countdownNumber}
-            className={`font-cinematic font-black tracking-tight leading-none text-center select-none countdown-zoom ${
-              countdownNumber === 'HULK SMASH!'
-                ? 'text-4xl sm:text-7xl md:text-8xl text-[#00FF88] drop-shadow-[0_0_50px_rgba(0,255,136,0.9)]'
-                : 'text-7xl sm:text-9xl md:text-[11rem] text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.6)]'
-            }`}
+            className={`font-cinematic font-black tracking-tight leading-none text-center select-none countdown-zoom ${countdownNumber === 'HULK SMASH!'
+              ? 'text-4xl sm:text-7xl md:text-8xl text-[#00FF88] drop-shadow-[0_0_50px_rgba(0,255,136,0.9)]'
+              : 'text-7xl sm:text-9xl md:text-[11rem] text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.6)]'
+              }`}
           >
             {countdownNumber}
           </div>
@@ -977,9 +976,8 @@ export default function HulkSmashGame({ onClose }) {
          ═════════════════════════════════════════════════════════════════════ */}
       {(gameState === 'playing' || gameState === 'paused') && (
         <div
-          className={`w-full max-w-5xl mx-auto px-2.5 sm:px-6 pt-2 pb-2.5 flex flex-col justify-between flex-1 min-h-0 relative z-20 transition-transform ${
-            screenShake ? 'screen-shake-smash' : ''
-          }`}
+          className={`w-full max-w-5xl mx-auto px-2.5 sm:px-6 pt-2 pb-2.5 flex flex-col justify-between flex-1 min-h-0 relative z-20 transition-transform ${screenShake ? 'screen-shake-smash' : ''
+            }`}
         >
           {/* Top Tactical HUD Bar */}
           <div className="border border-[#1E252D] bg-[#0A0D12]/95 px-3 py-2 sm:px-4 sm:py-2.5 rounded-sm shadow-xl flex items-center justify-between gap-2 sm:gap-4 shrink-0">
@@ -997,9 +995,8 @@ export default function HulkSmashGame({ onClose }) {
                   )}
                 </div>
                 <span
-                  className={`text-lg sm:text-3xl font-mono font-black tracking-wider tabular-nums block leading-tight ${
-                    isOverchargeActive ? 'text-[#F59E0B]' : 'text-white'
-                  }`}
+                  className={`text-lg sm:text-3xl font-mono font-black tracking-wider tabular-nums block leading-tight ${isOverchargeActive ? 'text-[#F59E0B]' : 'text-white'
+                    }`}
                 >
                   {score.toLocaleString()}
                 </span>
@@ -1036,9 +1033,8 @@ export default function HulkSmashGame({ onClose }) {
                 <img
                   src={activeAvatar.poster}
                   alt={activeAvatar.name}
-                  className={`w-9 h-9 rounded-full object-cover object-top border-2 transition-all ${
-                    combo >= 5 ? 'border-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.8)]' : 'border-[#00FF88]/70'
-                  }`}
+                  className={`w-9 h-9 rounded-full object-cover object-top border-2 transition-all ${combo >= 5 ? 'border-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.8)]' : 'border-[#00FF88]/70'
+                    }`}
                 />
                 {activeAvatar.id !== 'hulk' && (
                   <img
@@ -1074,13 +1070,12 @@ export default function HulkSmashGame({ onClose }) {
                   {isTimeFrozen ? 'TIME FROZEN' : 'TIME LEFT'}
                 </span>
                 <span
-                  className={`text-lg sm:text-3xl font-mono font-black tabular-nums leading-tight inline-flex items-center gap-1 ${
-                    isTimeFrozen
-                      ? 'text-[#38BDF8] drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]'
-                      : timeLeft <= 8
-                        ? 'text-[#EF4444] animate-pulse drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]'
-                        : 'text-[#00FF88]'
-                  }`}
+                  className={`text-lg sm:text-3xl font-mono font-black tabular-nums leading-tight inline-flex items-center gap-1 ${isTimeFrozen
+                    ? 'text-[#38BDF8] drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]'
+                    : timeLeft <= 8
+                      ? 'text-[#EF4444] animate-pulse drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]'
+                      : 'text-[#00FF88]'
+                    }`}
                 >
                   {isTimeFrozen && <Clock className="w-4 h-4 sm:w-5 sm:h-5" />}
                   {timeLeft}s
@@ -1126,18 +1121,16 @@ export default function HulkSmashGame({ onClose }) {
               </span>
               <div className="flex-1 h-1.5 bg-[#0B0E14] border border-[#1E252D] rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-200 ${
-                    teamUpCharge >= 100
-                      ? 'bg-gradient-to-r from-[#22C55E] via-[#00FF88] to-[#38BDF8] shadow-[0_0_10px_#00FF88]'
-                      : 'bg-[#10B981]/70'
-                  }`}
+                  className={`h-full transition-all duration-200 ${teamUpCharge >= 100
+                    ? 'bg-gradient-to-r from-[#22C55E] via-[#00FF88] to-[#38BDF8] shadow-[0_0_10px_#00FF88]'
+                    : 'bg-[#10B981]/70'
+                    }`}
                   style={{ width: `${teamUpCharge}%` }}
                 />
               </div>
               <span
-                className={`text-[9px] font-mono font-bold uppercase shrink-0 ${
-                  teamUpCharge >= 100 ? 'text-[#00FF88] animate-pulse' : 'text-[#8C9098]'
-                }`}
+                className={`text-[9px] font-mono font-bold uppercase shrink-0 ${teamUpCharge >= 100 ? 'text-[#00FF88] animate-pulse' : 'text-[#8C9098]'
+                  }`}
               >
                 {teamUpCharge >= 100 ? 'READY — PRESS 1/2/3' : `${teamUpCharge}%`}
               </span>
@@ -1170,32 +1163,29 @@ export default function HulkSmashGame({ onClose }) {
                   onClick={(e) => handleSmashSlot(index, e)}
                   style={{ touchAction: 'manipulation' }}
                   aria-label={`${item.name} (${item.badge})`}
-                  className={`group relative rounded-sm border-2 flex flex-col justify-between cursor-pointer transition-all duration-150 transform active:scale-95 overflow-hidden select-none shadow-lg text-left ${
-                    item.isSmashed
-                      ? 'scale-90 opacity-15 border-white'
-                      : isDecoy
-                        ? 'border-[#EF4444] bg-[#180709] hover:border-[#F87171] shadow-[0_0_18px_rgba(239,68,68,0.35)]'
-                        : item.isBonus
-                          ? 'border-[#00FF88] bg-[#061810] shadow-[0_0_26px_rgba(0,255,136,0.65)] hover:scale-[1.03]'
-                          : 'border-[#10B981] bg-[#07110B] hover:border-[#00FF88] shadow-[0_0_18px_rgba(16,185,129,0.35)] hover:scale-[1.03]'
-                  }`}
+                  className={`group relative rounded-sm border-2 flex flex-col justify-between cursor-pointer transition-all duration-150 transform active:scale-95 overflow-hidden select-none shadow-lg text-left ${item.isSmashed
+                    ? 'scale-90 opacity-15 border-white'
+                    : isDecoy
+                      ? 'border-[#EF4444] bg-[#180709] hover:border-[#F87171] shadow-[0_0_18px_rgba(239,68,68,0.35)]'
+                      : item.isBonus
+                        ? 'border-[#00FF88] bg-[#061810] shadow-[0_0_26px_rgba(0,255,136,0.65)] hover:scale-[1.03]'
+                        : 'border-[#10B981] bg-[#07110B] hover:border-[#00FF88] shadow-[0_0_18px_rgba(16,185,129,0.35)] hover:scale-[1.03]'
+                    }`}
                 >
                   {/* Full-Bleed Marvel Character Portrait */}
                   <img
                     src={item.poster}
                     alt={item.name}
-                    className={`absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 ${
-                      isDecoy ? 'brightness-75 saturate-75' : 'brightness-90 contrast-110'
-                    }`}
+                    className={`absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 ${isDecoy ? 'brightness-75 saturate-75' : 'brightness-90 contrast-110'
+                      }`}
                   />
 
                   {/* Scrim Overlay for High-Speed Readability */}
                   <div
-                    className={`absolute inset-0 pointer-events-none ${
-                      isDecoy
-                        ? 'bg-gradient-to-t from-black/95 via-[#EF4444]/15 to-black/75'
-                        : 'bg-gradient-to-t from-black/95 via-[#10B981]/10 to-black/65'
-                    }`}
+                    className={`absolute inset-0 pointer-events-none ${isDecoy
+                      ? 'bg-gradient-to-t from-black/95 via-[#EF4444]/15 to-black/75'
+                      : 'bg-gradient-to-t from-black/95 via-[#10B981]/10 to-black/65'
+                      }`}
                   />
 
                   {/* Corner Tactical Crosshairs for Smash Targets */}
@@ -1206,22 +1196,20 @@ export default function HulkSmashGame({ onClose }) {
                   {/* Top Action Badge & Points */}
                   <div className="relative z-10 w-full p-1.5 sm:p-2 flex items-center justify-between gap-1">
                     <span
-                      className={`inline-flex items-center gap-1 text-[7.5px] sm:text-[9px] font-mono font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider truncate shadow ${
-                        isDecoy
-                          ? 'bg-[#EF4444] text-white'
-                          : item.isBonus
-                            ? 'bg-[#00FF88] text-black'
-                            : 'bg-[#10B981] text-black'
-                      }`}
+                      className={`inline-flex items-center gap-1 text-[7.5px] sm:text-[9px] font-mono font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider truncate shadow ${isDecoy
+                        ? 'bg-[#EF4444] text-white'
+                        : item.isBonus
+                          ? 'bg-[#00FF88] text-black'
+                          : 'bg-[#10B981] text-black'
+                        }`}
                     >
                       {isDecoy ? <ShieldAlert className="w-2.5 h-2.5 shrink-0" /> : <Crosshair className="w-2.5 h-2.5 shrink-0" />}
                       <span className="truncate">{item.badge}</span>
                     </span>
 
                     <span
-                      className={`text-[8.5px] sm:text-[10px] font-mono font-black px-1.5 py-0.5 rounded-sm bg-black/80 border shrink-0 ${
-                        isDecoy ? 'text-[#EF4444] border-[#EF4444]/50' : 'text-[#00FF88] border-[#10B981]/50'
-                      }`}
+                      className={`text-[8.5px] sm:text-[10px] font-mono font-black px-1.5 py-0.5 rounded-sm bg-black/80 border shrink-0 ${isDecoy ? 'text-[#EF4444] border-[#EF4444]/50' : 'text-[#00FF88] border-[#10B981]/50'
+                        }`}
                     >
                       {isDecoy ? `${item.penalty}` : `+${displayPoints}`}
                     </span>
@@ -1240,9 +1228,8 @@ export default function HulkSmashGame({ onClose }) {
                   {/* GPU-Composited Lifespan Fuse Strip */}
                   {!item.isSmashed && (
                     <div
-                      className={`target-fuse-bar absolute bottom-0 left-0 right-0 h-1 z-20 ${
-                        isDecoy ? 'bg-[#EF4444]' : 'bg-[#00FF88]'
-                      }`}
+                      className={`target-fuse-bar absolute bottom-0 left-0 right-0 h-1 z-20 ${isDecoy ? 'bg-[#EF4444]' : 'bg-[#00FF88]'
+                        }`}
                       style={{
                         animationDuration: `${item.lifespan || 2000}ms`,
                         animationPlayState: gameState === 'paused' || isTimeFrozen ? 'paused' : 'running',
@@ -1264,18 +1251,16 @@ export default function HulkSmashGame({ onClose }) {
                   type="button"
                   disabled={!isReady || gameState !== 'playing'}
                   onClick={() => handleTriggerHeroAssist(assist)}
-                  className={`relative flex items-center gap-2 p-1.5 sm:p-2 rounded-sm border text-left transition-all overflow-hidden ${
-                    isReady
-                      ? 'bg-[#0B1610] border-[#00FF88] hover:scale-[1.02] shadow-[0_0_18px_rgba(0,255,136,0.35)] cursor-pointer'
-                      : 'bg-[#090B0F] border-[#1A1F28] opacity-60 cursor-not-allowed'
-                  }`}
+                  className={`relative flex items-center gap-2 p-1.5 sm:p-2 rounded-sm border text-left transition-all overflow-hidden ${isReady
+                    ? 'bg-[#0B1610] border-[#00FF88] hover:scale-[1.02] shadow-[0_0_18px_rgba(0,255,136,0.35)] cursor-pointer'
+                    : 'bg-[#090B0F] border-[#1A1F28] opacity-60 cursor-not-allowed'
+                    }`}
                 >
                   <img
                     src={assist.poster}
                     alt={assist.heroName}
-                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-sm object-cover object-top border shrink-0 ${
-                      isReady ? 'border-[#00FF88]' : 'border-[#2D333E] grayscale-[40%]'
-                    }`}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-sm object-cover object-top border shrink-0 ${isReady ? 'border-[#00FF88]' : 'border-[#2D333E] grayscale-[40%]'
+                      }`}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">
@@ -1283,11 +1268,10 @@ export default function HulkSmashGame({ onClose }) {
                         {assist.abilityName}
                       </span>
                       <span
-                        className={`hidden sm:inline-block px-1 py-0.2 text-[8px] font-mono font-bold rounded-sm border ${
-                          isReady
-                            ? 'bg-[#00FF88] text-black border-[#00FF88]'
-                            : 'bg-[#12141A] text-[#6B7280] border-[#232731]'
-                        }`}
+                        className={`hidden sm:inline-block px-1 py-0.2 text-[8px] font-mono font-bold rounded-sm border ${isReady
+                          ? 'bg-[#00FF88] text-black border-[#00FF88]'
+                          : 'bg-[#12141A] text-[#6B7280] border-[#232731]'
+                          }`}
                       >
                         [{assist.hotkey}]
                       </span>
@@ -1403,11 +1387,10 @@ export default function HulkSmashGame({ onClose }) {
                     key={cat}
                     type="button"
                     onClick={() => setAvatarCategory(cat)}
-                    className={`px-2 py-1 text-[9px] font-mono font-bold uppercase rounded-sm border cursor-pointer transition-colors ${
-                      avatarCategory === cat
-                        ? 'bg-[#00FF88] text-black border-[#00FF88]'
-                        : 'bg-[#07090C] text-[#8C9098] border-[#1E252D] hover:text-white'
-                    }`}
+                    className={`px-2 py-1 text-[9px] font-mono font-bold uppercase rounded-sm border cursor-pointer transition-colors ${avatarCategory === cat
+                      ? 'bg-[#00FF88] text-black border-[#00FF88]'
+                      : 'bg-[#07090C] text-[#8C9098] border-[#1E252D] hover:text-white'
+                      }`}
                   >
                     {cat}
                   </button>
@@ -1424,11 +1407,10 @@ export default function HulkSmashGame({ onClose }) {
                     key={char.id}
                     type="button"
                     onClick={() => handleSelectAvatar(char)}
-                    className={`group relative rounded-sm overflow-hidden border-2 aspect-[3/4] text-left cursor-pointer transition-all ${
-                      isSelected
-                        ? 'border-[#00FF88] shadow-[0_0_20px_rgba(0,255,136,0.55)] scale-[1.02]'
-                        : 'border-[#1E252D] hover:border-[#00FF88]/70'
-                    }`}
+                    className={`group relative rounded-sm overflow-hidden border-2 aspect-[3/4] text-left cursor-pointer transition-all ${isSelected
+                      ? 'border-[#00FF88] shadow-[0_0_20px_rgba(0,255,136,0.55)] scale-[1.02]'
+                      : 'border-[#1E252D] hover:border-[#00FF88]/70'
+                      }`}
                   >
                     <img
                       src={char.poster}
@@ -1448,8 +1430,8 @@ export default function HulkSmashGame({ onClose }) {
                       <span className="block text-[10px] font-cinematic font-black text-white uppercase leading-tight truncate">
                         {char.name}
                       </span>
-                      <span className="block text-[8px] font-mono text-[#00FF88] uppercase truncate">
-                        {char.alias}
+                      <span className="block text-[7.5px] font-mono text-[#00FF88] truncate">
+                        &ldquo;{char.voiceLine}&rdquo;
                       </span>
                     </div>
                   </button>
@@ -1568,11 +1550,10 @@ export default function HulkSmashGame({ onClose }) {
                     key={sfx.id}
                     type="button"
                     onClick={() => handleAuditionSound(sfx.id)}
-                    className={`p-2.5 rounded-sm border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
-                      isActive
-                        ? 'bg-[#0F1E16] border-[#00FF88]'
-                        : 'bg-[#07090C] border-[#1E252D] hover:border-[#00FF88]/50'
-                    }`}
+                    className={`p-2.5 rounded-sm border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${isActive
+                      ? 'bg-[#0F1E16] border-[#00FF88]'
+                      : 'bg-[#07090C] border-[#1E252D] hover:border-[#00FF88]/50'
+                      }`}
                   >
                     <div className="min-w-0">
                       <span
@@ -1591,7 +1572,53 @@ export default function HulkSmashGame({ onClose }) {
               })}
             </div>
 
-            {/* Imported Heroes vs Threats Preview */}
+            {/* 51 Unique Marvel Character Voices + Signature SFX */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <h4 className="text-[10px] font-mono font-bold text-[#00FF88] uppercase tracking-wider">
+                  51 UNIQUE CHARACTER VOICES &amp; SIGNATURE SFX (TAP TO PLAY)
+                </h4>
+                <span className="text-[9px] font-mono text-[#8C9098] uppercase">
+                  E.G. IRON MAN / THANOS / HULK
+                </span>
+              </div>
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-1">
+                {ALL_AVATARS.map((char) => {
+                  const isActive = lastPreviewSound === `char-${char.id}`;
+                  return (
+                    <button
+                      key={char.id}
+                      type="button"
+                      onClick={() => handleAuditionCharacterVoice(char.id)}
+                      className={`p-2 rounded-sm border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${isActive
+                          ? 'bg-[#0F1E16] border-[#00FF88]'
+                          : 'bg-[#07090C] border-[#1E252D] hover:border-[#00FF88]/60'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <img
+                          src={char.poster}
+                          alt={char.name}
+                          loading="lazy"
+                          className="w-8 h-8 rounded-sm object-cover object-top shrink-0 border border-[#232731]"
+                        />
+                        <div className="min-w-0">
+                          <span className="text-[10px] font-cinematic font-bold text-white block truncate">
+                            {char.name}
+                          </span>
+                          <span className="text-[8.5px] font-mono text-[#9CA3AF] block truncate">
+                            &ldquo;{char.voiceLine}&rdquo;
+                          </span>
+                        </div>
+                      </div>
+                      <Volume2 className="w-3.5 h-3.5 text-[#00FF88] shrink-0" />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Imported Heroes vs Threats Preview (Clickable for Voice+SFX) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
               <div>
                 <h4 className="text-[10px] font-mono font-bold text-[#00FF88] uppercase tracking-wider mb-2">
@@ -1599,13 +1626,21 @@ export default function HulkSmashGame({ onClose }) {
                 </h4>
                 <div className="space-y-1.5">
                   {SMASH_TARGETS.map((t) => (
-                    <div key={t.id} className="flex items-center gap-2 p-1.5 bg-[#07090C] border border-[#10B981]/30 rounded-sm">
-                      <img src={t.poster} alt={t.name} className="w-8 h-8 rounded-sm object-cover object-top shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <span className="text-xs font-bold text-white block truncate">{t.name}</span>
-                        <span className="text-[9px] font-mono text-[#8C9098] block truncate">+{t.points} PTS • {t.subtitle}</span>
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => handleAuditionCharacterVoice(t.characterId)}
+                      className="w-full text-left flex items-center justify-between gap-2 p-1.5 bg-[#07090C] hover:bg-[#0D1A12] border border-[#10B981]/30 rounded-sm cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <img src={t.poster} alt={t.name} className="w-8 h-8 rounded-sm object-cover object-top shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="text-xs font-bold text-white block truncate">{t.name}</span>
+                          <span className="text-[9px] font-mono text-[#8C9098] block truncate">+{t.points} PTS • {t.subtitle}</span>
+                        </div>
                       </div>
-                    </div>
+                      <Volume2 className="w-3.5 h-3.5 text-[#00FF88] shrink-0" />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -1614,15 +1649,23 @@ export default function HulkSmashGame({ onClose }) {
                 <h4 className="text-[10px] font-mono font-bold text-[#EF4444] uppercase tracking-wider mb-2">
                   MARVEL HERO ALLIES — PROTECT ({DECOYS.length})
                 </h4>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
                   {DECOYS.map((d) => (
-                    <div key={d.id} className="flex items-center gap-2 p-1.5 bg-[#07090C] border border-[#EF4444]/30 rounded-sm">
-                      <img src={d.poster} alt={d.name} className="w-8 h-8 rounded-sm object-cover object-top shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <span className="text-xs font-bold text-white block truncate">{d.name}</span>
-                        <span className="text-[9px] font-mono text-[#8C9098] block truncate">{d.subtitle}</span>
+                    <button
+                      key={d.id}
+                      type="button"
+                      onClick={() => handleAuditionCharacterVoice(d.characterId)}
+                      className="w-full text-left flex items-center justify-between gap-2 p-1.5 bg-[#07090C] hover:bg-[#190A0D] border border-[#EF4444]/30 rounded-sm cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <img src={d.poster} alt={d.name} className="w-8 h-8 rounded-sm object-cover object-top shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="text-xs font-bold text-white block truncate">{d.name}</span>
+                          <span className="text-[9px] font-mono text-[#8C9098] block truncate">{d.subtitle}</span>
+                        </div>
                       </div>
-                    </div>
+                      <Volume2 className="w-3.5 h-3.5 text-[#EF4444] shrink-0" />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -1733,11 +1776,11 @@ export default function HulkSmashGame({ onClose }) {
 
               <button
                 type="button"
-                onClick={() => hulkAudio.playHulkRoar()}
+                onClick={() => handleAuditionCharacterVoice(activeAvatar.id)}
                 className="w-full sm:w-auto px-4 py-3 bg-[#10B981]/15 hover:bg-[#10B981]/25 border border-[#10B981]/60 text-[#00FF88] font-mono font-bold text-xs uppercase tracking-wider rounded-sm cursor-pointer inline-flex items-center justify-center gap-1.5"
               >
                 <Volume2 className="w-4 h-4" />
-                <span>HULK ROAR</span>
+                <span>{activeAvatar.id === 'hulk' ? 'HULK ROAR' : 'AVATAR VOICE'}</span>
               </button>
 
               <button
@@ -1790,9 +1833,8 @@ export default function HulkSmashGame({ onClose }) {
           style={{ left: `${float.x}px`, top: `${float.y}px` }}
         >
           <div
-            className={`floating-score font-mono font-black text-lg sm:text-2xl drop-shadow-[0_0_8px_rgba(0,0,0,0.95)] whitespace-nowrap ${
-              float.isPositive ? 'text-[#00FF88]' : 'text-[#EF4444]'
-            }`}
+            className={`floating-score font-mono font-black text-lg sm:text-2xl drop-shadow-[0_0_8px_rgba(0,0,0,0.95)] whitespace-nowrap ${float.isPositive ? 'text-[#00FF88]' : 'text-[#EF4444]'
+              }`}
           >
             {float.text}
           </div>

@@ -81,6 +81,9 @@ async function run() {
   SOUND_CATALOG.forEach(sfx => {
     assert(fs.existsSync('public' + sfx.path), `WAV sound asset exists on disk: ${sfx.path}`);
   });
+  ALL_AVATARS.forEach(char => {
+    assert(fs.existsSync('public' + char.voicePath), `Character unique voice+SFX WAV exists: ${char.id} -> ${char.voicePath}`);
+  });
   assert(HULK_DIALOGUES.intro.length > 0, 'Hulk intro dialogues defined in English');
   assert(HULK_DIALOGUES.correct.every(d => !d.includes('machan') && !d.includes('da')), 'Hulk dialogues strictly in English');
   assert(COMIC_WORDS.includes('SMASH!'), 'Comic word SMASH! included');
@@ -94,6 +97,12 @@ async function run() {
   assert(roarRes.status === 200, 'HTTP 200 returned on /sounds/hulk-roar.wav');
   const repulsorRes = await fetchHttp('http://localhost:3000/sounds/ironman-repulsor.wav');
   assert(repulsorRes.status === 200, 'HTTP 200 returned on /sounds/ironman-repulsor.wav');
+  const ironVoiceRes = await fetchHttp('http://localhost:3000/sounds/chars/iron-man.wav');
+  assert(ironVoiceRes.status === 200, 'HTTP 200 returned on /sounds/chars/iron-man.wav');
+  const thanosVoiceRes = await fetchHttp('http://localhost:3000/sounds/chars/thanos.wav');
+  assert(thanosVoiceRes.status === 200, 'HTTP 200 returned on /sounds/chars/thanos.wav');
+  const hulkVoiceRes = await fetchHttp('http://localhost:3000/sounds/chars/hulk.wav');
+  assert(hulkVoiceRes.status === 200, 'HTTP 200 returned on /sounds/chars/hulk.wav');
 
   console.log(`\n========================================`);
   console.log(`NEW FEATURES TESTS PASSED: ${passed}`);

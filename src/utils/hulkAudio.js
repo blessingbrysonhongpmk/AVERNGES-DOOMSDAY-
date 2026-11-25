@@ -1,8 +1,7 @@
 /**
- * AVENGERS: DOOMSDAY — HULK & MARVEL CHARACTER AUDIO ENGINE
- * Preloads & decodes local imported WAV SFX assets from /sounds/*.wav into Web Audio API
- * AudioBuffers for zero-latency playback, with real-time Web Audio DSP synthesis fallback
- * and optional low-pitch Hulk English voice synthesis.
+ * AVENGERS: DOOMSDAY — HULK & 51 MARVEL CHARACTER AUDIO ENGINE
+ * Preloads core WAV SFX assets + unique DSP character voice+SFX tracks (/sounds/chars/<id>.wav)
+ * into Web Audio API AudioBuffers for zero-latency playback, with cooldown control and DSP fallbacks.
  */
 
 export const SOUND_CATALOG = [
@@ -90,6 +89,23 @@ export const SOUND_CATALOG = [
 
 const SOUND_BY_ID = Object.fromEntries(SOUND_CATALOG.map((s) => [s.id, s]));
 
+const PRIORITY_CHAR_IDS = [
+  'hulk',
+  'iron-man',
+  'thanos',
+  'doctor-doom',
+  'thor',
+  'spider-man',
+  'steve-rogers',
+  'doctor-strange',
+  'black-widow',
+  'loki',
+  'galactus',
+  'sentry',
+  'wolverine',
+  'deadpool',
+];
+
 class HulkAudioEngine {
   constructor() {
     this.ctx = null;
@@ -97,13 +113,15 @@ class HulkAudioEngine {
     this.voiceEnabled = false;
     this.buffers = new Map();
     this.rawBuffers = new Map();
+    this.charBuffers = new Map();
+    this.charRawBuffers = new Map();
     this.preloadPromise = null;
+    this.activeVoiceSource = null;
+    this.activeHtmlAudio = null;
     this.lastVoiceAt = 0;
+    this.lastCharVoiceAt = 0;
   }
 
-  /**
-   * Initializes or resumes the shared Web Audio API AudioContext safely.
-   */
   init() {
     if (typeof window === 'undefined') return null;
     if (!this.ctx) {
@@ -122,74 +140,152 @@ class HulkAudioEngine {
     return this.ctx;
   }
 
+  async _fetchAndDecode(url, bufferMap, rawMap, key) {
+    if (bufferMap.has(key) || rawMap.has(key)) return true;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return false;
+      const arrBuf = await res.arrayBuffer();
+      rawMap.set(key, arrBuf);
+      if (this.ctx && typeof this.ctx.decodeAudioData === 'function') {
+        try {
+          const decoded = await this.ctx.decodeAudioData(arrBuf.slice(0));
+          bufferMap.set(key, decoded);
+        } catch { }
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   /**
-   * Preloads all imported WAV files from SOUND_CATALOG and decodes them into AudioBuffers.
-   * Safe to call multiple times; caches in-flight promise.
+   * Preloads all 10 core WAV SFX assets plus core combat character voice+SFX WAV files.
    */
-  async preloadAll(onProgress) {
+  async preloadAll(onProgress, extraCharIds = []) {
     if (typeof window === 'undefined' || typeof fetch === 'undefined') {
       return { loaded: 0, total: SOUND_CATALOG.length };
     }
     if (this.preloadPromise) return this.preloadPromise;
 
     this.init();
-    const total = SOUND_CATALOG.length;
+    const charIdsToLoad = Array.from(new Set([...PRIORITY_CHAR_IDS, ...extraCharIds.filter(Boolean)]));
+    const total = SOUND_CATALOG.length + charIdsToLoad.length;
     let loaded = 0;
 
+    const bump = (id) => {
+      loaded += 1;
+      if (typeof onProgress === 'function') {
+        onProgress({ loaded, total, lastId: id });
+      }
+    };
+
     this.preloadPromise = (async () => {
-      await Promise.all(
-        SOUND_CATALOG.map(async (entry) => {
-          try {
-            const res = await fetch(entry.path);
-            if (res.ok) {
-              const arrBuf = await res.arrayBuffer();
-              this.rawBuffers.set(entry.id, arrBuf);
-              if (this.ctx && typeof this.ctx.decodeAudioData === 'function') {
-                try {
-                  const decoded = await this.ctx.decodeAudioData(arrBuf.slice(0));
-                  this.buffers.set(entry.id, decoded);
-                } catch {
-                  // Context may require first user gesture before decode; raw buffer retained
-                }
-              }
-            }
-          } catch {
-            // Network/offline safety: synth fallback remains active
-          } finally {
-            loaded += 1;
-            if (typeof onProgress === 'function') {
-              onProgress({ loaded, total, lastId: entry.id });
-            }
-          }
-        })
-      );
+      await Promise.all([
+        ...SOUND_CATALOG.map(async (entry) => {
+          await this._fetchAndDecode(entry.path, this.buffers, this.rawBuffers, entry.id);
+          bump(entry.id);
+        }),
+        ...charIdsToLoad.map(async (charId) => {
+          await this._fetchAndDecode(`/sounds/chars/${charId}.wav`, this.charBuffers, this.charRawBuffers, charId);
+          bump(charId);
+        }),
+      ]);
       return { loaded, total };
     })();
 
     return this.preloadPromise;
   }
 
-  /**
-   * Decodes retained raw ArrayBuffers if AudioContext just unlocked after user interaction.
-   */
-  async ensureDecoded(id) {
-    if (this.buffers.has(id)) return this.buffers.get(id);
-    const raw = this.rawBuffers.get(id);
+  async ensureDecoded(id, isChar = false) {
+    const bMap = isChar ? this.charBuffers : this.buffers;
+    const rMap = isChar ? this.charRawBuffers : this.rawBuffers;
+    if (bMap.has(id)) return bMap.get(id);
+    const raw = rMap.get(id);
     const ctx = this.init();
     if (!raw || !ctx || typeof ctx.decodeAudioData !== 'function') return null;
     try {
       const decoded = await ctx.decodeAudioData(raw.slice(0));
-      this.buffers.set(id, decoded);
+      bMap.set(id, decoded);
       return decoded;
     } catch {
       return null;
     }
   }
 
+  _stopCurrentCharVoice() {
+    try {
+      if (this.activeVoiceSource) {
+        this.activeVoiceSource.stop();
+        this.activeVoiceSource.disconnect();
+        this.activeVoiceSource = null;
+      }
+    } catch { }
+    try {
+      if (this.activeHtmlAudio) {
+        this.activeHtmlAudio.pause();
+        this.activeHtmlAudio = null;
+      }
+    } catch { }
+  }
+
   /**
-   * Plays an imported WAV sound asset by SOUND_CATALOG ID with optional gain & playback rate.
-   * Returns true if buffer playback started, false if falling back to procedural DSP.
+   * Plays a unique character voice+SFX WAV (/sounds/chars/<characterId>.wav).
+   * Throttled by cooldownMs during rapid gameplay unless force=true (preview/team-up/avatar pick).
    */
+  async playCharacterVoice(characterId, { gain = 0.88, cooldownMs = 1500, force = false } = {}) {
+    if (!this.enabled || !characterId || typeof window === 'undefined') return false;
+
+    const nowMs = Date.now();
+    if (!force && nowMs - this.lastCharVoiceAt < cooldownMs) {
+      return false;
+    }
+    this.lastCharVoiceAt = nowMs;
+
+    if (force) {
+      this._stopCurrentCharVoice();
+    }
+
+    const url = `/sounds/chars/${characterId}.wav`;
+    const ctx = this.init();
+
+    // Lazy-fetch if this character isn't preloaded yet
+    if (!this.charBuffers.has(characterId) && !this.charRawBuffers.has(characterId)) {
+      await this._fetchAndDecode(url, this.charBuffers, this.charRawBuffers, characterId);
+    }
+
+    const buffer = (await this.ensureDecoded(characterId, true)) || this.charBuffers.get(characterId);
+    if (buffer && ctx && ctx.state === 'running') {
+      try {
+        const src = ctx.createBufferSource();
+        const gainNode = ctx.createGain();
+        src.buffer = buffer;
+        gainNode.gain.setValueAtTime(gain, ctx.currentTime);
+        src.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        if (force) {
+          this.activeVoiceSource = src;
+          src.onended = () => {
+            if (this.activeVoiceSource === src) this.activeVoiceSource = null;
+          };
+        }
+        src.start(ctx.currentTime);
+        return true;
+      } catch { }
+    }
+
+    if (typeof Audio !== 'undefined') {
+      try {
+        const el = new Audio(url);
+        el.volume = Math.min(1, Math.max(0, gain));
+        if (force) this.activeHtmlAudio = el;
+        el.play().catch(() => { });
+        return true;
+      } catch { }
+    }
+    return false;
+  }
+
   playSound(id, { gain = 0.8, playbackRate = 1.0 } = {}) {
     if (!this.enabled) return false;
     const ctx = this.init();
@@ -207,14 +303,11 @@ class HulkAudioEngine {
         gainNode.connect(ctx.destination);
         src.start(ctx.currentTime);
         return true;
-      } catch {
-        // Fall through to HTMLAudio/synth
-      }
+      } catch { }
     }
 
-    // Attempt lazy decode + HTMLAudio fallback for unlocked playback
     if (this.rawBuffers.has(id)) {
-      this.ensureDecoded(id).then((decoded) => {
+      this.ensureDecoded(id, false).then((decoded) => {
         if (decoded && this.enabled && this.ctx && this.ctx.state === 'running') {
           try {
             const src = this.ctx.createBufferSource();
@@ -241,9 +334,6 @@ class HulkAudioEngine {
     return false;
   }
 
-  /**
-   * Optional low-pitch English Hulk announcer callout via browser SpeechSynthesis.
-   */
   speakHulkLine(text) {
     if (!this.enabled || !this.voiceEnabled || typeof window === 'undefined') return;
     if (!('speechSynthesis' in window)) return;
@@ -267,7 +357,6 @@ class HulkAudioEngine {
     } catch { }
   }
 
-  // 1. Hulk Smash Impact + Target Signature Flavor
   playSmash(combo = 1, target = null) {
     if (!this.enabled) return;
     const rate = Math.min(1.22, 0.94 + combo * 0.025);
@@ -277,18 +366,24 @@ class HulkAudioEngine {
       this._synthSmash(combo);
     }
 
-    // Layer target-specific signature character audio cleanly
-    if (target?.soundKey && target.soundKey !== 'hulkSmash') {
+    // Play the target character's unique voice+SFX (e.g., Thanos terror voice, Doom metallic line)
+    if (target?.characterId) {
+      setTimeout(() => {
+        this.playCharacterVoice(target.characterId, {
+          gain: 0.72,
+          cooldownMs: target.isBonus || target.characterId === 'thanos' ? 1200 : 2100,
+        });
+      }, 55);
+    } else if (target?.soundKey && target.soundKey !== 'hulkSmash') {
       setTimeout(() => {
         this.playSound(target.soundKey, { gain: 0.45, playbackRate: 1.05 });
       }, 45);
     }
 
-    // Milestone roars on major combo streaks (x5 Worldbreaker, x10 Apex)
     if (combo === 4 || combo === 9) {
       setTimeout(() => {
         this.playSound('hulkRoar', { gain: 0.65 });
-      }, 90);
+      }, 95);
     }
   }
 
@@ -336,11 +431,14 @@ class HulkAudioEngine {
     noise.stop(now + 0.09);
   }
 
-  // 2. Marvel Hero Ally Alert + Dissonant Buzzer
   playHeroAlert(decoy = null) {
     if (!this.enabled) return;
     this.playDecoyHit();
-    if (decoy?.soundKey) {
+    if (decoy?.characterId) {
+      setTimeout(() => {
+        this.playCharacterVoice(decoy.characterId, { gain: 0.8, cooldownMs: 900, force: true });
+      }, 95);
+    } else if (decoy?.soundKey) {
       setTimeout(() => {
         this.playSound(decoy.soundKey, { gain: 0.65 });
       }, 65);
@@ -362,8 +460,8 @@ class HulkAudioEngine {
     osc1.frequency.setValueAtTime(130, now);
     osc2.frequency.setValueAtTime(185, now);
 
-    gain.gain.setValueAtTime(0.3, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+    gain.gain.setValueAtTime(0.28, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
 
     osc1.connect(gain);
     osc2.connect(gain);
@@ -371,11 +469,10 @@ class HulkAudioEngine {
 
     osc1.start(now);
     osc2.start(now);
-    osc1.stop(now + 0.28);
-    osc2.stop(now + 0.28);
+    osc1.stop(now + 0.26);
+    osc2.stop(now + 0.26);
   }
 
-  // 3. Ascending Combo Chime
   playComboChime(combo = 1) {
     if (!this.enabled) return;
     const ctx = this.init();
@@ -389,7 +486,7 @@ class HulkAudioEngine {
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(0.16, now);
+    gain.gain.setValueAtTime(0.15, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
 
     osc.connect(gain);
@@ -398,7 +495,6 @@ class HulkAudioEngine {
     osc.stop(now + 0.26);
   }
 
-  // 4. Hulk Roar & Game Start Fanfare
   playHulkRoar() {
     if (!this.enabled) return;
     if (!this.playSound('hulkRoar', { gain: 0.9 })) {
@@ -406,36 +502,25 @@ class HulkAudioEngine {
     }
   }
 
-  playGameStart() {
+  playGameStart(avatarId = 'hulk') {
     if (!this.enabled) return;
-    if (!this.playSound('hulkRoar', { gain: 0.85 })) {
-      const ctx = this.init();
-      if (!ctx) return;
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(100, now);
-      osc.frequency.exponentialRampToValueAtTime(600, now + 0.35);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.4);
+    if (avatarId && avatarId !== 'hulk') {
+      this.playCharacterVoice(avatarId, { gain: 0.9, force: true });
+    } else if (!this.playSound('hulkRoar', { gain: 0.85 })) {
+      this._synthSmash(8);
     }
   }
 
-  // 5. Avengers Hero Team-Up Sound
-  playHeroAssist(soundKey = 'thorThunder') {
+  playHeroAssist(soundKey = 'thorThunder', characterId = null) {
     if (!this.enabled) return;
-    this.playSound(soundKey, { gain: 0.9 });
-    setTimeout(() => {
-      this.playSound('hulkThunderclap', { gain: 0.65 });
-    }, 110);
+    this.playSound(soundKey, { gain: 0.78 });
+    if (characterId) {
+      setTimeout(() => {
+        this.playCharacterVoice(characterId, { gain: 0.95, force: true });
+      }, 90);
+    }
   }
 
-  // 6. Timer Urgency Beep
   playTimerTick(isLow = false) {
     if (!this.enabled) return;
     const ctx = this.init();
@@ -445,7 +530,7 @@ class HulkAudioEngine {
     const gain = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(isLow ? 880 : 440, now);
-    gain.gain.setValueAtTime(isLow ? 0.22 : 0.08, now);
+    gain.gain.setValueAtTime(isLow ? 0.2 : 0.08, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -453,7 +538,6 @@ class HulkAudioEngine {
     osc.stop(now + 0.07);
   }
 
-  // 7. Gamma Core Charging Sweep (Loading Sequence)
   playChargingSweep() {
     if (!this.enabled) return;
     if (!this.playSound('gammaCharge', { gain: 0.65 })) {
@@ -475,7 +559,6 @@ class HulkAudioEngine {
     }
   }
 
-  // 8. Countdown Beep (3, 2, 1, HULK SMASH!)
   playCountdownBeep(isFinal = false) {
     if (!this.enabled) return;
     if (isFinal) {
@@ -497,7 +580,6 @@ class HulkAudioEngine {
     osc.stop(now + 0.15);
   }
 
-  // 9. Game Over Triumphant Chord
   playGameOver() {
     if (!this.enabled) return;
     this.playSound('capShield', { gain: 0.55 });

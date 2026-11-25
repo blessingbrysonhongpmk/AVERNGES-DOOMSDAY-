@@ -30,11 +30,67 @@ export function getAvatarSoundKey(character) {
 }
 
 /**
- * All 51 Marvel Characters exported as selectable player Combat Avatars
+ * All 51 Marvel Characters exported as selectable player Combat Avatars with unique Voice + SFX tracks
  */
+export const CHARACTER_QUOTES = {
+  'doctor-doom': 'All kneel before Doom!',
+  galactus: 'I hunger for your world!',
+  thanos: 'I am inevitable.',
+  'reed-richards': 'Incursion vector locked!',
+  'sue-storm': 'Forcefields holding strong!',
+  'johnny-storm': 'Flame on!',
+  'ben-grimm': "It's clobbering time!",
+  'iron-man': 'I am Iron Man.',
+  'steve-rogers': 'Avengers, assemble!',
+  thor: 'Bring me Thanos!',
+  hulk: 'Hulk smash!',
+  'black-widow': "Sun's getting real low.",
+  hawkeye: 'Never miss a shot.',
+  'sam-wilson': 'On your left!',
+  'war-machine': 'Boom! Looking for this?',
+  'captain-marvel': 'Higher, further, faster!',
+  'spider-man': 'Friendly Spider-Man here!',
+  'doctor-strange': 'We are in the endgame now.',
+  'ant-man': 'Going subatomic now!',
+  'shang-chi': 'Unleash the Ten Rings!',
+  shuri: 'Wakanda forever!',
+  'she-hulk': 'Objection! Gamma smash!',
+  valkyrie: 'For New Asgard!',
+  'ms-marvel': 'Cosmic light power, embiggen!',
+  'kate-bishop': 'Trick arrow locked in!',
+  loki: 'Burdened with glorious purpose!',
+  'scarlet-witch': 'Chaos magic unleashed.',
+  wolverine: "Let's go, bub.",
+  deadpool: 'Maximum effort!',
+  'professor-x': 'To me, my X-Men.',
+  magneto: 'Master of magnetism.',
+  'america-chavez': 'Star portal opening!',
+  'monica-rambeau': 'Absorbing spectral energy!',
+  namor: 'Beware the serpent god!',
+  'bucky-barnes': 'Winter Soldier ready.',
+  'yelena-belova': 'That was a cool pose.',
+  sentry: 'The Void consumes the light!',
+  'red-guardian': 'Red Guardian hits harder!',
+  'us-agent': 'Standing down is not an option.',
+  ghost: 'Phasing through your defenses.',
+  taskmaster: 'Combat pattern copied.',
+  'star-lord': 'Star-Lord, legendary outlaw!',
+  'rocket-raccoon': 'Oh yeah, giant boom time!',
+  groot: 'I am Groot!',
+  gamora: 'Deadliest in the galaxy.',
+  drax: 'Nothing goes over my head!',
+  nebula: 'Cybernetics locked on target.',
+  mantis: 'Sleep now, warrior.',
+  daredevil: 'Radar locked. Justice strikes.',
+  punisher: 'One batch, two batch, smash.',
+  'moon-knight': 'Khonshu demands vengeance!',
+};
+
 export const ALL_AVATARS = CHARACTERS_DATA.map((char) => ({
   ...char,
   soundKey: getAvatarSoundKey(char),
+  voicePath: `/sounds/chars/${char.id}.wav`,
+  voiceLine: CHARACTER_QUOTES[char.id] || `${char.name} ready for combat!`,
 }));
 
 /**
@@ -324,6 +380,7 @@ export const DECOYS = [
 export const HERO_ASSISTS = [
   {
     id: 'thor-bifrost',
+    characterId: 'thor',
     hotkey: '1',
     heroName: 'THOR',
     abilityName: 'BIFROST THUNDER',
@@ -335,6 +392,7 @@ export const HERO_ASSISTS = [
   },
   {
     id: 'ironman-overcharge',
+    characterId: 'iron-man',
     hotkey: '2',
     heroName: 'IRON MAN',
     abilityName: '2X OVERCHARGE',
@@ -346,6 +404,7 @@ export const HERO_ASSISTS = [
   },
   {
     id: 'strange-timestasis',
+    characterId: 'doctor-strange',
     hotkey: '3',
     heroName: 'DR. STRANGE',
     abilityName: 'TIME FREEZE',
