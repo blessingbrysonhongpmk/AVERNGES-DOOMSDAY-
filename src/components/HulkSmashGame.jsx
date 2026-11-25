@@ -1595,18 +1595,20 @@ export default function HulkSmashGame({ onClose }) {
                   aria-label="Select sound slot to customize"
                   className="px-2.5 py-2 bg-[#0C1016] border border-[#232731] text-white text-xs font-mono rounded-sm outline-none focus:border-[#00FF88] flex-1"
                 >
-                  <option value="hulkRoar">Slot: Hulk Gamma Roar (Start / Combo)</option>
-                  <option value="hulkSmash">Slot: Hulk Seismic Ground Smash</option>
-                  <option value="hulkThunderclap">Slot: Hulk Thunderclap (Countdown / Team-Up)</option>
-                  <option value="char:hulk">Slot: Hulk Character Voice + Roar</option>
-                  <option value="char:iron-man">Slot: Iron Man Voice + Repulsor</option>
-                  <option value="char:thanos">Slot: Thanos Terror Voice</option>
-                  <option value="char:doctor-doom">Slot: Doctor Doom Voice</option>
-                  {activeAvatar?.id && !['hulk', 'iron-man', 'thanos', 'doctor-doom'].includes(activeAvatar.id) && (
-                    <option value={`char:${activeAvatar.id}`}>
-                      Slot: Active Avatar ({activeAvatar.name})
-                    </option>
-                  )}
+                  <optgroup label="Core Hulk &amp; Arena SFX">
+                    {SOUND_CATALOG.map((sfx) => (
+                      <option key={sfx.id} value={sfx.id}>
+                        SFX: {sfx.label} ({sfx.character})
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="All 51 Marvel Characters (Tamil / Custom Clips)">
+                    {ALL_AVATARS.map((char) => (
+                      <option key={char.id} value={`char:${char.id}`}>
+                        Character: {char.name} ({char.alias})
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
 
                 <label className="px-4 py-2 bg-[#22C55E] hover:bg-[#10B981] text-black font-mono font-bold text-xs uppercase rounded-sm cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0">
