@@ -929,7 +929,7 @@ export default function HulkSmashGame({ onClose }) {
             type="button"
             onClick={() => openModalSafely(setShowSoundboard)}
             className="px-2.5 py-1.5 border border-[#272D38] hover:border-[#4B5565] bg-[#0D1015] text-[#D1D5DB] hover:text-white rounded-[2px] transition-colors cursor-pointer inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider font-semibold"
-            title="Hulk & Marvel Tamil AI Voice Vault + Custom Importer"
+            title="Hulk & Marvel MCU AI Voice Vault + Custom Importer"
           >
             <Music className="w-3.5 h-3.5 text-[#9CA3AF]" />
             <span className="hidden md:inline">AUDIO &amp; HEROES</span>
@@ -951,11 +951,10 @@ export default function HulkSmashGame({ onClose }) {
             aria-checked={bgmEnabled}
             onClick={toggleBgm}
             aria-label={bgmEnabled ? 'Turn Avengers BGM Off' : 'Turn Avengers BGM On'}
-            className={`hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 border rounded-[3px] text-[9.5px] font-mono font-bold uppercase transition-colors cursor-pointer ${
-              bgmEnabled
+            className={`hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 border rounded-[3px] text-[9.5px] font-mono font-bold uppercase transition-colors cursor-pointer ${bgmEnabled
                 ? 'border-[#264633] bg-[#0B120E] text-white'
                 : 'border-[#272D38] bg-[#0B0D11] text-[#7A818D] hover:text-white'
-            }`}
+              }`}
             title="Toggle Avengers Orchestral Background Score"
           >
             <div className="flex items-end gap-[1.5px] h-2.5" aria-hidden="true">
@@ -963,21 +962,19 @@ export default function HulkSmashGame({ onClose }) {
                 <span
                   key={d}
                   style={{ animationDelay: `${d}ms`, height: idx === 1 ? '10px' : '7px' }}
-                  className={`w-[2px] rounded-[1px] ${
-                    bgmEnabled && bgmPlaying
+                  className={`w-[2px] rounded-[1px] ${bgmEnabled && bgmPlaying
                       ? 'bgm-eq-bar bg-[#22C55E]'
                       : bgmEnabled
                         ? 'bg-[#D1D5DB]'
                         : 'bg-[#3B4250]'
-                  }`}
+                    }`}
                 />
               ))}
             </div>
             <span>BGM</span>
             <span
-              className={`px-1.5 py-0.5 rounded-[2px] text-[8.5px] font-extrabold leading-none ${
-                bgmEnabled ? 'bg-[#F3F4F6] text-[#08090B]' : 'bg-[#1D222C] text-[#9CA3AF]'
-              }`}
+              className={`px-1.5 py-0.5 rounded-[2px] text-[8.5px] font-extrabold leading-none ${bgmEnabled ? 'bg-[#F3F4F6] text-[#08090B]' : 'bg-[#1D222C] text-[#9CA3AF]'
+                }`}
             >
               {bgmEnabled ? 'ON' : 'OFF'}
             </span>
@@ -986,15 +983,15 @@ export default function HulkSmashGame({ onClose }) {
           <button
             type="button"
             onClick={() => setVoiceEnabled((prev) => !prev)}
-            aria-label={voiceEnabled ? 'Disable Tamil AI Hero Voices' : 'Enable Tamil AI Hero Voices'}
+            aria-label={voiceEnabled ? 'Disable Neural AI MCU Voices' : 'Enable Neural AI MCU Voices'}
             className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 border rounded-[2px] text-[10px] font-mono font-semibold uppercase transition-colors cursor-pointer ${voiceEnabled
               ? 'border-[#34D399]/70 bg-[#0F1B16] text-[#34D399]'
               : 'border-[#272D38] bg-[#0D1015] text-[#7A818D] hover:text-white'
               }`}
-            title="Toggle Neural AI Tamil Hero & Mass Voices"
+            title="Toggle Neural AI English MCU Hero & Villain Voices"
           >
             {voiceEnabled ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{voiceEnabled ? 'TAMIL VOICE ON' : 'VOICE OFF'}</span>
+            <span className="hidden sm:inline">{voiceEnabled ? 'AI VOICES ON' : 'VOICE OFF'}</span>
           </button>
 
           <button
@@ -1233,11 +1230,6 @@ export default function HulkSmashGame({ onClose }) {
                 <p className="text-xs font-cinematic font-bold text-[#F3F4F6] truncate mt-0.5">
                   &ldquo;{dialogue}&rdquo;
                 </p>
-                {activeAvatar.voiceLineTamil && (
-                  <span className="text-[9px] font-sans text-[#9CA3AF] truncate block mt-0.5">
-                    {activeAvatar.voiceLineTamil}
-                  </span>
-                )}
               </div>
             </button>
 
@@ -1618,8 +1610,8 @@ export default function HulkSmashGame({ onClose }) {
                       <span className="block text-[10px] font-cinematic font-bold text-white uppercase leading-tight truncate">
                         {char.name}
                       </span>
-                      <span className="block text-[8px] font-sans text-[#D1D5DB] truncate">
-                        {char.voiceLineTamil || char.voiceLine}
+                      <span className="block text-[8px] font-mono text-[#D1D5DB] truncate">
+                        &ldquo;{char.voiceLine}&rdquo;
                       </span>
                     </div>
                   </button>
@@ -1732,7 +1724,7 @@ export default function HulkSmashGame({ onClose }) {
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                 <span className="text-[10px] font-mono font-semibold text-[#D1D5DB] uppercase tracking-[0.16em] inline-flex items-center gap-1.5">
                   <Upload className="w-3.5 h-3.5 text-[#34D399]" />
-                  <span>IMPORT CUSTOM HULK OR TAMIL CLIP (.MP3 / .WAV)</span>
+                  <span>IMPORT CUSTOM HULK OR AVENGERS CLIP (.MP3 / .WAV)</span>
                 </span>
                 {(customAudioSlot === 'bgm:primary' ? customBgmName : customOverrides[customAudioSlot]) && (
                   <span className="text-[9px] font-mono text-[#D4AF37] uppercase truncate max-w-[220px]">
@@ -1763,7 +1755,7 @@ export default function HulkSmashGame({ onClose }) {
                       </option>
                     ))}
                   </optgroup>
-                  <optgroup label="All 51 Marvel Characters (Tamil / Custom Clips)">
+                  <optgroup label="All 51 Marvel Characters (MCU / Custom Clips)">
                     {ALL_AVATARS.map((char) => (
                       <option key={char.id} value={`char:${char.id}`}>
                         Character: {char.name} ({char.alias})
@@ -1865,8 +1857,8 @@ export default function HulkSmashGame({ onClose }) {
                           <span className="text-[10px] font-cinematic font-bold text-white block truncate">
                             {char.name}
                           </span>
-                          <span className="text-[8.5px] font-sans text-[#9CA3AF] block truncate">
-                            {char.voiceLineTamil || char.voiceLine}
+                          <span className="text-[8.5px] font-mono text-[#9CA3AF] block truncate">
+                            &ldquo;{char.voiceLine}&rdquo;
                           </span>
                         </div>
                       </div>

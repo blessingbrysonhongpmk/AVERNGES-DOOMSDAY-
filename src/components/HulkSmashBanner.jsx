@@ -108,7 +108,7 @@ export default function HulkSmashBanner({ onPlay, isGameOpen }) {
               <div className="absolute bottom-3 inset-x-4 sm:inset-x-5 z-10 flex items-end justify-between gap-3">
                 <div>
                   <span className="text-[9.5px] font-mono tracking-[0.22em] text-[#4ADE80] uppercase block mb-0.5">
-                    SECTOR 616 • TAMIL AI VOICES + SFX
+                    SECTOR 616 • NEURAL AI VOICES + SFX
                   </span>
                   <h3 className="text-2xl sm:text-3xl font-cinematic font-black tracking-tight text-metallic uppercase leading-none">
                     HULK SMASH MAYHEM
@@ -121,7 +121,7 @@ export default function HulkSmashBanner({ onPlay, isGameOpen }) {
             <div className="p-5 sm:p-6 flex flex-col justify-between flex-1 gap-4 bg-gradient-to-b from-[#0A0E0C] to-[#08090B]">
               <div>
                 <p className="text-xs sm:text-sm font-body text-[#A1A8B0] leading-relaxed mb-3.5">
-                  Unleash Hulk&apos;s seismic smash against Doctor Doom&apos;s forces, Thanos echoes, and Void anomalies—with 51 playable Marvel Heroes &amp; Tamil AI voice lines.
+                  Unleash Hulk&apos;s seismic smash against Doctor Doom&apos;s forces, Thanos echoes, and Void anomalies—with 51 playable Marvel Heroes &amp; English MCU AI voice lines.
                 </p>
 
                 {/* Cast Preview Row */}
@@ -185,7 +185,7 @@ export default function HulkSmashBanner({ onPlay, isGameOpen }) {
                     handleLaunch();
                   }}
                   className="h-12 sm:h-13 px-4 bg-[#0D1210] hover:bg-[#131E18] border border-[#273D31] hover:border-[#34D399]/75 text-[#D1FAE5] hover:text-white font-mono font-bold text-[10.5px] tracking-[0.14em] uppercase transition-colors rounded-[3px] cursor-pointer inline-flex items-center justify-center gap-2 shrink-0"
-                  title="Play with any of 51 Marvel Heroes & Neural Tamil AI Voices"
+                  title="Play with any of 51 Marvel Heroes & Neural English AI Voices"
                 >
                   <Users className="w-4 h-4 text-[#22C55E]" />
                   <span>51 HEROES</span>

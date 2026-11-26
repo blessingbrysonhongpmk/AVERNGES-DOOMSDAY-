@@ -94,8 +94,8 @@ async function run() {
   const gameSource = fs.readFileSync('src/components/HulkSmashGame.jsx', 'utf8');
   assert(gameSource.includes('font-trailer') && gameSource.includes('font-hud'), 'Game countdown and HUD use blockbuster trailer/HUD fonts');
   assert(gameSource.includes('excludeAvatarId') && gameSource.includes('overchargeMs') && gameSource.includes('freezeMs'), 'Game fixes pause-safe buffs and avatar decoy deduplication');
-  assert(gameSource.includes('TAMIL VOICE ON') && gameSource.includes('object-[50%_18%]'), 'Game includes clear framed portraits and Tamil AI Voice toggle');
-  assert(ALL_AVATARS.every((char) => char.voiceLineTamil && char.voiceLineTamil.length > 0), 'All 51 Marvel characters have Tamil voice line subtitles');
+  assert(gameSource.includes('AI VOICES ON') && gameSource.includes('object-[50%_18%]') && !/tamil/i.test(gameSource), 'Game uses pure English MCU voices & crisp framed portraits without Tamil strings');
+  assert(ALL_AVATARS.every((char) => char.voiceLine && !char.voiceLineTamil), 'All 51 Marvel characters have English MCU voice quotes only');
 
   const { WATCHLIST: WL, WATCHLIST_ERAS } = await import('./src/data/watchlist.js');
   assert(WATCHLIST_ERAS.length === 4, `Watchlist chronological eras defined: ${WATCHLIST_ERAS.length}`);

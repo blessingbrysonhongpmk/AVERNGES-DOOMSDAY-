@@ -98,11 +98,11 @@ export const STUDIO_SFX_PATHS = {
   shotBlast1: '/sounds/shot-blast-1.wav',
   shotBlast2: '/sounds/shot-blast-2.wav',
   shotBlast3: '/sounds/shot-blast-3.wav',
-  tamilGameStart: '/sounds/tamil-game-start.wav',
-  tamilComboMass: '/sounds/tamil-combo-mass.wav',
-  tamilComboUltimate: '/sounds/tamil-combo-ultimate.wav',
-  tamilAllyAlert: '/sounds/tamil-ally-alert.wav',
-  tamilVictoryCheer: '/sounds/tamil-victory-cheer.wav',
+  mcuGameStart: '/sounds/mcu-game-start.wav',
+  mcuComboMass: '/sounds/mcu-combo-mass.wav',
+  mcuComboUltimate: '/sounds/mcu-combo-ultimate.wav',
+  mcuAllyAlert: '/sounds/mcu-ally-alert.wav',
+  mcuVictoryCheer: '/sounds/mcu-victory-cheer.wav',
 };
 
 const SHOT_BLAST_KEYS = ['shotBlast1', 'shotBlast2', 'shotBlast3'];
@@ -519,8 +519,8 @@ class HulkAudioEngine {
 
   speakHulkLine(text) {
     if (!this.enabled || !this.voiceEnabled || typeof window === 'undefined') return;
-    // Prefer pre-rendered Neural AI Tamil hero/callout WAVs over robotic browser speechSynthesis
-    if (this.buffers.has('tamilGameStart') || this.charBuffers.size > 0) return;
+    // Prefer pre-rendered Neural English AI MCU hero/callout WAVs over robotic browser speechSynthesis
+    if (this.buffers.has('mcuGameStart') || this.charBuffers.size > 0) return;
     if (!('speechSynthesis' in window)) return;
     const now = Date.now();
     if (now - this.lastVoiceAt < 1400) return;
@@ -559,7 +559,7 @@ class HulkAudioEngine {
       this.playSound(target.soundKey, { gain: 0.44, playbackRate: 1.06 });
     }
 
-    // Play the target character's Neural AI Tamil voice + signature shot/power SFX
+    // Play the target character's Neural English AI voice + signature shot/power SFX
     if (target?.characterId && this.voiceEnabled) {
       setTimeout(() => {
         this.playCharacterVoice(target.characterId, {
@@ -573,7 +573,7 @@ class HulkAudioEngine {
       const now = Date.now();
       if (now - this.lastCalloutAt > 2100) {
         this.lastCalloutAt = now;
-        const calloutKey = combo >= 6 ? 'tamilComboUltimate' : 'tamilComboMass';
+        const calloutKey = combo >= 6 ? 'mcuComboUltimate' : 'mcuComboMass';
         setTimeout(() => {
           this.playSound(calloutKey, { gain: 0.88 });
         }, 120);
@@ -640,7 +640,7 @@ class HulkAudioEngine {
       }, 90);
     } else {
       setTimeout(() => {
-        if (!this.playSound('tamilAllyAlert', { gain: 0.82 }) && decoy?.soundKey) {
+        if (!this.playSound('mcuAllyAlert', { gain: 0.82 }) && decoy?.soundKey) {
           this.playSound(decoy.soundKey, { gain: 0.65 });
         }
       }, 85);
@@ -715,7 +715,7 @@ class HulkAudioEngine {
       }
       return;
     }
-    if (this.voiceEnabled && this.playSound('tamilGameStart', { gain: 0.92 })) {
+    if (this.voiceEnabled && this.playSound('mcuGameStart', { gain: 0.92 })) {
       return;
     }
     if (!this.playSound('hulkRoar', { gain: 0.85 })) {
@@ -804,7 +804,7 @@ class HulkAudioEngine {
     const fanfarePlayed = this.playSound('victoryFanfare', { gain: 0.86 });
     if (this.voiceEnabled) {
       setTimeout(() => {
-        this.playSound('tamilVictoryCheer', { gain: 0.9 });
+        this.playSound('mcuVictoryCheer', { gain: 0.9 });
       }, 260);
     }
     if (fanfarePlayed) return;
