@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Check, Film, Tv } from 'lucide-react';
 
 export default function MovieDetailModal({
@@ -32,9 +33,9 @@ export default function MovieDetailModal({
 
   const isLoki = item.isMultiSeason;
 
-  return (
+  const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-sm"
+      className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -212,4 +213,9 @@ export default function MovieDetailModal({
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return modalContent;
 }

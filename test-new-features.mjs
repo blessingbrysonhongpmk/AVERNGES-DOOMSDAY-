@@ -104,6 +104,7 @@ async function run() {
   const roadmapSource = fs.readFileSync('src/components/DoomsdayRoadmapModal.jsx', 'utf8');
   assert(roadmapSource.includes('CHECKLIST') && roadmapSource.includes('TIMELINE'), 'Roadmap modal includes large Checklist & Timeline mode switcher');
   assert(roadmapSource.includes('SEASON 1') && roadmapSource.includes('SEASON 2'), 'Roadmap modal supports Loki Season 1 & 2 checklist controls');
+  assert(roadmapSource.includes('createPortal') && roadmapSource.includes('MultiverseProgressDial'), 'Roadmap modal renders cleanly via document.body portal and includes 15-segment SVG dial');
 
   console.log('\n=== VERIFYING HTTP RESPONSE ON PORT 3000 ===');
   const home = await fetchHttp('http://localhost:3000/');

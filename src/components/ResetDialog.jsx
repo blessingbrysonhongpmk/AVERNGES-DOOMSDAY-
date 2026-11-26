@@ -1,12 +1,13 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, X } from 'lucide-react';
 
 export default function ResetDialog({ isOpen, onConfirm, onCancel }) {
   if (!isOpen) return null;
 
-  return (
+  const dialog = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"
+      className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="reset-dialog-title"
@@ -54,4 +55,9 @@ export default function ResetDialog({ isOpen, onConfirm, onCancel }) {
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(dialog, document.body);
+  }
+  return dialog;
 }
