@@ -3,6 +3,7 @@ import { WATCHLIST } from '../data/watchlist';
 import { loadWatchlistProgress, saveWatchlistProgress, clearWatchlistProgress } from '../utils/storage';
 import ResetDialog from './ResetDialog';
 import MovieDetailModal from './MovieDetailModal';
+import DoomsdayRoadmapModal from './DoomsdayRoadmapModal';
 import CinematicAtmosphere from './CinematicAtmosphere';
 import { clockAudio } from '../utils/audio.js';
 import {
@@ -13,20 +14,29 @@ import {
   RotateCcw,
   Check,
   Eye,
-  Layers,
-  LayoutGrid,
+  ListChecks,
+  ArrowUpRight,
 } from 'lucide-react';
 
 export default function Watchlist() {
   const [progress, setProgress] = useState(() => loadWatchlistProgress());
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [activeModalItem, setActiveModalItem] = useState(null);
+  const [roadmapOpen, setRoadmapOpen] = useState(false);
+  const [roadmapView, setRoadmapView] = useState('checklist');
+  const [roadmapFocusId, setRoadmapFocusId] = useState(null);
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [viewMode, setViewMode] = useState('reel'); // 'reel' (Image 4 default) | 'timeline' | 'grid'
   const scrollContainerRef = useRef(null);
+
+  const openRoadmapScreen = (focusId = null, initialTab = 'checklist') => {
+    try { clockAudio.tick(0); } catch { }
+    setRoadmapFocusId(focusId);
+    setRoadmapView(initialTab);
+    setRoadmapOpen(true);
+  };
 
   useEffect(() => {
     saveWatchlistProgress(progress);
@@ -44,14 +54,21 @@ export default function Watchlist() {
     try { clockAudio.tick(0); } catch (e) { }
     setProgress((prev) => {
       const loki = prev['loki-series'] || {};
-      const bothDone = loki.season1 && loki.season2;
+      const bothDone = !!(loki.season1 && loki.season2);
 
-      let s1 = true;
-      let s2 = true;
+      let s1 = !!loki.season1;
+      let s2 = !!loki.season2;
 
-      if (action === 'clear' || (action === 'toggle' && bothDone)) {
+      if (action === 's1') {
+        s1 = !s1;
+      } else if (action === 's2') {
+        s2 = !s2;
+      } else if (action === 'clear' || (action === 'toggle' && bothDone)) {
         s1 = false;
         s2 = false;
+      } else {
+        s1 = true;
+        s2 = true;
       }
 
       return {
@@ -243,8 +260,23 @@ export default function Watchlist() {
                 </div>
               </div>
 
+              {/* Primary Flagship Roadmap Screen Entry */}
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => openRoadmapScreen(null, 'checklist')}
+                  className="w-full h-12 px-5 bg-[#F3F4F6] hover:bg-white text-[#08090B] text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer inline-flex items-center justify-between rounded-[3px] shadow-md"
+                >
+                  <span className="inline-flex items-center gap-2.5">
+                    <ListChecks className="w-4 h-4 text-[#16A34A]" />
+                    <span>OPEN ROADMAP &amp; TIMELINE</span>
+                  </span>
+                  <ArrowUpRight className="w-4 h-4 text-[#08090B]" />
+                </button>
+              </div>
+
               {/* Action Buttons Row */}
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#1E252D]/60">
+              <div className="flex flex-wrap items-center gap-2 pt-2.5 border-t border-[#1E252D]/60">
                 <button
                   type="button"
                   onClick={handleShare}
@@ -305,13 +337,8 @@ export default function Watchlist() {
                   return (
                     <div
                       key={item.id}
-                      onClick={() => {
-                        if (item.isMultiSeason) {
-                          handleToggleLokiSeason('toggle');
-                        } else {
-                          handleToggleStandard(item.id);
-                        }
-                      }}
+                      onClick={() => openRoadmapScreen(item.id, 'checklist')}
+                      title={`Open Roadmap at Chapter ${item.number}: ${item.title}`}
                       className={`relative w-[125px] xs:w-[138px] sm:w-[150px] aspect-[2/3] shrink-0 rounded-xs border transition-all duration-300 cursor-pointer overflow-hidden group select-none ${isCompleted
                           ? 'border-[#22C55E] shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-[#0C140E]'
                           : 'border-[#1E252D] hover:border-white/50 bg-[#0E1015]'
@@ -325,19 +352,31 @@ export default function Watchlist() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
 
-                      {/* Top Tag: Number and Check badge */}
-                      <div className="absolute top-1.5 left-1.5 flex items-center gap-1">
+                      {/* Top Tag: Direct Quick-Toggle Check Badge */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (item.isMultiSeason) {
+                            handleToggleLokiSeason('toggle');
+                          } else {
+                            handleToggleStandard(item.id);
+                          }
+                        }}
+                        title={isCompleted ? 'Mark unwatched' : 'Quick mark watched'}
+                        className="absolute top-1.5 left-1.5 flex items-center gap-1 z-10 cursor-pointer"
+                      >
                         {isCompleted ? (
-                          <span className="bg-[#22C55E] text-black font-mono font-black text-[8.5px] px-1.5 py-0.5 rounded-xs flex items-center gap-0.5 shadow">
+                          <span className="bg-[#22C55E] hover:bg-[#4ADE80] text-black font-mono font-black text-[8.5px] px-1.5 py-0.5 rounded-xs flex items-center gap-0.5 shadow transition-colors">
                             <span>{item.number}</span>
                             <Check className="w-3 h-3 stroke-[3]" />
                           </span>
                         ) : (
-                          <span className="bg-black/85 text-white/90 border border-white/20 font-mono font-bold text-[8.5px] px-1.5 py-0.5 rounded-xs">
+                          <span className="bg-black/85 hover:bg-white hover:text-black text-white/90 border border-white/25 font-mono font-bold text-[8.5px] px-1.5 py-0.5 rounded-xs transition-colors">
                             {item.number}
                           </span>
                         )}
-                      </div>
+                      </button>
 
                       {/* Info Button on Hover to view synopsis */}
                       <button
@@ -383,11 +422,34 @@ export default function Watchlist() {
 
       </div>
 
+      {/* ── FULL-SCREEN ROADMAP (CHECKLIST & CHRONOLOGICAL TIMELINE) ── */}
+      <DoomsdayRoadmapModal
+        isOpen={roadmapOpen}
+        onClose={() => setRoadmapOpen(false)}
+        progress={progress}
+        onToggleStandard={handleToggleStandard}
+        onToggleLokiSeason={handleToggleLokiSeason}
+        onShare={handleShare}
+        copied={copied}
+        onOpenReset={() => setIsResetOpen(true)}
+        initialView={roadmapView}
+        initialFocusId={roadmapFocusId}
+      />
+
       {/* ── CHAPTER DETAIL MODAL ── */}
       {activeModalItem && (
         <MovieDetailModal
           item={activeModalItem}
-          progress={progress}
+          isOpen={!!activeModalItem}
+          isCompleted={
+            activeModalItem.isMultiSeason
+              ? !!(progress['loki-series']?.season1 && progress['loki-series']?.season2)
+              : !!progress[activeModalItem.id]?.completed
+          }
+          lokiSeasons={{
+            s1: !!progress['loki-series']?.season1,
+            s2: !!progress['loki-series']?.season2,
+          }}
           onClose={() => setActiveModalItem(null)}
           onToggleStandard={handleToggleStandard}
           onToggleLokiSeason={handleToggleLokiSeason}
@@ -398,7 +460,7 @@ export default function Watchlist() {
       {isResetOpen && (
         <ResetDialog
           isOpen={isResetOpen}
-          onClose={() => setIsResetOpen(false)}
+          onCancel={() => setIsResetOpen(false)}
           onConfirm={handleConfirmReset}
         />
       )}

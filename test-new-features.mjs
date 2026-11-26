@@ -95,6 +95,14 @@ async function run() {
   assert(gameSource.includes('font-trailer') && gameSource.includes('font-hud'), 'Game countdown and HUD use blockbuster trailer/HUD fonts');
   assert(gameSource.includes('excludeAvatarId') && gameSource.includes('overchargeMs') && gameSource.includes('freezeMs'), 'Game fixes pause-safe buffs and avatar decoy deduplication');
 
+  const { WATCHLIST: WL, WATCHLIST_ERAS } = await import('./src/data/watchlist.js');
+  assert(WATCHLIST_ERAS.length === 4, `Watchlist chronological eras defined: ${WATCHLIST_ERAS.length}`);
+  assert(WL.every((w) => w.eraId && w.reality && w.doomsdayLink), 'Every Watchlist chapter defines timeline era, reality & Doomsday link');
+  assert(fs.existsSync('src/components/DoomsdayRoadmapModal.jsx'), 'DoomsdayRoadmapModal component exists');
+  const roadmapSource = fs.readFileSync('src/components/DoomsdayRoadmapModal.jsx', 'utf8');
+  assert(roadmapSource.includes('CHECKLIST') && roadmapSource.includes('TIMELINE'), 'Roadmap modal includes large Checklist & Timeline mode switcher');
+  assert(roadmapSource.includes('SEASON 1') && roadmapSource.includes('SEASON 2'), 'Roadmap modal supports Loki Season 1 & 2 checklist controls');
+
   console.log('\n=== VERIFYING HTTP RESPONSE ON PORT 3000 ===');
   const home = await fetchHttp('http://localhost:3000/');
   assert(home.status === 200, 'HTTP 200 returned on /');

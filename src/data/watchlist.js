@@ -5,6 +5,37 @@
  * All poster paths are centralized and point strictly to local assets in public/posters/
  */
 
+export const WATCHLIST_ERAS = [
+  {
+    id: 'mutant-origins',
+    index: 'ERA I',
+    title: 'Mutant & Multiverse Foundations',
+    years: '2000 – 2003',
+    summary: 'Early Fox continuity establishes mutantkind, Xavier’s school, and alternate-Earth lineages converging in Doomsday.',
+  },
+  {
+    id: 'infinity-saga',
+    index: 'ERA II',
+    title: 'Sacred Timeline & Infinity Fallout',
+    years: '2011 – 2019',
+    summary: 'From the Space Stone in WWII to the Avengers assembling and fracturing time with the Time Heist.',
+  },
+  {
+    id: 'multiverse-fracture',
+    index: 'ERA III',
+    title: 'TVA & Multiverse Unraveling',
+    years: '2021 – 2023',
+    summary: 'Branches escape the Sacred Timeline, Loki anchors Yggdrasil, and dimensional boundaries rupture across Earths.',
+  },
+  {
+    id: 'collision-course',
+    index: 'ERA IV',
+    title: 'Collision Course to Doomsday',
+    years: '2024 – 2026',
+    summary: 'Anchor Beings fall, a new Captain America leads, Thunderbolts* assemble, and the Fantastic Four bridge Earths with Doctor Doom.',
+  },
+];
+
 export const WATCHLIST = [
   {
     id: 'x-men-2000',
@@ -15,6 +46,10 @@ export const WATCHLIST = [
     poster: '/posters/x-men.webp',
     tagline: 'Trust a few. Fear the rest.',
     narrativeSignificance: 'The birth of modern Marvel cinema, introducing mutants, the Charles Xavier / Magneto ideological rift, and the foundational multiverse lineage.',
+    eraId: 'mutant-origins',
+    reality: 'Earth-10005',
+    inUniverseTime: '2000 // Fox Continuity',
+    doomsdayLink: 'Introduces Professor X, Magneto, Cyclops & mutant lineage returning in the Multiverse collision.',
   },
   {
     id: 'x2-2003',
@@ -25,6 +60,10 @@ export const WATCHLIST = [
     poster: '/posters/x2.webp',
     tagline: 'In this war, you will take sides.',
     narrativeSignificance: 'Establishes mutant-human conflict escalation and mutant legacy that reverberates into the modern multiverse collision.',
+    eraId: 'mutant-origins',
+    reality: 'Earth-10005',
+    inUniverseTime: '2003 // Stryker Incident',
+    doomsdayLink: 'Deepens Mystique, Nightcrawler & X-Mansion dynamics key to the X-Men ensemble return.',
   },
   {
     id: 'captain-america-first-avenger-2011',
@@ -35,6 +74,10 @@ export const WATCHLIST = [
     poster: '/posters/captain-america-first-avenger.webp',
     tagline: 'When patriots become heroes.',
     narrativeSignificance: 'Introduces Steve Rogers, the Super Soldier serum, and the Tesseract (Space Stone) that sparked the modern Marvel Cinematic Universe.',
+    eraId: 'infinity-saga',
+    reality: 'Earth-616',
+    inUniverseTime: '1943 – 1945 (WWII)',
+    doomsdayLink: 'Establishes Steve Rogers’s legacy, the shield mantle, and the earliest branch-altering time arc.',
   },
   {
     id: 'the-avengers-2012',
@@ -45,6 +88,10 @@ export const WATCHLIST = [
     poster: '/posters/the-avengers.webp',
     tagline: 'Some assembly required.',
     narrativeSignificance: 'Earth’s Mightiest Heroes unite for the first time against Loki and the Chitauri, establishing the benchmark team dynamic.',
+    eraId: 'infinity-saga',
+    reality: 'Earth-616',
+    inUniverseTime: '2012 // Battle of NY',
+    doomsdayLink: 'Sets the original Avengers standard and spawns the 2012 Loki variant who later rules Yggdrasil.',
   },
   {
     id: 'avengers-infinity-war-2018',
@@ -55,6 +102,10 @@ export const WATCHLIST = [
     poster: '/posters/infinity-war.webp',
     tagline: 'An entire universe. Once and for all.',
     narrativeSignificance: 'The cataclysmic clash against Thanos for the six Infinity Stones, demonstrating the cosmic cost of universal decimation.',
+    eraId: 'infinity-saga',
+    reality: 'Earth-616',
+    inUniverseTime: '2018 // The Blip Begins',
+    doomsdayLink: 'Defines the benchmark multiversal-scale ensemble structure led by the Russo Brothers.',
   },
   {
     id: 'avengers-endgame-2019',
@@ -65,6 +116,10 @@ export const WATCHLIST = [
     poster: '/posters/endgame.webp',
     tagline: 'Avenge the fallen.',
     narrativeSignificance: 'The Time Heist, quantum realm navigation, and sacrifice that permanently fractured timelines and opened the door to the Multiverse.',
+    eraId: 'infinity-saga',
+    reality: 'Earth-616 / Branches',
+    inUniverseTime: '2023 // Time Heist',
+    doomsdayLink: 'Tony Stark’s ultimate sacrifice leaves the face-mirror shock of Victor von Doom hovering over Earth-616.',
   },
   {
     id: 'loki-series',
@@ -78,6 +133,10 @@ export const WATCHLIST = [
     poster: '/posters/loki-season-1.webp',
     tagline: 'Glorious purpose redefined.',
     narrativeSignificance: 'The core architecture of the Multiverse: the TVA, sacred timeline unraveling, He Who Remains, and Loki holding together the branching multiverse tree (Yggdrasil).',
+    eraId: 'multiverse-fracture',
+    reality: 'TVA // Outside Time',
+    inUniverseTime: 'At Temporal Loom Edge',
+    doomsdayLink: 'Loki literally holds every living branch of the Multiverse together—Doom’s primary target for dominion.',
     isMultiSeason: true,
     seasons: [
       { id: 's1', name: 'Season 1', year: '2021', label: 'Season 1', poster: '/posters/loki-season-1.webp' },
@@ -93,6 +152,10 @@ export const WATCHLIST = [
     poster: '/posters/shang-chi.webp',
     tagline: 'You cannot outrun who you were born to be.',
     narrativeSignificance: 'Introduces ancient dimensional artifacts emitting an unidentified beacon into the cosmos, bridging mystical and multiverse realms.',
+    eraId: 'multiverse-fracture',
+    reality: 'Earth-616 / Ta Lo',
+    inUniverseTime: '2024 // Post-Blip',
+    doomsdayLink: 'The Ten Rings’ cosmic beacon ties Shang-Chi directly into Wong, Banner & Carol Danvers’s Avengers threat briefing.',
   },
   {
     id: 'spider-man-no-way-home-2021',
@@ -103,6 +166,10 @@ export const WATCHLIST = [
     poster: '/posters/no-way-home.webp',
     tagline: 'The multiverse unleashed.',
     narrativeSignificance: 'The first direct collision of disparate cinematic universes in live action, breaking dimensional boundaries across Sony and Marvel timelines.',
+    eraId: 'multiverse-fracture',
+    reality: 'Earth-616 Breach',
+    inUniverseTime: '2024 // Runes Fracture',
+    doomsdayLink: 'Proves catastrophic cross-universe tears can pull outsiders directly through shattered reality seams.',
   },
   {
     id: 'doctor-strange-multiverse-2022',
@@ -113,6 +180,10 @@ export const WATCHLIST = [
     poster: '/posters/doctor-strange-mom.webp',
     tagline: 'Enter a new dimension of Strange.',
     narrativeSignificance: 'Explores dreamwalking, America Chavez’s star portals, the Illuminati of Earth-838, and the existential threat of universe-destroying Incursions.',
+    eraId: 'multiverse-fracture',
+    reality: 'Earth-616 / Earth-838',
+    inUniverseTime: '2024 // Incursion Alert',
+    doomsdayLink: 'Introduces Incursions, Clea’s warning, and the dark cost of tampering with parallel Earths.',
   },
   {
     id: 'black-panther-wakanda-forever-2022',
@@ -123,6 +194,10 @@ export const WATCHLIST = [
     poster: '/posters/wakanda-forever.webp',
     tagline: 'Forever.',
     narrativeSignificance: 'Vibranium geopolitical tension, Talokan, and Earth’s vulnerable defensive standing on the brink of global and inter-dimensional crises.',
+    eraId: 'multiverse-fracture',
+    reality: 'Earth-616',
+    inUniverseTime: '2025 // Sovereign Shield',
+    doomsdayLink: 'Unites Shuri’s Wakanda, M’Baku & Namor’s Talokan as sovereign defenders facing multiversal invasion.',
   },
   {
     id: 'deadpool-and-wolverine-2024',
@@ -133,6 +208,10 @@ export const WATCHLIST = [
     poster: '/posters/deadpool-wolverine.webp',
     tagline: 'Come together.',
     narrativeSignificance: 'The Void, Anchor Beings, Cassandra Nova, and the definitive integration of Fox Marvel continuity directly into the Sacred Timeline.',
+    eraId: 'collision-course',
+    reality: 'Earth-10005 / The Void',
+    inUniverseTime: '2024 // Anchor Crisis',
+    doomsdayLink: 'Establishes Anchor Beings & TVA pruning mechanics while saving Earth-10005 from annihilation.',
   },
   {
     id: 'captain-america-brave-new-world-2025',
@@ -143,6 +222,10 @@ export const WATCHLIST = [
     poster: '/posters/brave-new-world.webp',
     tagline: 'A new world order.',
     narrativeSignificance: 'Sam Wilson leads as Captain America amid international conspiracy, Red Hulk, and Celestial island Adamantium discovery.',
+    eraId: 'collision-course',
+    reality: 'Earth-616',
+    inUniverseTime: '2027 // New Avengers Call',
+    doomsdayLink: 'Sam Wilson actively moves to rebuild an official Avengers strike roster ahead of Doomsday.',
   },
   {
     id: 'thunderbolts-2025',
@@ -153,6 +236,10 @@ export const WATCHLIST = [
     poster: '/posters/thunderbolts.webp',
     tagline: 'Careful who you assemble.',
     narrativeSignificance: 'The convergence of disenfranchised operatives (Yelena, Bucky, US Agent, Ghost, Taskmaster, Red Guardian, Sentry) navigating shadowy governmental power plays.',
+    eraId: 'collision-course',
+    reality: 'Earth-616',
+    inUniverseTime: '2027 // Watchtower Emerges',
+    doomsdayLink: 'Unveils the Watchtower team & Sentry’s overwhelming Void power entering the Doomsday battlefield.',
   },
   {
     id: 'fantastic-four-first-steps-2025',
@@ -163,5 +250,9 @@ export const WATCHLIST = [
     poster: '/posters/fantastic-four.webp',
     tagline: 'The first family enters the fray.',
     narrativeSignificance: 'Introduces Marvel’s First Family from a retro-futuristic alternate universe, directly establishing the dimensional bridge and history with Doctor Doom.',
+    eraId: 'collision-course',
+    reality: 'Earth-828 (Retro-Future)',
+    inUniverseTime: '1960s Alt-Earth // Bridge',
+    doomsdayLink: 'Final direct launchpad: Reed Richards, Sue, Johnny, Ben & Franklin Richards cross directly into Victor von Doom’s path.',
   },
 ];
