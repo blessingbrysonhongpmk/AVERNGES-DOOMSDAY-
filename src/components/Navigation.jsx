@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Home, Film, Users, Newspaper, Gamepad2, Disc3 } from 'lucide-react';
+import { Volume2, VolumeX, Home, Film, Users, Newspaper, Gamepad2, Upload, RotateCcw } from 'lucide-react';
 import { useClockAudio } from '../utils/audio.js';
 import { useAvengersBgm } from '../utils/bgm.js';
 
@@ -16,7 +16,27 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { enabled: soundEnabled, toggle: toggleSound } = useClockAudio();
-  const { enabled: bgmEnabled, isPlaying: bgmPlaying, customBgmName, toggle: toggleBgm } = useAvengersBgm();
+  const {
+    enabled: bgmEnabled,
+    isPlaying: bgmPlaying,
+    customBgmName,
+    toggle: toggleBgm,
+    importCustomBgm,
+    clearCustomBgm,
+  } = useAvengersBgm();
+  const [bgmUploadError, setBgmUploadError] = useState('');
+
+  const handleNavbarBgmUpload = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setBgmUploadError('');
+    const res = await importCustomBgm(file);
+    if (!res.ok) {
+      setBgmUploadError(res.error || 'Unsupported file');
+      setTimeout(() => setBgmUploadError(''), 3000);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -169,6 +189,40 @@ export default function Navigation() {
               </span>
             </div>
           </button>
+
+          {/* Load Custom Authorized MP3/WAV BGM Button */}
+          <label
+            title={
+              bgmUploadError
+                ? bgmUploadError
+                : customBgmName
+                  ? `Replace custom BGM (${customBgmName})`
+                  : 'Load your own MP3 or WAV as sitewide Avengers BGM'
+            }
+            className="h-9 sm:h-10 px-2.5 bg-[#0D1015] hover:bg-[#171C25] border border-[#272D38] hover:border-[#34D399]/70 text-[#D1D5DB] hover:text-white rounded-[3px] transition-colors cursor-pointer inline-flex items-center gap-1.5 text-[9.5px] font-mono font-bold uppercase tracking-wider shrink-0"
+          >
+            <Upload className="w-3.5 h-3.5 text-[#34D399]" />
+            <span className="hidden xl:inline">{bgmUploadError ? 'ERROR' : 'LOAD BGM'}</span>
+            <input
+              type="file"
+              accept="audio/*"
+              aria-label="Upload custom Avengers BGM audio file"
+              onChange={handleNavbarBgmUpload}
+              className="sr-only"
+            />
+          </label>
+
+          {customBgmName && (
+            <button
+              type="button"
+              onClick={() => clearCustomBgm()}
+              aria-label="Restore built-in Avengers BGM"
+              title={`Restore built-in score (currently playing ${customBgmName})`}
+              className="h-9 sm:h-10 w-9 sm:w-10 bg-[#0D1015] hover:bg-[#1B1214] border border-[#272D38] hover:border-[#DC2626]/70 text-[#9CA3AF] hover:text-[#F87171] rounded-[3px] transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          )}
 
           {/* Compact Clock Escapement SFX Button */}
           <button

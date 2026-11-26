@@ -244,11 +244,22 @@ class AvengersBgmEngine {
       } catch { }
     }
 
-    // Fallback HTMLAudioElement loop
-    if (typeof Audio !== 'undefined' && !this.customBgmName) {
+    // Fallback HTMLAudioElement loop (supports default WAV & custom uploaded audio blobs)
+    if (typeof Audio !== 'undefined') {
       try {
-        if (!this.htmlAudio) {
-          this.htmlAudio = new Audio(BGM_DEFAULT_PATH);
+        let srcUrl = BGM_DEFAULT_PATH;
+        if (this.customBgmName && this.rawArrayBuffer) {
+          if (this.customBlobUrl) {
+            try { URL.revokeObjectURL(this.customBlobUrl); } catch { }
+          }
+          this.customBlobUrl = URL.createObjectURL(new Blob([this.rawArrayBuffer]));
+          srcUrl = this.customBlobUrl;
+        }
+        if (!this.htmlAudio || this.htmlAudio.src !== srcUrl) {
+          if (this.htmlAudio) {
+            try { this.htmlAudio.pause(); } catch { }
+          }
+          this.htmlAudio = new Audio(srcUrl);
           this.htmlAudio.loop = true;
         }
         this.htmlAudio.volume = this._targetGain();
@@ -312,12 +323,16 @@ class AvengersBgmEngine {
 
   async importCustomBgm(file) {
     if (!file) return { ok: false, error: 'No file selected' };
+    const ctx = this._ensureContext();
     try {
       const arrBuf = await file.arrayBuffer();
-      const ctx = this._ensureContext();
       let decoded = null;
       if (ctx && typeof ctx.decodeAudioData === 'function') {
-        decoded = await ctx.decodeAudioData(arrBuf.slice(0));
+        try {
+          decoded = await ctx.decodeAudioData(arrBuf.slice(0));
+        } catch {
+          // Will fall back to HTMLAudioElement playback via Blob URL if browser container isn't WebAudio-decodable
+        }
       }
       const db = await openBgmDB();
       if (db) {
