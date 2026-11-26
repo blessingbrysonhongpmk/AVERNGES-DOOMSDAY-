@@ -164,7 +164,7 @@ export default function HulkSmashGame({ onClose }) {
   const [shockwaves, setShockwaves] = useState([]);
 
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSoundboard, setShowSoundboard] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
@@ -875,12 +875,12 @@ export default function HulkSmashGame({ onClose }) {
           <img
             src={activeAvatar.poster}
             alt={activeAvatar.name}
-            className="w-6 h-6 rounded-[2px] object-cover object-top border border-[#2D3442] shrink-0"
+            className="w-8 h-9 rounded-[2px] object-cover object-[50%_18%] brightness-105 contrast-105 border border-[#34D399]/75 shrink-0 shadow-sm"
           />
           <span className="text-xs sm:text-sm font-cinematic font-black text-metallic uppercase tracking-[0.14em] truncate">
             HULK SMASH MAYHEM
           </span>
-          <span className="hidden lg:inline-block text-[9.5px] font-mono tracking-[0.18em] text-[#7A818D] uppercase border-l border-[#232833] pl-2.5 truncate max-w-[160px]">
+          <span className="hidden lg:inline-block text-[10px] font-mono tracking-[0.16em] text-[#34D399] font-semibold uppercase border-l border-[#232833] pl-2.5 truncate max-w-[180px]">
             {activeAvatar.name}
           </span>
         </div>
@@ -889,18 +889,23 @@ export default function HulkSmashGame({ onClose }) {
           <button
             type="button"
             onClick={() => openModalSafely(setShowAvatarPicker)}
-            className="px-2.5 py-1.5 border border-[#272D38] hover:border-[#34D399]/70 bg-[#0D1015] text-[#E5E7EB] hover:text-white rounded-[2px] transition-colors cursor-pointer inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider font-semibold"
+            className="px-2.5 py-1.5 border border-[#34D399]/50 hover:border-[#34D399] bg-[#0D1411] text-white rounded-[2px] transition-colors cursor-pointer inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider font-semibold"
             title="Choose any of 51 Marvel Character Avatars"
           >
-            <Users className="w-3.5 h-3.5 text-[#34D399]" />
+            <img
+              src={activeAvatar.poster}
+              alt=""
+              className="w-4 h-5 rounded-[1px] object-cover object-[50%_18%] brightness-110 shrink-0"
+            />
             <span className="hidden sm:inline">AVATAR ({ALL_AVATARS.length})</span>
+            <span className="sm:hidden">HERO</span>
           </button>
 
           <button
             type="button"
             onClick={() => openModalSafely(setShowSoundboard)}
             className="px-2.5 py-1.5 border border-[#272D38] hover:border-[#4B5565] bg-[#0D1015] text-[#D1D5DB] hover:text-white rounded-[2px] transition-colors cursor-pointer inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider font-semibold"
-            title="Hulk & Marvel Audio Vault + Custom Importer"
+            title="Hulk & Marvel Tamil AI Voice Vault + Custom Importer"
           >
             <Music className="w-3.5 h-3.5 text-[#9CA3AF]" />
             <span className="hidden md:inline">AUDIO &amp; HEROES</span>
@@ -919,15 +924,15 @@ export default function HulkSmashGame({ onClose }) {
           <button
             type="button"
             onClick={() => setVoiceEnabled((prev) => !prev)}
-            aria-label={voiceEnabled ? 'Disable voice lines' : 'Enable voice lines'}
-            className={`hidden sm:inline-flex items-center gap-1 px-2 py-1.5 border rounded-[2px] text-[10px] font-mono uppercase transition-colors cursor-pointer ${voiceEnabled
-              ? 'border-[#34D399]/60 bg-[#0F1B16] text-[#34D399]'
+            aria-label={voiceEnabled ? 'Disable Tamil AI Hero Voices' : 'Enable Tamil AI Hero Voices'}
+            className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 border rounded-[2px] text-[10px] font-mono font-semibold uppercase transition-colors cursor-pointer ${voiceEnabled
+              ? 'border-[#34D399]/70 bg-[#0F1B16] text-[#34D399]'
               : 'border-[#272D38] bg-[#0D1015] text-[#7A818D] hover:text-white'
               }`}
-            title="Toggle English SpeechSynthesis Announcer"
+            title="Toggle Neural AI Tamil Hero & Mass Voices"
           >
             {voiceEnabled ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5" />}
-            <span>VOICE</span>
+            <span className="hidden sm:inline">{voiceEnabled ? 'TAMIL VOICE ON' : 'VOICE OFF'}</span>
           </button>
 
           <button
@@ -1132,7 +1137,7 @@ export default function HulkSmashGame({ onClose }) {
               </div>
             </div>
 
-            {/* Center: Clickable Avatar & Live Reaction Console */}
+            {/* Center: Clickable Clear Avatar & Live Reaction Console */}
             <button
               type="button"
               onClick={() => openModalSafely(setShowAvatarPicker)}
@@ -1143,29 +1148,34 @@ export default function HulkSmashGame({ onClose }) {
                 <img
                   src={activeAvatar.poster}
                   alt={activeAvatar.name}
-                  className="w-9 h-9 rounded-[2px] object-cover object-top border border-[#2E3644]"
+                  className="w-12 h-14 rounded-[2px] object-cover object-[50%_18%] brightness-110 contrast-105 border-2 border-[#34D399]/80 shadow-md"
                 />
                 {activeAvatar.id !== 'hulk' && (
                   <img
                     src={HULK_PROFILE.poster}
                     alt="Hulk Co-Op"
-                    className="w-7 h-7 self-end rounded-[2px] object-cover object-top border border-[#244331]"
+                    className="w-8 h-9 self-end rounded-[2px] object-cover object-[50%_18%] brightness-105 border border-[#34D399]/60"
                   />
                 )}
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[8.5px] font-mono font-semibold tracking-[0.18em] uppercase text-[#34D399] truncate">
+                  <span className="text-[9px] font-mono font-bold tracking-[0.16em] uppercase text-[#34D399] truncate">
                     {activeAvatar.name} • {currentRageTier.title}
                   </span>
-                  <span className="text-[8px] font-mono text-[#7C828D] uppercase shrink-0">
-                    LVL {currentLevel}
+                  <span className="text-[8px] font-mono px-1.5 py-0.5 bg-[#121720] border border-[#2B3340] text-[#D1D5DB] uppercase shrink-0 rounded-[1px]">
+                    LVL {currentLevel} • SWAP ▾
                   </span>
                 </div>
-                <p className="text-xs font-cinematic font-bold text-[#E5E7EB] truncate mt-0.5">
+                <p className="text-xs font-cinematic font-bold text-[#F3F4F6] truncate mt-0.5">
                   &ldquo;{dialogue}&rdquo;
                 </p>
+                {activeAvatar.voiceLineTamil && (
+                  <span className="text-[9px] font-sans text-[#9CA3AF] truncate block mt-0.5">
+                    {activeAvatar.voiceLineTamil}
+                  </span>
+                )}
               </div>
             </button>
 
@@ -1207,17 +1217,22 @@ export default function HulkSmashGame({ onClose }) {
               onClick={() => openModalSafely(setShowAvatarPicker)}
               className="md:hidden py-1.5 px-2.5 bg-[#0A0C10] border border-[#1D222B] rounded-[2px] flex items-center justify-between gap-2 text-left cursor-pointer"
             >
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <img
                   src={activeAvatar.poster}
                   alt={activeAvatar.name}
-                  className="w-5 h-5 rounded-[1px] object-cover object-top border border-[#2D3542] shrink-0"
+                  className="w-8 h-9 rounded-[2px] object-cover object-[50%_18%] brightness-110 border border-[#34D399]/70 shrink-0"
                 />
-                <span className="text-[11px] font-cinematic font-bold text-[#E5E7EB] uppercase truncate">
-                  &ldquo;{dialogue}&rdquo;
-                </span>
+                <div className="min-w-0">
+                  <span className="text-[8.5px] font-mono font-semibold text-[#34D399] uppercase block truncate">
+                    {activeAvatar.name}
+                  </span>
+                  <span className="text-[11px] font-cinematic font-bold text-[#E5E7EB] uppercase block truncate">
+                    &ldquo;{dialogue}&rdquo;
+                  </span>
+                </div>
               </div>
-              <span className="text-[8px] font-mono text-[#7C828D] uppercase shrink-0">SWAP ▾</span>
+              <span className="text-[8.5px] font-mono font-semibold text-[#D1D5DB] uppercase shrink-0">SWAP ▾</span>
             </button>
 
             <div className="flex items-center gap-2.5 px-0.5">
@@ -1264,77 +1279,80 @@ export default function HulkSmashGame({ onClose }) {
                   onClick={(e) => handleSmashSlot(index, e)}
                   style={{ touchAction: 'manipulation' }}
                   aria-label={`${item.name} (${item.badge})`}
-                  className={`group relative rounded-[2px] border flex flex-col justify-between cursor-pointer transition-all duration-150 active:scale-95 overflow-hidden select-none text-left ${item.isSmashed
+                  className={`group relative rounded-[2px] border flex items-stretch cursor-pointer transition-all duration-150 active:scale-95 overflow-hidden select-none text-left ${item.isSmashed
                     ? 'scale-95 opacity-15 border-white/40'
                     : isDecoy
-                      ? 'border-[#5C2428] hover:border-[#DC2626] bg-[#10090A]'
+                      ? 'border-[#7F2930] hover:border-[#EF4444] bg-[#12090B]'
                       : item.isBonus
-                        ? 'border-[#34D399] bg-[#08110D]'
-                        : 'border-[#254434] hover:border-[#34D399] bg-[#090D0B]'
+                        ? 'border-[#34D399] bg-[#08130E]'
+                        : 'border-[#254D38] hover:border-[#34D399] bg-[#090E0C]'
                     }`}
                 >
-                  {/* Full-Bleed Still Portrait */}
+                  {/* Subtle Blurred Atmospheric Backdrop Under Telemetry Column */}
                   <img
                     src={item.poster}
-                    alt={item.name}
-                    className={`absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 ${isDecoy ? 'brightness-[0.72] saturate-[0.75]' : 'brightness-[0.88] contrast-110'
-                      }`}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover object-[50%_20%] opacity-[0.16] blur-[2px] scale-110 pointer-events-none"
                   />
 
-                  {/* Deep Cinema Contrast Scrim */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: isDecoy
-                        ? 'linear-gradient(to bottom, rgba(24,8,10,0.78) 0%, rgba(10,12,16,0.18) 45%, rgba(6,7,9,0.95) 100%)'
-                        : 'linear-gradient(to bottom, rgba(8,14,11,0.72) 0%, rgba(10,12,16,0.12) 45%, rgba(6,7,9,0.95) 100%)',
-                    }}
-                  />
+                  {/* Left Telemetry Column: Tag, Score Delta & Nameplate */}
+                  <div className="relative z-10 flex-1 min-w-0 p-1.5 sm:p-2.5 flex flex-col justify-between gap-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <span
+                        className={`inline-flex items-center gap-1 text-[7px] sm:text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] uppercase tracking-[0.12em] truncate border ${isDecoy
+                          ? 'bg-[#7F1D1D]/90 border-[#DC2626]/70 text-white'
+                          : item.isBonus
+                            ? 'bg-[#34D399] border-[#34D399] text-[#050608]'
+                            : 'bg-[#0C1D15]/95 border-[#34D399]/60 text-[#34D399]'
+                          }`}
+                      >
+                        {isDecoy ? <ShieldAlert className="w-2.5 h-2.5 shrink-0" /> : <Crosshair className="w-2.5 h-2.5 shrink-0" />}
+                        <span className="truncate">{item.badge}</span>
+                      </span>
 
-                  {/* Crisp L-Shaped Targeting Reticles on Hostiles */}
-                  {!isDecoy && (
-                    <>
-                      <span className="absolute top-1.5 left-1.5 w-2 h-2 border-t border-l border-[#34D399]/70 pointer-events-none z-10" />
-                      <span className="absolute top-1.5 right-1.5 w-2 h-2 border-t border-r border-[#34D399]/70 pointer-events-none z-10" />
-                    </>
-                  )}
+                      <span
+                        className={`text-[9px] sm:text-xs font-hud font-bold px-1.5 py-0.5 rounded-[1px] bg-black/85 border border-[#232832] shrink-0 tabular-nums ${isDecoy ? 'text-[#F87171]' : 'text-[#F3F4F6]'
+                          }`}
+                      >
+                        {isDecoy ? `${item.penalty}` : `+${displayPoints}`}
+                      </span>
+                    </div>
 
-                  {/* Top Classification Tag & Score Delta */}
-                  <div className="relative z-10 w-full p-1.5 sm:p-2 flex items-center justify-between gap-1">
-                    <span
-                      className={`inline-flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] uppercase tracking-[0.14em] truncate border ${isDecoy
-                        ? 'bg-[#7F1D1D]/90 border-[#DC2626]/60 text-white'
-                        : item.isBonus
-                          ? 'bg-[#34D399] border-[#34D399] text-[#050608]'
-                          : 'bg-[#0C1D15]/90 border-[#34D399]/50 text-[#34D399]'
-                        }`}
-                    >
-                      {isDecoy ? <ShieldAlert className="w-2.5 h-2.5 shrink-0" /> : <Crosshair className="w-2.5 h-2.5 shrink-0" />}
-                      <span className="truncate">{item.badge}</span>
-                    </span>
-
-                    <span
-                      className={`text-[8.5px] sm:text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] bg-black/80 border border-[#232832] shrink-0 ${isDecoy ? 'text-[#F87171]' : 'text-[#E5E7EB]'
-                        }`}
-                    >
-                      {isDecoy ? `${item.penalty}` : `+${displayPoints}`}
-                    </span>
+                    <div className="mt-auto">
+                      <span className="block text-[10px] sm:text-xs font-cinematic font-bold text-white uppercase leading-tight line-clamp-2">
+                        {item.name}
+                      </span>
+                      <span className="hidden xs:block text-[8px] font-mono text-[#A1A7B3] uppercase tracking-wider truncate mt-0.5">
+                        {item.subtitle}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Bottom Nameplate */}
-                  <div className="relative z-10 w-full px-2 pb-2 pt-2 text-left">
-                    <span className="block text-[10px] sm:text-xs font-cinematic font-bold text-white uppercase tracking-wide truncate">
-                      {item.name}
-                    </span>
-                    <span className="hidden xs:block text-[8px] font-mono text-[#8E94A0] uppercase tracking-wider truncate">
-                      {item.subtitle}
-                    </span>
+                  {/* Right Crystal-Clear Unobscured Character Portrait Window */}
+                  <div
+                    className={`relative z-10 w-[44%] sm:w-[46%] max-w-[144px] h-full shrink-0 border-l overflow-hidden bg-[#060709] ${isDecoy ? 'border-[#7F2930]/80' : 'border-[#254D38]/80'
+                      }`}
+                  >
+                    <img
+                      src={item.poster}
+                      alt={item.name}
+                      className="w-full h-full object-cover object-[50%_18%] brightness-110 contrast-[1.06] transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* Thin edge vignette only, keeping face 100% visible */}
+                    <div className="absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black/65 to-transparent pointer-events-none" />
+                    {!isDecoy && (
+                      <>
+                        <span className="absolute top-1.5 left-1.5 w-2 h-2 border-t border-l border-[#34D399]/80 pointer-events-none" />
+                        <span className="absolute top-1.5 right-1.5 w-2 h-2 border-t border-r border-[#34D399]/80 pointer-events-none" />
+                      </>
+                    )}
                   </div>
 
                   {/* Razor-Thin Lifespan Progress Line */}
                   {!item.isSmashed && (
                     <div
-                      className={`target-fuse-bar absolute bottom-0 left-0 right-0 h-[2px] z-20 ${isDecoy ? 'bg-[#DC2626]' : 'bg-[#34D399]'
+                      className={`target-fuse-bar absolute bottom-0 left-0 right-0 h-[2.5px] z-20 ${isDecoy ? 'bg-[#EF4444]' : 'bg-[#34D399]'
                         }`}
                       style={{
                         animationDuration: `${item.lifespan || 2000}ms`,
@@ -1365,7 +1383,7 @@ export default function HulkSmashGame({ onClose }) {
                   <img
                     src={assist.poster}
                     alt={assist.heroName}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-[2px] object-cover object-top border shrink-0 ${isReady ? 'border-[#34D399]/60' : 'border-[#262B35] grayscale-[50%]'
+                    className={`w-10 h-12 sm:w-12 sm:h-14 rounded-[2px] object-cover object-[50%_18%] border shrink-0 ${isReady ? 'border-[#34D399]/75 brightness-110' : 'border-[#262B35] brightness-95'
                       }`}
                   />
                   <div className="min-w-0 flex-1">
@@ -1524,12 +1542,12 @@ export default function HulkSmashGame({ onClose }) {
                       src={char.poster}
                       alt={char.name}
                       loading="lazy"
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover object-[50%_18%] brightness-110 contrast-[1.04] group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/75 to-transparent pointer-events-none" />
 
                     {isSelected && (
-                      <span className="absolute top-1.5 right-1.5 w-5 h-5 rounded-[2px] bg-[#34D399] text-[#050608] flex items-center justify-center">
+                      <span className="absolute top-1.5 right-1.5 w-5 h-5 rounded-[2px] bg-[#34D399] text-[#050608] flex items-center justify-center shadow">
                         <Check className="w-3.5 h-3.5 stroke-[3]" />
                       </span>
                     )}
@@ -1538,8 +1556,8 @@ export default function HulkSmashGame({ onClose }) {
                       <span className="block text-[10px] font-cinematic font-bold text-white uppercase leading-tight truncate">
                         {char.name}
                       </span>
-                      <span className="block text-[7.5px] font-mono text-[#9CA3AF] truncate">
-                        &ldquo;{char.voiceLine}&rdquo;
+                      <span className="block text-[8px] font-sans text-[#D1D5DB] truncate">
+                        {char.voiceLineTamil || char.voiceLine}
                       </span>
                     </div>
                   </button>
@@ -1769,19 +1787,19 @@ export default function HulkSmashGame({ onClose }) {
                         : 'bg-[#0C0F14] border-[#1D222B] hover:border-[#3A4352]'
                         }`}
                     >
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <img
                           src={char.poster}
                           alt={char.name}
                           loading="lazy"
-                          className="w-8 h-8 rounded-[1px] object-cover object-top shrink-0 border border-[#262C37]"
+                          className="w-9 h-11 rounded-[2px] object-cover object-[50%_18%] brightness-110 shrink-0 border border-[#2D3542]"
                         />
                         <div className="min-w-0">
                           <span className="text-[10px] font-cinematic font-bold text-white block truncate">
                             {char.name}
                           </span>
-                          <span className="text-[8.5px] font-mono text-[#8E94A0] block truncate">
-                            &ldquo;{char.voiceLine}&rdquo;
+                          <span className="text-[8.5px] font-sans text-[#9CA3AF] block truncate">
+                            {char.voiceLineTamil || char.voiceLine}
                           </span>
                         </div>
                       </div>

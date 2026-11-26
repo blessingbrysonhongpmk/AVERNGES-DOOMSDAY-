@@ -94,6 +94,8 @@ async function run() {
   const gameSource = fs.readFileSync('src/components/HulkSmashGame.jsx', 'utf8');
   assert(gameSource.includes('font-trailer') && gameSource.includes('font-hud'), 'Game countdown and HUD use blockbuster trailer/HUD fonts');
   assert(gameSource.includes('excludeAvatarId') && gameSource.includes('overchargeMs') && gameSource.includes('freezeMs'), 'Game fixes pause-safe buffs and avatar decoy deduplication');
+  assert(gameSource.includes('TAMIL VOICE ON') && gameSource.includes('object-[50%_18%]'), 'Game includes clear framed portraits and Tamil AI Voice toggle');
+  assert(ALL_AVATARS.every((char) => char.voiceLineTamil && char.voiceLineTamil.length > 0), 'All 51 Marvel characters have Tamil voice line subtitles');
 
   const { WATCHLIST: WL, WATCHLIST_ERAS } = await import('./src/data/watchlist.js');
   assert(WATCHLIST_ERAS.length === 4, `Watchlist chronological eras defined: ${WATCHLIST_ERAS.length}`);
@@ -109,20 +111,14 @@ async function run() {
   assert(home.body.includes('AVENGERS: DOOMSDAY'), 'HTML includes brand title');
   assert(home.body.includes('Bebas+Neue') && home.body.includes('Barlow+Condensed'), 'HTML loads Bebas Neue & Barlow Condensed fonts');
   assert(home.body.includes('root'), 'HTML includes root container');
+  for (const [key, sfxPath] of Object.entries(STUDIO_SFX_PATHS)) {
+    const res = await fetchHttp(`http://localhost:3000${sfxPath}`);
+    assert(res.status === 200, `HTTP 200 returned on studio cue ${key}: ${sfxPath}`);
+  }
   const roarRes = await fetchHttp('http://localhost:3000/sounds/hulk-roar.wav');
   assert(roarRes.status === 200, 'HTTP 200 returned on /sounds/hulk-roar.wav');
   const repulsorRes = await fetchHttp('http://localhost:3000/sounds/ironman-repulsor.wav');
   assert(repulsorRes.status === 200, 'HTTP 200 returned on /sounds/ironman-repulsor.wav');
-  const countdownPulseRes = await fetchHttp('http://localhost:3000/sounds/countdown-pulse.wav');
-  assert(countdownPulseRes.status === 200, 'HTTP 200 returned on /sounds/countdown-pulse.wav');
-  const countdownSmashRes = await fetchHttp('http://localhost:3000/sounds/countdown-smash.wav');
-  assert(countdownSmashRes.status === 200, 'HTTP 200 returned on /sounds/countdown-smash.wav');
-  const timerTensionRes = await fetchHttp('http://localhost:3000/sounds/timer-tension.wav');
-  assert(timerTensionRes.status === 200, 'HTTP 200 returned on /sounds/timer-tension.wav');
-  const allyAlertRes = await fetchHttp('http://localhost:3000/sounds/ally-shield-alert.wav');
-  assert(allyAlertRes.status === 200, 'HTTP 200 returned on /sounds/ally-shield-alert.wav');
-  const victoryFanfareRes = await fetchHttp('http://localhost:3000/sounds/victory-fanfare.wav');
-  assert(victoryFanfareRes.status === 200, 'HTTP 200 returned on /sounds/victory-fanfare.wav');
   const ironVoiceRes = await fetchHttp('http://localhost:3000/sounds/chars/iron-man.wav');
   assert(ironVoiceRes.status === 200, 'HTTP 200 returned on /sounds/chars/iron-man.wav');
   const thanosVoiceRes = await fetchHttp('http://localhost:3000/sounds/chars/thanos.wav');

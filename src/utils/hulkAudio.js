@@ -95,7 +95,17 @@ export const STUDIO_SFX_PATHS = {
   timerTension: '/sounds/timer-tension.wav',
   allyAlert: '/sounds/ally-shield-alert.wav',
   victoryFanfare: '/sounds/victory-fanfare.wav',
+  shotBlast1: '/sounds/shot-blast-1.wav',
+  shotBlast2: '/sounds/shot-blast-2.wav',
+  shotBlast3: '/sounds/shot-blast-3.wav',
+  tamilGameStart: '/sounds/tamil-game-start.wav',
+  tamilComboMass: '/sounds/tamil-combo-mass.wav',
+  tamilComboUltimate: '/sounds/tamil-combo-ultimate.wav',
+  tamilAllyAlert: '/sounds/tamil-ally-alert.wav',
+  tamilVictoryCheer: '/sounds/tamil-victory-cheer.wav',
 };
+
+const SHOT_BLAST_KEYS = ['shotBlast1', 'shotBlast2', 'shotBlast3'];
 
 const PRIORITY_CHAR_IDS = [
   'hulk',
@@ -143,7 +153,7 @@ class HulkAudioEngine {
     this.masterGain = null;
     this.compressor = null;
     this.enabled = true;
-    this.voiceEnabled = false;
+    this.voiceEnabled = true;
     this.buffers = new Map();
     this.rawBuffers = new Map();
     this.charBuffers = new Map();
@@ -154,6 +164,8 @@ class HulkAudioEngine {
     this.activeHtmlAudio = null;
     this.lastVoiceAt = 0;
     this.lastCharVoiceAt = 0;
+    this.lastCalloutAt = 0;
+    this.shotIndex = 0;
   }
 
   /**
@@ -403,8 +415,8 @@ class HulkAudioEngine {
    * Plays a unique character voice+SFX WAV (/sounds/chars/<characterId>.wav).
    * Throttled by cooldownMs during rapid gameplay unless force=true (preview/team-up/avatar pick).
    */
-  async playCharacterVoice(characterId, { gain = 0.88, cooldownMs = 1500, force = false } = {}) {
-    if (!this.enabled || !characterId || typeof window === 'undefined') return false;
+  async playCharacterVoice(characterId, { gain = 0.92, cooldownMs = 1300, force = false } = {}) {
+    if (!this.enabled || (!this.voiceEnabled && !force) || !characterId || typeof window === 'undefined') return false;
 
     const nowMs = Date.now();
     if (!force && nowMs - this.lastCharVoiceAt < cooldownMs) {
@@ -507,6 +519,8 @@ class HulkAudioEngine {
 
   speakHulkLine(text) {
     if (!this.enabled || !this.voiceEnabled || typeof window === 'undefined') return;
+    // Prefer pre-rendered Neural AI Tamil hero/callout WAVs over robotic browser speechSynthesis
+    if (this.buffers.has('tamilGameStart') || this.charBuffers.size > 0) return;
     if (!('speechSynthesis' in window)) return;
     const now = Date.now();
     if (now - this.lastVoiceAt < 1400) return;
@@ -531,27 +545,40 @@ class HulkAudioEngine {
   playSmash(combo = 1, target = null) {
     if (!this.enabled) return;
     const rate = Math.min(1.22, 0.94 + combo * 0.025);
-    const played = this.playSound('hulkSmash', { gain: 0.9, playbackRate: rate });
+    const shotKey = SHOT_BLAST_KEYS[this.shotIndex % SHOT_BLAST_KEYS.length];
+    this.shotIndex += 1;
 
-    if (!played) {
+    const playedShot = this.playSound(shotKey, { gain: 0.78, playbackRate: Math.min(1.16, 0.95 + combo * 0.02) });
+    const played = this.playSound('hulkSmash', { gain: 0.72, playbackRate: rate });
+
+    if (!played && !playedShot) {
       this._synthSmash(combo);
     }
 
-    // Play the target character's unique voice+SFX (e.g., Thanos terror voice, Doom metallic line)
-    if (target?.characterId) {
-      setTimeout(() => {
-        this.playCharacterVoice(target.characterId, {
-          gain: 0.72,
-          cooldownMs: target.isBonus || target.characterId === 'thanos' ? 1200 : 2100,
-        });
-      }, 55);
-    } else if (target?.soundKey && target.soundKey !== 'hulkSmash') {
-      setTimeout(() => {
-        this.playSound(target.soundKey, { gain: 0.45, playbackRate: 1.05 });
-      }, 45);
+    if (target?.soundKey && target.soundKey !== 'hulkSmash') {
+      this.playSound(target.soundKey, { gain: 0.44, playbackRate: 1.06 });
     }
 
-    if (combo === 4 || combo === 9) {
+    // Play the target character's Neural AI Tamil voice + signature shot/power SFX
+    if (target?.characterId && this.voiceEnabled) {
+      setTimeout(() => {
+        this.playCharacterVoice(target.characterId, {
+          gain: 0.88,
+          cooldownMs: target.isBonus || target.characterId === 'thanos' ? 950 : 1550,
+        });
+      }, 65);
+    }
+
+    if (this.voiceEnabled && (combo === 3 || combo === 5 || combo === 7 || combo === 9)) {
+      const now = Date.now();
+      if (now - this.lastCalloutAt > 2100) {
+        this.lastCalloutAt = now;
+        const calloutKey = combo >= 6 ? 'tamilComboUltimate' : 'tamilComboMass';
+        setTimeout(() => {
+          this.playSound(calloutKey, { gain: 0.88 });
+        }, 120);
+      }
+    } else if (combo === 4 || combo === 8) {
       setTimeout(() => {
         this.playSound('hulkRoar', { gain: 0.65 });
       }, 95);
@@ -606,14 +633,17 @@ class HulkAudioEngine {
   playHeroAlert(decoy = null) {
     if (!this.enabled) return;
     this.playDecoyHit();
+    if (!this.voiceEnabled) return;
     if (decoy?.characterId) {
       setTimeout(() => {
-        this.playCharacterVoice(decoy.characterId, { gain: 0.8, cooldownMs: 900, force: true });
-      }, 95);
-    } else if (decoy?.soundKey) {
+        this.playCharacterVoice(decoy.characterId, { gain: 0.9, cooldownMs: 850, force: true });
+      }, 90);
+    } else {
       setTimeout(() => {
-        this.playSound(decoy.soundKey, { gain: 0.65 });
-      }, 65);
+        if (!this.playSound('tamilAllyAlert', { gain: 0.82 }) && decoy?.soundKey) {
+          this.playSound(decoy.soundKey, { gain: 0.65 });
+        }
+      }, 85);
     }
   }
 
@@ -678,8 +708,17 @@ class HulkAudioEngine {
   playGameStart(avatarId = 'hulk') {
     if (!this.enabled) return;
     if (avatarId && avatarId !== 'hulk') {
-      this.playCharacterVoice(avatarId, { gain: 0.9, force: true });
-    } else if (!this.playSound('hulkRoar', { gain: 0.85 })) {
+      if (this.voiceEnabled) {
+        this.playCharacterVoice(avatarId, { gain: 0.95, force: true });
+      } else {
+        this.playSound('shotBlast1', { gain: 0.82 });
+      }
+      return;
+    }
+    if (this.voiceEnabled && this.playSound('tamilGameStart', { gain: 0.92 })) {
+      return;
+    }
+    if (!this.playSound('hulkRoar', { gain: 0.85 })) {
       this._synthSmash(8);
     }
   }
@@ -762,7 +801,13 @@ class HulkAudioEngine {
 
   playGameOver() {
     if (!this.enabled) return;
-    if (this.playSound('victoryFanfare', { gain: 0.86 })) return;
+    const fanfarePlayed = this.playSound('victoryFanfare', { gain: 0.86 });
+    if (this.voiceEnabled) {
+      setTimeout(() => {
+        this.playSound('tamilVictoryCheer', { gain: 0.9 });
+      }, 260);
+    }
+    if (fanfarePlayed) return;
     this.playSound('capShield', { gain: 0.55 });
     const ctx = this.init();
     if (!ctx) return;
