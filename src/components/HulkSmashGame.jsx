@@ -963,8 +963,8 @@ export default function HulkSmashGame({ onClose }) {
             onClick={toggleGameBgm}
             aria-label={gameBgmEnabled ? 'Turn Hulk Arena BGM Off' : 'Turn Hulk Arena BGM On'}
             className={`hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 border rounded-[3px] text-[9.5px] font-mono font-bold uppercase transition-colors cursor-pointer ${gameBgmEnabled
-                ? 'border-[#264633] bg-[#0B120E] text-white'
-                : 'border-[#272D38] bg-[#0B0D11] text-[#7A818D] hover:text-white'
+              ? 'border-[#264633] bg-[#0B120E] text-white'
+              : 'border-[#272D38] bg-[#0B0D11] text-[#7A818D] hover:text-white'
               }`}
             title="Toggle Hulk Arena Game BGM"
           >
@@ -974,10 +974,10 @@ export default function HulkSmashGame({ onClose }) {
                   key={d}
                   style={{ animationDelay: `${d}ms`, height: idx === 1 ? '10px' : '7px' }}
                   className={`w-[2px] rounded-[1px] ${gameBgmEnabled && gameBgmPlaying
-                      ? 'bgm-eq-bar bg-[#22C55E]'
-                      : gameBgmEnabled
-                        ? 'bg-[#D1D5DB]'
-                        : 'bg-[#3B4250]'
+                    ? 'bgm-eq-bar bg-[#22C55E]'
+                    : gameBgmEnabled
+                      ? 'bg-[#D1D5DB]'
+                      : 'bg-[#3B4250]'
                     }`}
                 />
               ))}

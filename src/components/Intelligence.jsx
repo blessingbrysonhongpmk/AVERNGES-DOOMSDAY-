@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useCountdown } from '../hooks/useCountdown';
 import { CONFIG } from '../data/config.js';
 import { clockAudio } from '../utils/audio.js';
-import CinematicAtmosphere from './CinematicAtmosphere';
 import { FANVERSE_VIDEOS } from '../data/tamilFanverseData.js';
 import TamilFanverseHero from './fanverse/TamilFanverseHero';
 import DoomsdayAlertDeck from './fanverse/DoomsdayAlertDeck';
@@ -13,21 +12,19 @@ import FanTheoryLab from './fanverse/FanTheoryLab';
 import FanZoneHub from './fanverse/FanZoneHub';
 import TrailerCinemaModal from './fanverse/TrailerCinemaModal';
 
-const MODULE_LINKS = [
-  { id: 'fanverse-alert', code: '01', label: 'DOOMSDAY ALERT' },
-  { id: 'fanverse-dubs', code: '02', label: 'TAMIL DUB NOSTALGIA' },
-  { id: 'fanverse-characters', code: '03', label: 'CHARACTER FILES' },
-  { id: 'fanverse-timeline', code: '04', label: 'MULTIVERSE TIMELINE' },
-  { id: 'fanverse-theories', code: '05', label: 'FAN THEORY LAB' },
-  { id: 'fanverse-fanzone', code: '06', label: 'FAN ZONE' },
+const ARCHIVE_TABS = [
+  { id: 'timeline', label: 'MULTIVERSE CONNECTIONS' },
+  { id: 'theories', label: 'FAN THEORY LAB' },
+  { id: 'fanzone', label: 'TAMIL FAN ZONE' },
 ];
 
 export default function Intelligence() {
   const { formatted } = useCountdown(CONFIG.release.targetIsoString);
   const [theaterVideo, setTheaterVideo] = useState(null);
+  const [hubTab, setHubTab] = useState('timeline');
 
   const handleMarkCalendar = () => {
-    try { clockAudio.tick(0); } catch { }
+    try { clockAudio.tick(0); } catch {}
     const title = encodeURIComponent("Marvel Studios' Avengers: Doomsday Theatrical Premiere");
     const details = encodeURIComponent('Everything leads to Doomsday. The Multiverse war culminates in theaters worldwide.');
     const location = encodeURIComponent('Cinemas Worldwide');
@@ -36,8 +33,11 @@ export default function Intelligence() {
   };
 
   const jumpToModule = (elementId) => {
-    try { clockAudio.tick(0); } catch { }
-    const target = document.getElementById(elementId);
+    try { clockAudio.tick(0); } catch {}
+    if (elementId === 'fanverse-hub' || elementId === 'fanverse-fanzone') {
+      setHubTab('fanzone');
+    }
+    const target = document.getElementById(elementId === 'fanverse-fanzone' ? 'fanverse-hub' : elementId);
     if (target) {
       const y = target.getBoundingClientRect().top + window.pageYOffset - 78;
       window.scrollTo({ top: y, behavior: 'smooth' });
@@ -48,17 +48,10 @@ export default function Intelligence() {
     <section
       id="intelligence"
       aria-label="Tamil Fanverse — Multiverse Oru Tamil Vibe"
-      className="relative z-10 py-12 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-[#1E2024] bg-[#06070A] overflow-hidden"
+      className="relative z-10 py-10 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-white/[0.08] bg-[#090A0D]"
     >
-      {/* Subtle Background Cinema Atmosphere */}
-      <CinematicAtmosphere
-        poster="/doctor-doom-stained-glass.jpg"
-        overlayOpacity="bg-[#06070A]/[0.94]"
-        accentGlow="emerald"
-      />
-
-      <div className="container-fluid container-xl mx-auto px-0 relative z-10 max-w-7xl">
-        {/* Main Tamil Fanverse Hero + Featured Doom Visual + Final Countdown Stub */}
+      <div className="container-fluid container-xl mx-auto px-0 max-w-7xl">
+        {/* Main Marvel Studios Style Hero Stage */}
         <TamilFanverseHero
           featuredVideo={FANVERSE_VIDEOS[0]}
           onPlayVideo={setTheaterVideo}
@@ -67,41 +60,50 @@ export default function Intelligence() {
           onJumpTo={jumpToModule}
         />
 
-        {/* Quick Headquarters Section Jump Rail */}
-        <nav
-          aria-label="Tamil Fanverse Modules"
-          className="mb-10 sm:mb-12 flex flex-wrap items-center gap-2 p-2 border border-white/[0.08] bg-[#090B10]/90 rounded-[3px]"
-        >
-          {MODULE_LINKS.map((mod) => (
-            <button
-              key={mod.id}
-              type="button"
-              onClick={() => jumpToModule(mod.id)}
-              className="px-3 py-1.5 border border-white/[0.07] hover:border-[#22C55E]/60 bg-[#0D1017] hover:bg-[#0E1912] text-[#C8CDD6] hover:text-white rounded-[2px] text-[9.5px] font-mono font-bold tracking-[0.14em] uppercase inline-flex items-center gap-1.5 cursor-pointer transition-all"
-            >
-              <span className="text-[#22C55E]">{mod.code}</span>
-              <span>{mod.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* B. Doomsday Alert (5 Official IndiaMarvel Tamil Videos + Verified Facts vs Theory) */}
+        {/* Official Tamil Trailers & Verified Briefing Dispatch */}
         <DoomsdayAlertDeck onOpenTrailer={setTheaterVideo} />
 
-        {/* A. Tamil Dub Nostalgia ("Namma Tamil Dub Memories") */}
+        {/* Marvel.com Style Horizontal Movie Shelf: Tamil Dub Nostalgia */}
         <TamilDubNostalgia />
 
-        {/* C. Character Files (8 Iconic Interactive Dossiers) */}
+        {/* Marvel.com Signature Chamfered Character Grid */}
         <CharacterFilesGrid />
 
-        {/* D. Multiverse Connections Interactive Timeline */}
-        <MultiverseTimeline />
+        {/* Streamlined Interactive Hub: Timeline / Theory Desk / Tamil Fan Zone */}
+        <div id="fanverse-hub" className="pt-6 border-t border-white/[0.1] scroll-mt-24">
+          <div className="flex flex-wrap items-center gap-6 border-b border-white/[0.1] mb-8">
+            {ARCHIVE_TABS.map((t) => {
+              const active = hubTab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    try { clockAudio.tick(0); } catch {}
+                    setHubTab(t.id);
+                  }}
+                  className={`pb-3 text-sm sm:text-base font-hud font-extrabold tracking-[0.16em] uppercase border-b-[3px] -mb-[1px] cursor-pointer transition-colors ${
+                    active
+                      ? 'border-[#E62429] text-white'
+                      : 'border-transparent text-[#8C9098] hover:text-white'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* E. Fan Theory Lab (Strictly Unconfirmed Speculation) */}
-        <FanTheoryLab />
-
-        {/* F. Interactive Tamil Fan Zone (Polls, Dream Squad 5, Guess Hero, Trivia) */}
-        <FanZoneHub />
+          <div className={hubTab === 'timeline' ? 'block' : 'hidden'}>
+            <MultiverseTimeline />
+          </div>
+          <div className={hubTab === 'theories' ? 'block' : 'hidden'}>
+            <FanTheoryLab />
+          </div>
+          <div className={hubTab === 'fanzone' ? 'block' : 'hidden'}>
+            <FanZoneHub />
+          </div>
+        </div>
       </div>
 
       {/* Widescreen YouTube Tamil Screening Modal */}

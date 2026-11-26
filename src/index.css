@@ -739,6 +739,15 @@
   animation: vaultShockwaveExpand 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ── Official Studio Chamfer Cuts (Marvel.com Signature Geometry) ── */
+.marvel-chamfer {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+
+.marvel-btn-cut {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 

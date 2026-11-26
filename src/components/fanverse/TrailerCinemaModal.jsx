@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Play, ExternalLink, Tv, Sparkles } from 'lucide-react';
+import { X, Play, ExternalLink } from 'lucide-react';
 import { clockAudio } from '../../utils/audio.js';
 
 export default function TrailerCinemaModal({ videos, activeVideo, onSelectVideo, onClose }) {
@@ -24,24 +24,21 @@ export default function TrailerCinemaModal({ videos, activeVideo, onSelectVideo,
       role="dialog"
       aria-modal="true"
       aria-label={activeVideo.tanglishTitle}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-xl"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl bg-[#07090D] border border-white/[0.12] rounded-[4px] shadow-[0_32px_100px_rgba(0,0,0,0.95)] overflow-hidden"
+        className="relative w-full max-w-5xl bg-[#0D0E12] border border-white/[0.12] shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top specularity bar */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#22C55E] to-[#E62429]" />
+        <div className="h-[3px] w-full bg-[#E62429]" />
 
-        {/* Cinema Header */}
-        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-[#0A0D13]">
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-[#121318]">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#E62429]/20 border border-[#E62429]/60 text-[#FCA5A5] text-[9.5px] font-mono font-bold tracking-[0.2em] uppercase rounded-[2px] shrink-0">
-              <Tv className="w-3 h-3" />
-              <span>{activeVideo.channel} OFFICIAL</span>
+            <span className="px-2 py-0.5 bg-[#E62429] text-white text-[9.5px] font-hud font-bold tracking-[0.2em] uppercase shrink-0">
+              {activeVideo.channel}
             </span>
-            <h3 className="text-xs sm:text-base font-cinematic font-bold text-white truncate">
+            <h3 className="text-sm sm:text-lg font-hud font-bold text-white uppercase tracking-wide truncate">
               {activeVideo.tanglishTitle}
             </h3>
           </div>
@@ -51,23 +48,22 @@ export default function TrailerCinemaModal({ videos, activeVideo, onSelectVideo,
               href={activeVideo.youtubeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 border border-white/[0.12] hover:border-[#22C55E] bg-white/[0.04] hover:bg-[#22C55E]/15 text-[#D8D9DC] hover:text-white text-[10px] font-mono font-bold tracking-wider uppercase rounded-[2px] transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 border border-white/15 hover:border-white text-[#D8D9DC] hover:text-white text-[10px] font-mono uppercase transition-colors"
             >
-              <span>YOUTUBE LINK</span>
+              <span>YOUTUBE</span>
               <ExternalLink className="w-3 h-3" />
             </a>
             <button
               type="button"
               onClick={onClose}
               aria-label="Close Trailer Theater"
-              className="w-8 h-8 border border-white/[0.12] hover:border-[#E62429] bg-white/[0.04] hover:bg-[#E62429] text-[#D8D9DC] hover:text-white rounded-[2px] inline-flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 border border-white/15 hover:border-[#E62429] bg-black/50 hover:bg-[#E62429] text-white inline-flex items-center justify-center transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* 16:9 YouTube Official Screening Frame */}
         <div className="relative aspect-video w-full bg-black">
           <iframe
             key={activeVideo.youtubeId}
@@ -79,19 +75,17 @@ export default function TrailerCinemaModal({ videos, activeVideo, onSelectVideo,
           />
         </div>
 
-        {/* Tanglish Commentary + Playlist Queue Strip */}
-        <div className="p-4 sm:p-5 bg-[#080A0F] border-t border-white/[0.08]">
+        <div className="p-4 sm:p-5 bg-[#0A0B0E] border-t border-white/[0.08]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <p className="text-xs sm:text-sm font-body text-[#D8D9DC] leading-relaxed">
-              <Sparkles className="w-3.5 h-3.5 text-[#22C55E] inline mr-1.5 -mt-0.5" />
               {activeVideo.tanglishCommentary}
             </p>
-            <span className="text-[10px] font-mono tracking-wider text-[#8C9098] uppercase shrink-0">
+            <span className="text-[10px] font-mono tracking-wider text-[#777A80] uppercase shrink-0">
               {activeVideo.officialTitle}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
             {videos.map((vid) => {
               const isCurrent = vid.id === activeVideo.id;
               return (
@@ -102,13 +96,13 @@ export default function TrailerCinemaModal({ videos, activeVideo, onSelectVideo,
                     try { clockAudio.tick(0); } catch {}
                     onSelectVideo(vid);
                   }}
-                  className={`p-2 text-left rounded-[3px] border transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`p-2 text-left border transition-colors cursor-pointer flex items-center gap-2 ${
                     isCurrent
-                      ? 'border-[#22C55E] bg-[#0B1C13] text-white'
-                      : 'border-white/[0.07] bg-[#0D1017] hover:border-white/25 text-[#9CA3AF] hover:text-white'
+                      ? 'border-[#E62429] bg-[#181013] text-white'
+                      : 'border-white/[0.08] bg-[#121318] hover:border-white/25 text-[#9CA3AF] hover:text-white'
                   }`}
                 >
-                  <div className="relative w-12 h-8 rounded-[2px] overflow-hidden bg-black shrink-0 border border-white/10">
+                  <div className="relative w-12 h-8 overflow-hidden bg-black shrink-0">
                     <img
                       src={`https://i.ytimg.com/vi/${vid.youtubeId}/hqdefault.jpg`}
                       onError={(e) => { e.currentTarget.src = vid.fallbackImage; }}
@@ -120,10 +114,7 @@ export default function TrailerCinemaModal({ videos, activeVideo, onSelectVideo,
                     </span>
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[8.5px] font-mono uppercase tracking-wider text-[#22C55E] block truncate">
-                      {vid.tag.split(' // ')[0]}
-                    </span>
-                    <span className="text-[10px] font-display font-semibold block truncate">
+                    <span className="text-[10px] font-hud font-bold uppercase block truncate">
                       {vid.id === 'final-trailer'
                         ? 'Final Trailer'
                         : vid.id === 'special-look'

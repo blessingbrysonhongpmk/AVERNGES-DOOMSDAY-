@@ -9,9 +9,8 @@ const CompactUnit = memo(function CompactUnit({ value, label, isGreen = false })
   return (
     <div className="flex flex-col items-center justify-center min-w-[28px] xs:min-w-[36px] sm:min-w-[52px] md:min-w-[68px]">
       <span
-        className={`text-base xs:text-xl sm:text-3xl md:text-4xl font-sans font-bold leading-none select-none tabular-nums ${
-          isGreen ? 'text-[#22C55E] drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]' : 'text-white'
-        }`}
+        className={`text-base xs:text-xl sm:text-3xl md:text-4xl font-sans font-bold leading-none select-none tabular-nums ${isGreen ? 'text-[#22C55E] drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]' : 'text-white'
+          }`}
       >
         {value}
       </span>
@@ -26,7 +25,7 @@ export default function FinalCountdown() {
   const { formatted, isArrived } = useCountdown(CONFIG.release.targetIsoString);
 
   const handleMarkCalendar = () => {
-    try { clockAudio.tick(0); } catch (e) {}
+    try { clockAudio.tick(0); } catch (e) { }
     const title = encodeURIComponent("Marvel Studios' Avengers: Doomsday Theatrical Premiere");
     const details = encodeURIComponent("Everything leads to Doomsday. The Multiverse war culminates in theaters worldwide.");
     const location = encodeURIComponent("Cinemas Worldwide");
@@ -51,16 +50,16 @@ export default function FinalCountdown() {
 
         {/* ── THE FINAL COUNTDOWN CARD (Matching reference image) ── */}
         <div className="relative border border-[#10B981]/40 bg-gradient-to-br from-[#0C0F14] via-[#080A0D] to-[#040507] p-6 sm:p-10 rounded-xs shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden">
-          
+
           {/* Subtle Stained Glass / Incursion Ambient Corner Lighting */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#10B981]/10 blur-3xl rounded-full pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#00FF88]/5 blur-3xl rounded-full pointer-events-none" />
 
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-            
+
             {/* Left / Center Info */}
             <div className="text-center lg:text-left">
-              
+
               <div className="inline-flex items-center gap-2 mb-2 px-3 py-1 border border-[#10B981]/30 bg-[#10B981]/10 text-[9px] xs:text-[10px] font-mono tracking-[0.22em] text-[#34D399] uppercase rounded-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-ping shrink-0" />
                 <span>THE FINAL COUNTDOWN</span>
@@ -94,7 +93,7 @@ export default function FinalCountdown() {
 
             {/* Right: Live Synchronized Precision Countdown Monolith */}
             <div className="flex flex-col items-center shrink-0 w-full lg:w-auto">
-              
+
               <div className="text-[10px] font-mono tracking-widest text-[#717682] uppercase mb-3 flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-[#22C55E]" />
                 <span>LIVE TIME REMAINING</span>

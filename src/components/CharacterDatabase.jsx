@@ -82,7 +82,7 @@ export default function CharacterDatabase() {
 
   // Carousel navigation
   const scrollCarousel = (direction) => {
-    try { clockAudio.tick(0); } catch (e) {}
+    try { clockAudio.tick(0); } catch (e) { }
     if (scrollContainerRef.current) {
       const scrollAmount = direction === 'left' ? -340 : 340;
       scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
@@ -91,7 +91,7 @@ export default function CharacterDatabase() {
 
   // Shuffle fresh battle hand & pick spotlight
   const handleShuffleNewHand = () => {
-    try { clockAudio.tick(0); } catch (e) {}
+    try { clockAudio.tick(0); } catch (e) { }
     const pool = Array.from({ length: filteredCharacters.length }, (_, i) => i);
     const indices = [];
     const handSize = Math.min(11, pool.length);
@@ -114,12 +114,12 @@ export default function CharacterDatabase() {
 
   const openCharacterDossier = (char) => {
     setSelectedCharacter(char);
-    try { clockAudio.tick(0); } catch (e) {}
+    try { clockAudio.tick(0); } catch (e) { }
   };
 
   const hoverCharacterCard = (char) => {
     setSpotlightChar(char);
-    try { clockAudio.tick(0); } catch (e) {}
+    try { clockAudio.tick(0); } catch (e) { }
   };
 
   // Show hero/identity subtitle clearly alongside civil name when distinct
@@ -259,21 +259,19 @@ export default function CharacterDatabase() {
                           key={cat}
                           type="button"
                           onClick={() => {
-                            try { clockAudio.tick(0); } catch (e) {}
+                            try { clockAudio.tick(0); } catch (e) { }
                             setCategoryFilter(cat);
                             setDealKey((k) => k + 1);
                           }}
-                          className={`px-2.5 py-1 text-[8.5px] xs:text-[9px] font-mono tracking-wider uppercase transition-colors cursor-pointer border rounded-xs inline-flex items-center gap-1.5 ${
-                            isActive
+                          className={`px-2.5 py-1 text-[8.5px] xs:text-[9px] font-mono tracking-wider uppercase transition-colors cursor-pointer border rounded-xs inline-flex items-center gap-1.5 ${isActive
                               ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E] font-bold shadow-[0_0_12px_rgba(34,197,94,0.12)]'
                               : 'border-[#1E252D] bg-[#0E1015] text-[#9CA3AF] hover:text-white hover:border-[#383C46]'
-                          }`}
+                            }`}
                         >
                           <span>{cat}</span>
                           <span
-                            className={`text-[8px] px-1 py-0.2 rounded-xs ${
-                              isActive ? 'bg-[#22C55E]/20 text-[#34D399]' : 'bg-[#161922] text-[#6B7280]'
-                            }`}
+                            className={`text-[8px] px-1 py-0.2 rounded-xs ${isActive ? 'bg-[#22C55E]/20 text-[#34D399]' : 'bg-[#161922] text-[#6B7280]'
+                              }`}
                           >
                             {count}
                           </span>
@@ -299,15 +297,14 @@ export default function CharacterDatabase() {
                 <button
                   type="button"
                   onClick={() => {
-                    try { clockAudio.tick(0); } catch (e) {}
+                    try { clockAudio.tick(0); } catch (e) { }
                     setViewMode(viewMode === 'fan' ? 'carousel' : 'fan');
                     setDealKey((k) => k + 1);
                   }}
-                  className={`px-3.5 py-2 border text-[10px] font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer inline-flex items-center gap-1.5 rounded-xs ${
-                    viewMode === 'fan'
+                  className={`px-3.5 py-2 border text-[10px] font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer inline-flex items-center gap-1.5 rounded-xs ${viewMode === 'fan'
                       ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E]'
                       : 'bg-[#12141A] hover:bg-[#1A1C24] border-[#232731] hover:border-white/40 text-white'
-                  }`}
+                    }`}
                 >
                   <Layers className="w-3.5 h-3.5 text-[#22C55E]" />
                   <span>{viewMode === 'fan' ? 'REEL VIEW' : '3D BATTLE FAN'}</span>
@@ -316,15 +313,14 @@ export default function CharacterDatabase() {
                 <button
                   type="button"
                   onClick={() => {
-                    try { clockAudio.tick(0); } catch (e) {}
+                    try { clockAudio.tick(0); } catch (e) { }
                     setViewMode(viewMode === 'grid' ? 'carousel' : 'grid');
                     setDealKey((k) => k + 1);
                   }}
-                  className={`px-3.5 py-2 border text-[10px] font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer inline-flex items-center gap-1.5 rounded-xs ${
-                    viewMode === 'grid'
+                  className={`px-3.5 py-2 border text-[10px] font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer inline-flex items-center gap-1.5 rounded-xs ${viewMode === 'grid'
                       ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E]'
                       : 'bg-[#12141A] hover:bg-[#1A1C24] border-[#232731] hover:border-white/40 text-white'
-                  }`}
+                    }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5 text-[#22C55E]" />
                   <span>{viewMode === 'grid' ? 'REEL VIEW' : `ALL ${totalCastCount} GRID`}</span>
@@ -350,9 +346,8 @@ export default function CharacterDatabase() {
                       return (
                         <div
                           key={char.id}
-                          className={`relative w-36 xs:w-40 sm:w-44 aspect-[2/3] shrink-0 border ${
-                            isSpotlight ? 'border-[#22C55E]' : 'border-[#1E252D] hover:border-[#22C55E]'
-                          } bg-[#0E1015] rounded-xs overflow-hidden shadow-[0_12px_30px_rgba(0,0,0,0.8)] cursor-pointer group transition-all duration-300 hover:scale-[1.03] select-none`}
+                          className={`relative w-36 xs:w-40 sm:w-44 aspect-[2/3] shrink-0 border ${isSpotlight ? 'border-[#22C55E]' : 'border-[#1E252D] hover:border-[#22C55E]'
+                            } bg-[#0E1015] rounded-xs overflow-hidden shadow-[0_12px_30px_rgba(0,0,0,0.8)] cursor-pointer group transition-all duration-300 hover:scale-[1.03] select-none`}
                           onMouseEnter={() => hoverCharacterCard(char)}
                           onClick={() => openCharacterDossier(char)}
                         >
@@ -489,9 +484,8 @@ export default function CharacterDatabase() {
                         key={char.id}
                         onClick={() => openCharacterDossier(char)}
                         onMouseEnter={() => hoverCharacterCard(char)}
-                        className={`relative aspect-[2/3] rounded-xs border ${
-                          isSpotlight ? 'border-[#22C55E]' : 'border-[#1E252D] hover:border-[#22C55E]'
-                        } bg-[#0E1015] overflow-hidden shadow-md cursor-pointer group transition-all hover:scale-[1.03]`}
+                        className={`relative aspect-[2/3] rounded-xs border ${isSpotlight ? 'border-[#22C55E]' : 'border-[#1E252D] hover:border-[#22C55E]'
+                          } bg-[#0E1015] overflow-hidden shadow-md cursor-pointer group transition-all hover:scale-[1.03]`}
                       >
                         <img
                           src={char.poster}
