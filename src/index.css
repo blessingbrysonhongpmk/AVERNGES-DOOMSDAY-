@@ -472,6 +472,20 @@
   animation-fill-mode: forwards;
 }
 
+@keyframes bgmEqPulse {
+  0%, 100% {
+    transform: scaleY(0.32);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.bgm-eq-bar {
+  transform-origin: bottom center;
+  animation: bgmEqPulse 0.85s ease-in-out infinite;
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 

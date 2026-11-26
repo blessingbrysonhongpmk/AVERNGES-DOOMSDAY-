@@ -125,6 +125,15 @@ async function run() {
   assert(thanosVoiceRes.status === 200, 'HTTP 200 returned on /sounds/chars/thanos.wav');
   const hulkVoiceRes = await fetchHttp('http://localhost:3000/sounds/chars/hulk.wav');
   assert(hulkVoiceRes.status === 200, 'HTTP 200 returned on /sounds/chars/hulk.wav');
+  assert(fs.existsSync('public/sounds/avengers-bgm.wav') && fs.statSync('public/sounds/avengers-bgm.wav').size > 1000000, 'High-quality Stereo Avengers Orchestral BGM exists on disk');
+  const bgmHeadRes = await new Promise((resolve, reject) => {
+    const req = http.request('http://localhost:3000/sounds/avengers-bgm.wav', { method: 'HEAD' }, (res) => resolve({ status: res.statusCode }));
+    req.on('error', reject);
+    req.end();
+  });
+  assert(bgmHeadRes.status === 200, 'HTTP 200 returned on /sounds/avengers-bgm.wav');
+  const navSource = fs.readFileSync('src/components/Navigation.jsx', 'utf8');
+  assert(navSource.includes('useAvengersBgm') && navSource.includes('AVENGERS BGM'), 'Navigation includes premium Avengers BGM ON/OFF switch');
 
   console.log(`\n========================================`);
   console.log(`NEW FEATURES TESTS PASSED: ${passed}`);

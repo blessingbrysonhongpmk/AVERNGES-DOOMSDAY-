@@ -7,6 +7,7 @@ import Watchlist from './components/Watchlist';
 import CharacterDatabase from './components/CharacterDatabase';
 import Intelligence from './components/Intelligence';
 import { loadAmbientMode, saveAmbientMode } from './utils/storage';
+import { avengersBgm } from './utils/bgm.js';
 
 export default function App() {
   const [ambientMode, setAmbientMode] = useState(() => loadAmbientMode());
@@ -15,6 +16,10 @@ export default function App() {
   useEffect(() => {
     saveAmbientMode(ambientMode);
   }, [ambientMode]);
+
+  useEffect(() => {
+    avengersBgm.setDucked(isGameOpen);
+  }, [isGameOpen]);
 
   const toggleAmbientMode = () => {
     setAmbientMode((prev) => (prev === 'normal' ? 'cinematic' : 'normal'));

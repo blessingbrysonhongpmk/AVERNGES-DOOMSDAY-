@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Home, Film, Users, Newspaper, Gamepad2 } from 'lucide-react';
+import { Volume2, VolumeX, Home, Film, Users, Newspaper, Gamepad2, Disc3 } from 'lucide-react';
 import { useClockAudio } from '../utils/audio.js';
+import { useAvengersBgm } from '../utils/bgm.js';
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Home', icon: Home },
@@ -15,6 +16,7 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { enabled: soundEnabled, toggle: toggleSound } = useClockAudio();
+  const { enabled: bgmEnabled, isPlaying: bgmPlaying, customBgmName, toggle: toggleBgm } = useAvengersBgm();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,28 +101,93 @@ export default function Navigation() {
           })}
         </nav>
 
-        {/* Right: Sound Toggle & Mobile Controls */}
+        {/* Right: Luxury Avengers BGM Rocker Console, Clock Sound Toggle & Mobile Menu */}
         <div className="flex items-center gap-2">
-          {/* Sound Toggle Button (Matching top right sound button in reference image) */}
+          {/* Machined Brushed-Metal Avengers BGM ON/OFF Hardware Switch */}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={bgmEnabled}
+            onClick={toggleBgm}
+            aria-label={bgmEnabled ? 'Turn Avengers Background Music Off' : 'Turn Avengers Background Music On'}
+            title={
+              customBgmName
+                ? `BGM: ${customBgmName} (Click to turn ${bgmEnabled ? 'OFF' : 'ON'})`
+                : `Avengers Score BGM (Click to turn ${bgmEnabled ? 'OFF' : 'ON'})`
+            }
+            className={`group h-9 sm:h-10 pl-2.5 sm:pl-3 pr-1.5 rounded-[3px] border inline-flex items-center gap-2 sm:gap-3 transition-colors cursor-pointer select-none ${
+              bgmEnabled
+                ? 'bg-[#0C120F] border-[#264633] hover:border-[#34D399]/70 text-white'
+                : 'bg-[#0B0D11] border-[#252A34] hover:border-[#3F4756] text-[#8E94A0]'
+            }`}
+          >
+            {/* Studio Equalizer Bars */}
+            <div className="flex items-end gap-[2px] h-3.5 shrink-0" aria-hidden="true">
+              {[0, 140, 280, 90].map((delay, i) => (
+                <span
+                  key={delay}
+                  style={{
+                    animationDelay: `${delay}ms`,
+                    height: i === 1 ? '14px' : i === 3 ? '12px' : i === 0 ? '9px' : '10px',
+                  }}
+                  className={`w-[2.5px] rounded-[1px] transition-colors ${
+                    bgmEnabled && bgmPlaying
+                      ? 'bgm-eq-bar bg-[#22C55E]'
+                      : bgmEnabled
+                        ? 'bg-[#D1D5DB] opacity-75'
+                        : 'bg-[#3B4250] scale-y-[0.35]'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="hidden xs:flex flex-col items-start text-left leading-none">
+              <span className="text-[7.5px] font-mono tracking-[0.18em] text-[#8A909C] uppercase mb-0.5">
+                {customBgmName ? 'CUSTOM SCORE' : 'AVENGERS BGM'}
+              </span>
+              <span className="text-[10px] font-display font-bold tracking-[0.12em] uppercase text-[#F3F4F6]">
+                {bgmEnabled ? (bgmPlaying ? 'SCORE LIVE' : 'TAP TO PLAY') : 'SCORE OFF'}
+              </span>
+            </div>
+
+            {/* Hardware Sliding ON / OFF Switch Housing */}
+            <div
+              className={`relative w-12 h-6 rounded-[2px] border p-0.5 flex items-center transition-colors ${
+                bgmEnabled
+                  ? 'bg-[#07140C] border-[#22C55E]/70 justify-end'
+                  : 'bg-[#060709] border-[#2A303C] justify-start'
+              }`}
+            >
+              <span
+                className={`h-full px-1.5 rounded-[1px] text-[9px] font-mono font-extrabold tracking-wider uppercase inline-flex items-center justify-center transition-all ${
+                  bgmEnabled
+                    ? 'bg-[#F3F4F6] text-[#08090B] shadow-sm'
+                    : 'bg-[#222733] text-[#9CA3AF]'
+                }`}
+              >
+                {bgmEnabled ? 'ON' : 'OFF'}
+              </span>
+            </div>
+          </button>
+
+          {/* Compact Clock Escapement SFX Button */}
           <button
             type="button"
             onClick={toggleSound}
             aria-label={soundEnabled ? 'Mute live mechanical clock' : 'Unmute live mechanical clock'}
-            className={`px-2.5 py-1 text-[11px] font-mono tracking-wider transition-all cursor-pointer flex items-center gap-1.5 border rounded-xs ${
+            className={`h-9 sm:h-10 px-2.5 text-[10px] font-mono tracking-wider transition-colors cursor-pointer inline-flex items-center gap-1.5 border rounded-[3px] ${
               soundEnabled
-                ? 'border-[#22C55E]/60 bg-[#22C55E]/15 text-[#22C55E] shadow-[0_0_10px_rgba(34,197,94,0.3)]'
-                : 'border-[#1E2024] bg-[#111216]/80 text-[#777A80] hover:text-white'
+                ? 'border-[#2D3542] bg-[#12161E] text-[#F3F4F6] hover:border-[#4B5565]'
+                : 'border-[#1E222B] bg-[#0B0D11] text-[#777A80] hover:text-white'
             }`}
-            title="Toggle live sound"
+            title={soundEnabled ? 'Clock Tick Sound: ON' : 'Clock Tick Sound: OFF'}
           >
             {soundEnabled ? (
-              <Volume2 className="w-3.5 h-3.5" />
+              <Volume2 className="w-3.5 h-3.5 text-[#22C55E]" />
             ) : (
               <VolumeX className="w-3.5 h-3.5" />
             )}
-            <span className="hidden sm:inline text-[9px] uppercase font-bold">
-              {soundEnabled ? 'SOUND: ON' : 'SOUND: OFF'}
-            </span>
+            <span className="hidden lg:inline uppercase font-semibold">SFX</span>
           </button>
 
           {/* Mobile Menu Hamburger Button */}

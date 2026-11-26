@@ -12,6 +12,7 @@ import {
   COMIC_WORDS,
 } from '../data/hulkGameData';
 import { hulkAudio, SOUND_CATALOG, STUDIO_SFX_PATHS } from '../utils/hulkAudio';
+import { useAvengersBgm } from '../utils/bgm.js';
 import {
   X,
   Volume2,
@@ -165,6 +166,14 @@ export default function HulkSmashGame({ onClose }) {
 
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const {
+    enabled: bgmEnabled,
+    isPlaying: bgmPlaying,
+    customBgmName,
+    toggle: toggleBgm,
+    importCustomBgm,
+    clearCustomBgm,
+  } = useAvengersBgm();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSoundboard, setShowSoundboard] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
@@ -799,6 +808,16 @@ export default function HulkSmashGame({ onClose }) {
   const handleImportCustomAudio = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (customAudioSlot === 'bgm:primary') {
+      const res = await importCustomBgm(file);
+      if (res.ok) {
+        setUploadStatusMsg(`ACTIVE AVENGERS BGM: "${res.fileName}"`);
+      } else {
+        setUploadStatusMsg(`FAILED: ${res.error}`);
+      }
+      e.target.value = '';
+      return;
+    }
     const isChar = customAudioSlot.startsWith('char:');
     const targetId = isChar ? customAudioSlot.slice(5) : customAudioSlot;
     const res = await hulkAudio.importCustomAudioFile(targetId, file, isChar);
@@ -812,6 +831,11 @@ export default function HulkSmashGame({ onClose }) {
   };
 
   const handleResetCustomAudio = async () => {
+    if (customAudioSlot === 'bgm:primary') {
+      await clearCustomBgm();
+      setUploadStatusMsg('RESTORED BUILT-IN ORCHESTRAL AVENGERS BGM');
+      return;
+    }
     const isChar = customAudioSlot.startsWith('char:');
     const targetId = isChar ? customAudioSlot.slice(5) : customAudioSlot;
     const next = await hulkAudio.clearCustomAudio(targetId, isChar);
@@ -919,6 +943,44 @@ export default function HulkSmashGame({ onClose }) {
             title="How to Play"
           >
             <HelpCircle className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={bgmEnabled}
+            onClick={toggleBgm}
+            aria-label={bgmEnabled ? 'Turn Avengers BGM Off' : 'Turn Avengers BGM On'}
+            className={`hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 border rounded-[3px] text-[9.5px] font-mono font-bold uppercase transition-colors cursor-pointer ${
+              bgmEnabled
+                ? 'border-[#264633] bg-[#0B120E] text-white'
+                : 'border-[#272D38] bg-[#0B0D11] text-[#7A818D] hover:text-white'
+            }`}
+            title="Toggle Avengers Orchestral Background Score"
+          >
+            <div className="flex items-end gap-[1.5px] h-2.5" aria-hidden="true">
+              {[0, 120, 240].map((d, idx) => (
+                <span
+                  key={d}
+                  style={{ animationDelay: `${d}ms`, height: idx === 1 ? '10px' : '7px' }}
+                  className={`w-[2px] rounded-[1px] ${
+                    bgmEnabled && bgmPlaying
+                      ? 'bgm-eq-bar bg-[#22C55E]'
+                      : bgmEnabled
+                        ? 'bg-[#D1D5DB]'
+                        : 'bg-[#3B4250]'
+                  }`}
+                />
+              ))}
+            </div>
+            <span>BGM</span>
+            <span
+              className={`px-1.5 py-0.5 rounded-[2px] text-[8.5px] font-extrabold leading-none ${
+                bgmEnabled ? 'bg-[#F3F4F6] text-[#08090B]' : 'bg-[#1D222C] text-[#9CA3AF]'
+              }`}
+            >
+              {bgmEnabled ? 'ON' : 'OFF'}
+            </span>
           </button>
 
           <button
@@ -1672,9 +1734,9 @@ export default function HulkSmashGame({ onClose }) {
                   <Upload className="w-3.5 h-3.5 text-[#34D399]" />
                   <span>IMPORT CUSTOM HULK OR TAMIL CLIP (.MP3 / .WAV)</span>
                 </span>
-                {customOverrides[customAudioSlot] && (
+                {(customAudioSlot === 'bgm:primary' ? customBgmName : customOverrides[customAudioSlot]) && (
                   <span className="text-[9px] font-mono text-[#D4AF37] uppercase truncate max-w-[220px]">
-                    ACTIVE: {customOverrides[customAudioSlot]}
+                    ACTIVE: {customAudioSlot === 'bgm:primary' ? customBgmName : customOverrides[customAudioSlot]}
                   </span>
                 )}
               </div>
@@ -1689,6 +1751,11 @@ export default function HulkSmashGame({ onClose }) {
                   aria-label="Select sound slot to customize"
                   className="px-2.5 py-2 bg-[#060709] border border-[#252B36] text-white text-xs font-mono rounded-[2px] outline-none focus:border-[#4B5565] flex-1"
                 >
+                  <optgroup label="Avengers Website Background Score (BGM)">
+                    <option value="bgm:primary">
+                      Background Music: Avengers Original / Custom BGM Loop
+                    </option>
+                  </optgroup>
                   <optgroup label="Core Hulk &amp; Arena SFX">
                     {SOUND_CATALOG.map((sfx) => (
                       <option key={sfx.id} value={sfx.id}>
@@ -1716,7 +1783,7 @@ export default function HulkSmashGame({ onClose }) {
                   />
                 </label>
 
-                {customOverrides[customAudioSlot] && (
+                {(customAudioSlot === 'bgm:primary' ? customBgmName : customOverrides[customAudioSlot]) && (
                   <button
                     type="button"
                     onClick={handleResetCustomAudio}
