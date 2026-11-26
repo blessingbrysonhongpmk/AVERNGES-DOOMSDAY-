@@ -312,11 +312,10 @@ export default function Watchlist() {
                           handleToggleStandard(item.id);
                         }
                       }}
-                      className={`relative w-[125px] xs:w-[138px] sm:w-[150px] aspect-[2/3] shrink-0 rounded-xs border transition-all duration-300 cursor-pointer overflow-hidden group select-none ${
-                        isCompleted
+                      className={`relative w-[125px] xs:w-[138px] sm:w-[150px] aspect-[2/3] shrink-0 rounded-xs border transition-all duration-300 cursor-pointer overflow-hidden group select-none ${isCompleted
                           ? 'border-[#22C55E] shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-[#0C140E]'
                           : 'border-[#1E252D] hover:border-white/50 bg-[#0E1015]'
-                      }`}
+                        }`}
                     >
                       <img
                         src={item.poster}

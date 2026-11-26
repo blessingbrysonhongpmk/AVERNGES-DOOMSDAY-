@@ -89,6 +89,14 @@ export const SOUND_CATALOG = [
 
 const SOUND_BY_ID = Object.fromEntries(SOUND_CATALOG.map((s) => [s.id, s]));
 
+export const STUDIO_SFX_PATHS = {
+  countdownPulse: '/sounds/countdown-pulse.wav',
+  countdownSmash: '/sounds/countdown-smash.wav',
+  timerTension: '/sounds/timer-tension.wav',
+  allyAlert: '/sounds/ally-shield-alert.wav',
+  victoryFanfare: '/sounds/victory-fanfare.wav',
+};
+
 const PRIORITY_CHAR_IDS = [
   'hulk',
   'iron-man',
@@ -131,6 +139,9 @@ function openCustomAudioDB() {
 class HulkAudioEngine {
   constructor() {
     this.ctx = null;
+    this.masterCtx = null;
+    this.masterGain = null;
+    this.compressor = null;
     this.enabled = true;
     this.voiceEnabled = false;
     this.buffers = new Map();
@@ -143,6 +154,37 @@ class HulkAudioEngine {
     this.activeHtmlAudio = null;
     this.lastVoiceAt = 0;
     this.lastCharVoiceAt = 0;
+  }
+
+  /**
+   * Returns a compressed master output bus so simultaneous SFX and voices stay punchy without clipping.
+   */
+  getMasterBus(ctx) {
+    if (!ctx) return null;
+    if (this.masterCtx === ctx && this.compressor) {
+      return this.compressor;
+    }
+    try {
+      if (typeof ctx.createDynamicsCompressor === 'function' && typeof ctx.createGain === 'function') {
+        const compressor = ctx.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-14, ctx.currentTime);
+        compressor.knee.setValueAtTime(12, ctx.currentTime);
+        compressor.ratio.setValueAtTime(6, ctx.currentTime);
+        compressor.attack.setValueAtTime(0.003, ctx.currentTime);
+        compressor.release.setValueAtTime(0.18, ctx.currentTime);
+
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0.92, ctx.currentTime);
+        compressor.connect(masterGain);
+        masterGain.connect(ctx.destination);
+
+        this.masterCtx = ctx;
+        this.compressor = compressor;
+        this.masterGain = masterGain;
+        return compressor;
+      }
+    } catch { }
+    return ctx.destination;
   }
 
   getCustomOverrides() {
@@ -282,17 +324,18 @@ class HulkAudioEngine {
   }
 
   /**
-   * Preloads all 10 core WAV SFX assets plus core combat character voice+SFX WAV files.
+   * Preloads all 10 core WAV SFX assets, 5 studio countdown/alert WAV cues, and core combat character WAV files.
    */
   async preloadAll(onProgress, extraCharIds = []) {
+    const studioEntries = Object.entries(STUDIO_SFX_PATHS);
     if (typeof window === 'undefined' || typeof fetch === 'undefined') {
-      return { loaded: 0, total: SOUND_CATALOG.length };
+      return { loaded: 0, total: SOUND_CATALOG.length + studioEntries.length };
     }
     if (this.preloadPromise) return this.preloadPromise;
 
     this.init();
     const charIdsToLoad = Array.from(new Set([...PRIORITY_CHAR_IDS, ...extraCharIds.filter(Boolean)]));
-    const total = SOUND_CATALOG.length + charIdsToLoad.length;
+    const total = SOUND_CATALOG.length + studioEntries.length + charIdsToLoad.length;
     let loaded = 0;
 
     const bump = (id) => {
@@ -307,6 +350,10 @@ class HulkAudioEngine {
         ...SOUND_CATALOG.map(async (entry) => {
           await this._fetchAndDecode(entry.path, this.buffers, this.rawBuffers, entry.id);
           bump(entry.id);
+        }),
+        ...studioEntries.map(async ([id, url]) => {
+          await this._fetchAndDecode(url, this.buffers, this.rawBuffers, id);
+          bump(id);
         }),
         ...charIdsToLoad.map(async (charId) => {
           await this._fetchAndDecode(`/sounds/chars/${charId}.wav`, this.charBuffers, this.charRawBuffers, charId);
@@ -385,7 +432,7 @@ class HulkAudioEngine {
         src.buffer = buffer;
         gainNode.gain.setValueAtTime(gain, ctx.currentTime);
         src.connect(gainNode);
-        gainNode.connect(ctx.destination);
+        gainNode.connect(this.getMasterBus(ctx));
         if (force) {
           this.activeVoiceSource = src;
           src.onended = () => {
@@ -423,12 +470,13 @@ class HulkAudioEngine {
         src.playbackRate.setValueAtTime(playbackRate, ctx.currentTime);
         gainNode.gain.setValueAtTime(gain, ctx.currentTime);
         src.connect(gainNode);
-        gainNode.connect(ctx.destination);
+        gainNode.connect(this.getMasterBus(ctx));
         src.start(ctx.currentTime);
         return true;
       } catch { }
     }
 
+    const fallbackUrl = SOUND_BY_ID[id]?.path || STUDIO_SFX_PATHS[id];
     if (this.rawBuffers.has(id)) {
       this.ensureDecoded(id, false).then((decoded) => {
         if (decoded && this.enabled && this.ctx && this.ctx.state === 'running') {
@@ -439,14 +487,14 @@ class HulkAudioEngine {
             src.playbackRate.setValueAtTime(playbackRate, this.ctx.currentTime);
             g.gain.setValueAtTime(gain, this.ctx.currentTime);
             src.connect(g);
-            g.connect(this.ctx.destination);
+            g.connect(this.getMasterBus(this.ctx));
             src.start(this.ctx.currentTime);
           } catch { }
         }
       });
-    } else if (typeof Audio !== 'undefined' && SOUND_BY_ID[id]) {
+    } else if (typeof Audio !== 'undefined' && fallbackUrl) {
       try {
-        const audioEl = new Audio(SOUND_BY_ID[id].path);
+        const audioEl = new Audio(fallbackUrl);
         audioEl.volume = Math.min(1, Math.max(0, gain));
         audioEl.playbackRate = playbackRate;
         audioEl.play().catch(() => { });
@@ -513,6 +561,7 @@ class HulkAudioEngine {
   _synthSmash(combo = 1) {
     const ctx = this.init();
     if (!ctx) return;
+    const bus = this.getMasterBus(ctx);
     const now = ctx.currentTime;
 
     const osc = ctx.createOscillator();
@@ -526,7 +575,7 @@ class HulkAudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(bus);
     osc.start(now);
     osc.stop(now + 0.25);
 
@@ -549,7 +598,7 @@ class HulkAudioEngine {
 
     noise.connect(filter);
     filter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
+    noiseGain.connect(bus);
     noise.start(now);
     noise.stop(now + 0.09);
   }
@@ -570,6 +619,7 @@ class HulkAudioEngine {
 
   playDecoyHit() {
     if (!this.enabled) return;
+    if (this.playSound('allyAlert', { gain: 0.78 })) return;
     const ctx = this.init();
     if (!ctx) return;
 
@@ -588,7 +638,7 @@ class HulkAudioEngine {
 
     osc1.connect(gain);
     osc2.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getMasterBus(ctx));
 
     osc1.start(now);
     osc2.start(now);
@@ -613,7 +663,7 @@ class HulkAudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getMasterBus(ctx));
     osc.start(now);
     osc.stop(now + 0.26);
   }
@@ -646,6 +696,8 @@ class HulkAudioEngine {
 
   playTimerTick(isLow = false) {
     if (!this.enabled) return;
+    const rate = isLow ? 1.12 : 0.96;
+    if (this.playSound('timerTension', { gain: isLow ? 0.62 : 0.34, playbackRate: rate })) return;
     const ctx = this.init();
     if (!ctx) return;
     const now = ctx.currentTime;
@@ -656,7 +708,7 @@ class HulkAudioEngine {
     gain.gain.setValueAtTime(isLow ? 0.2 : 0.08, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getMasterBus(ctx));
     osc.start(now);
     osc.stop(now + 0.07);
   }
@@ -676,39 +728,46 @@ class HulkAudioEngine {
       gain.gain.linearRampToValueAtTime(0.2, now + 1.0);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 1.25);
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(this.getMasterBus(ctx));
       osc.start(now);
       osc.stop(now + 1.25);
     }
   }
 
-  playCountdownBeep(isFinal = false) {
+  playCountdownBeep(isFinal = false, stepCount = 3) {
     if (!this.enabled) return;
     if (isFinal) {
-      this.playSound('hulkThunderclap', { gain: 0.85 });
+      if (!this.playSound('countdownSmash', { gain: 0.92 })) {
+        this.playSound('hulkThunderclap', { gain: 0.85 });
+      }
       return;
     }
+    const pitchMap = { 3: 0.94, 2: 1.0, 1: 1.1 };
+    const playbackRate = pitchMap[stepCount] || 1.0;
+    if (this.playSound('countdownPulse', { gain: 0.84, playbackRate })) return;
     const ctx = this.init();
     if (!ctx) return;
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.setValueAtTime(520 * playbackRate, now);
     gain.gain.setValueAtTime(0.2, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.getMasterBus(ctx));
     osc.start(now);
     osc.stop(now + 0.15);
   }
 
   playGameOver() {
     if (!this.enabled) return;
+    if (this.playSound('victoryFanfare', { gain: 0.86 })) return;
     this.playSound('capShield', { gain: 0.55 });
     const ctx = this.init();
     if (!ctx) return;
     const now = ctx.currentTime;
+    const bus = this.getMasterBus(ctx);
     const freqs = [220, 277.18, 329.63, 440];
     freqs.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
@@ -718,7 +777,7 @@ class HulkAudioEngine {
       gain.gain.setValueAtTime(0.18, now + idx * 0.06);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(bus);
       osc.start(now + idx * 0.06);
       osc.stop(now + 0.85);
     });

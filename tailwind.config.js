@@ -46,6 +46,8 @@ export default {
       },
       fontFamily: {
         cinematic: ['Cinzel', 'Trajan Pro', 'Bodoni Moda', 'Georgia', 'serif'],
+        trailer: ['Bebas Neue', 'Barlow Condensed', 'Impact', 'sans-serif'],
+        hud: ['Barlow Condensed', 'Space Grotesk', 'sans-serif'],
         display: ['Space Grotesk', 'Inter', 'sans-serif'],
         mono: ['Space Grotesk', 'JetBrains Mono', 'monospace'],
         body: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

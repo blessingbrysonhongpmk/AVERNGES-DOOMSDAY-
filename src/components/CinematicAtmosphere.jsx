@@ -67,9 +67,8 @@ export default function CinematicAtmosphere({
           playsInline
           onLoadedData={() => setVideoLoaded(true)}
           onError={() => setVideoError(true)}
-          className={`absolute inset-0 w-full h-full object-cover filter brightness-[0.42] contrast-125 transition-opacity duration-1000 ${
-            videoLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 w-full h-full object-cover filter brightness-[0.42] contrast-125 transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
         >
           {videoWebm && <source src={videoWebm} type="video/webm" />}
           {videoSrc && <source src={videoSrc} type="video/mp4" />}

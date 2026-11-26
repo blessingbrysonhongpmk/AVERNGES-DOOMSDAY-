@@ -11,7 +11,7 @@ import {
   RANKS,
   COMIC_WORDS,
 } from '../data/hulkGameData';
-import { hulkAudio, SOUND_CATALOG } from '../utils/hulkAudio';
+import { hulkAudio, SOUND_CATALOG, STUDIO_SFX_PATHS } from '../utils/hulkAudio';
 import {
   X,
   Volume2,
@@ -69,7 +69,7 @@ function loadSavedAvatar() {
  * Generates an updated 3x3 arena wave using Marvel Villain Threats and 12 Hero Allies.
  * Respects active Time Stone freeze so existing threats do not despawn prematurely.
  */
-function spawnArenaWave(currentSlots, level, { forceInitial = false, isTimeFrozen = false } = {}) {
+export function spawnArenaWave(currentSlots, level, { forceInitial = false, isTimeFrozen = false, excludeAvatarId = null } = {}) {
   const now = Date.now();
   const nextSlots = [...currentSlots];
   const lifespan = level === 1 ? 2300 : level === 2 ? 1750 : 1350;
@@ -105,7 +105,11 @@ function spawnArenaWave(currentSlots, level, { forceInitial = false, isTimeFroze
 
     let template;
     if (isDecoy) {
-      template = DECOYS[Math.floor(Math.random() * DECOYS.length)];
+      const decoyPool = excludeAvatarId
+        ? DECOYS.filter((d) => d.characterId !== excludeAvatarId)
+        : DECOYS;
+      const effectivePool = decoyPool.length > 0 ? decoyPool : DECOYS;
+      template = effectivePool[Math.floor(Math.random() * effectivePool.length)];
     } else {
       const pool = level >= 2 ? SMASH_TARGETS : SMASH_TARGETS.filter((t) => !t.isBonus);
       template = pool[Math.floor(Math.random() * pool.length)];
@@ -127,7 +131,10 @@ export default function HulkSmashGame({ onClose }) {
   const [gameState, setGameState] = useState('loading');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingStatusText, setLoadingStatusText] = useState('[01/04] INITIALIZING BANNER GAMMA LAB...');
-  const [audioLoadCount, setAudioLoadCount] = useState({ loaded: 0, total: SOUND_CATALOG.length });
+  const [audioLoadCount, setAudioLoadCount] = useState({
+    loaded: 0,
+    total: SOUND_CATALOG.length + Object.keys(STUDIO_SFX_PATHS).length,
+  });
   const [countdownNumber, setCountdownNumber] = useState(3);
 
   const [activeAvatar, setActiveAvatar] = useState(loadSavedAvatar);
@@ -144,8 +151,10 @@ export default function HulkSmashGame({ onClose }) {
   const [teamUpsUsed, setTeamUpsUsed] = useState(0);
   const [teamUpCharge, setTeamUpCharge] = useState(50);
 
-  const [isOverchargeActive, setIsOverchargeActive] = useState(false);
-  const [isTimeFrozen, setIsTimeFrozen] = useState(false);
+  const [overchargeMs, setOverchargeMs] = useState(0);
+  const [freezeMs, setFreezeMs] = useState(0);
+  const isOverchargeActive = overchargeMs > 0;
+  const isTimeFrozen = freezeMs > 0;
 
   const [slots, setSlots] = useState(() => Array(GRID_SIZE).fill(null));
   const [dialogue, setDialogue] = useState('HULK IS ALWAYS ANGRY. LET US SMASH!');
@@ -181,13 +190,19 @@ export default function HulkSmashGame({ onClose }) {
   const loadingDoneTimeoutRef = useRef(null);
   const countdownTimerRef = useRef(null);
   const shakeTimeoutRef = useRef(null);
-  const overchargeTimeoutRef = useRef(null);
-  const freezeTimeoutRef = useRef(null);
+  const loadingProgressRef = useRef(0);
+  const countdownStepRef = useRef(3);
+  const activeTimeoutsRef = useRef(new Set());
   const isTimeFrozenRef = useRef(false);
+  const gameStateRef = useRef(gameState);
 
   useEffect(() => {
     isTimeFrozenRef.current = isTimeFrozen;
   }, [isTimeFrozen]);
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
 
   useEffect(() => {
     hulkAudio.enabled = soundEnabled;
@@ -205,6 +220,15 @@ export default function HulkSmashGame({ onClose }) {
     });
   }, []);
 
+  const scheduleTimeout = useCallback((fn, delay) => {
+    const id = setTimeout(() => {
+      activeTimeoutsRef.current.delete(id);
+      fn();
+    }, delay);
+    activeTimeoutsRef.current.add(id);
+    return id;
+  }, []);
+
   const clearAllTimers = useCallback(() => {
     clearInterval(gameTimerRef.current);
     clearInterval(spawnTimerRef.current);
@@ -212,8 +236,8 @@ export default function HulkSmashGame({ onClose }) {
     clearTimeout(loadingDoneTimeoutRef.current);
     clearInterval(countdownTimerRef.current);
     clearTimeout(shakeTimeoutRef.current);
-    clearTimeout(overchargeTimeoutRef.current);
-    clearTimeout(freezeTimeoutRef.current);
+    activeTimeoutsRef.current.forEach((id) => clearTimeout(id));
+    activeTimeoutsRef.current.clear();
   }, []);
 
   useEffect(() => {
@@ -231,14 +255,14 @@ export default function HulkSmashGame({ onClose }) {
 
     const waveId = `${uid}-wave`;
     setShockwaves((prev) => [...prev.slice(-4), { id: waveId, x, y, color: color || '#34D399' }]);
-    setTimeout(() => {
+    scheduleTimeout(() => {
       setShockwaves((prev) => prev.filter((w) => w.id !== waveId));
     }, 560);
 
     if (word) {
       const burstId = `${uid}-burst`;
       setComicBursts((prev) => [...prev.slice(-4), { id: burstId, word, x, y, color: color || '#E5E7EB' }]);
-      setTimeout(() => {
+      scheduleTimeout(() => {
         setComicBursts((prev) => prev.filter((b) => b.id !== burstId));
       }, 650);
     }
@@ -246,11 +270,11 @@ export default function HulkSmashGame({ onClose }) {
     if (floatText) {
       const floatId = `${uid}-float`;
       setFloatingScores((prev) => [...prev.slice(-4), { id: floatId, text: floatText, x, y, isPositive }]);
-      setTimeout(() => {
+      scheduleTimeout(() => {
         setFloatingScores((prev) => prev.filter((f) => f.id !== floatId));
       }, 620);
     }
-  }, []);
+  }, [scheduleTimeout]);
 
   const currentLevel = useMemo(() => {
     if (timeLeft > 20) return 1;
@@ -286,10 +310,15 @@ export default function HulkSmashGame({ onClose }) {
     setShowAvatarPicker(false);
     if (pausedByModal) {
       setPausedByModal(false);
-      setSlots((prev) => spawnArenaWave(prev.map(() => null), currentLevel, { forceInitial: true }));
+      setSlots((prev) =>
+        spawnArenaWave(prev.map(() => null), currentLevel, {
+          forceInitial: true,
+          excludeAvatarId: activeAvatar?.id,
+        })
+      );
       setGameState('playing');
     }
-  }, [pausedByModal, currentLevel]);
+  }, [pausedByModal, currentLevel, activeAvatar]);
 
   const openModalSafely = (modalSetter) => {
     setShowHowToPlay(false);
@@ -321,8 +350,6 @@ export default function HulkSmashGame({ onClose }) {
 
   const startActiveGame = useCallback(() => {
     clearInterval(countdownTimerRef.current);
-    clearTimeout(overchargeTimeoutRef.current);
-    clearTimeout(freezeTimeoutRef.current);
     try {
       hulkAudio.playGameStart(activeAvatar?.id);
       hulkAudio.speakHulkLine(activeAvatar?.voiceLine || 'Hulk smash!');
@@ -337,13 +364,18 @@ export default function HulkSmashGame({ onClose }) {
     setTotalClicks(0);
     setTeamUpsUsed(0);
     setTeamUpCharge(50);
-    setIsOverchargeActive(false);
-    setIsTimeFrozen(false);
+    setOverchargeMs(0);
+    setFreezeMs(0);
     setComicBursts([]);
     setFloatingScores([]);
     setShockwaves([]);
     setIsNewRecord(false);
-    setSlots(spawnArenaWave(Array(GRID_SIZE).fill(null), 1, { forceInitial: true }));
+    setSlots(
+      spawnArenaWave(Array(GRID_SIZE).fill(null), 1, {
+        forceInitial: true,
+        excludeAvatarId: activeAvatar?.id,
+      })
+    );
     setDialogue(
       activeAvatar?.id === 'hulk'
         ? HULK_DIALOGUES.intro[Math.floor(Math.random() * HULK_DIALOGUES.intro.length)]
@@ -358,35 +390,51 @@ export default function HulkSmashGame({ onClose }) {
     setShowSoundboard(false);
     setShowAvatarPicker(false);
     setPausedByModal(false);
-    setGameState('countdown');
+    countdownStepRef.current = 3;
     setCountdownNumber(3);
-    try { hulkAudio.playCountdownBeep(false); } catch { }
+    setGameState('countdown');
+    try { hulkAudio.playCountdownBeep(false, 3); } catch { }
+  }, [clearAllTimers]);
 
-    let count = 3;
+  useEffect(() => {
+    if (gameState !== 'countdown' || showHowToPlay || showSoundboard || showAvatarPicker) {
+      clearInterval(countdownTimerRef.current);
+      return;
+    }
+
     countdownTimerRef.current = setInterval(() => {
-      count -= 1;
-      if (count === 0) {
+      const nextCount = countdownStepRef.current - 1;
+      countdownStepRef.current = nextCount;
+      if (nextCount === 0) {
         setCountdownNumber('HULK SMASH!');
         try {
-          hulkAudio.playCountdownBeep(true);
+          hulkAudio.playCountdownBeep(true, 0);
           hulkAudio.playHulkRoar();
         } catch { }
         triggerScreenShake();
-      } else if (count < 0) {
+      } else if (nextCount < 0) {
         clearInterval(countdownTimerRef.current);
         startActiveGame();
       } else {
-        setCountdownNumber(count);
-        try { hulkAudio.playCountdownBeep(false); } catch { }
+        setCountdownNumber(nextCount);
+        try { hulkAudio.playCountdownBeep(false, nextCount); } catch { }
       }
-    }, 780);
-  }, [clearAllTimers, startActiveGame, triggerScreenShake]);
+    }, 860);
+
+    return () => clearInterval(countdownTimerRef.current);
+  }, [gameState, showHowToPlay, showSoundboard, showAvatarPicker, startActiveGame, triggerScreenShake]);
 
   useEffect(() => {
-    if (gameState !== 'loading') return;
+    if (gameState !== 'loading' || showHowToPlay || showSoundboard || showAvatarPicker) {
+      clearInterval(loadingTimerRef.current);
+      clearTimeout(loadingDoneTimeoutRef.current);
+      return;
+    }
 
-    try { hulkAudio.playChargingSweep(); } catch { }
-    let currentPct = 0;
+    if (loadingProgressRef.current === 0) {
+      try { hulkAudio.playChargingSweep(); } catch { }
+    }
+    let currentPct = loadingProgressRef.current;
 
     loadingTimerRef.current = setInterval(() => {
       currentPct += Math.floor(Math.random() * 14) + 12;
@@ -403,11 +451,13 @@ export default function HulkSmashGame({ onClose }) {
 
       if (currentPct >= 100) {
         clearInterval(loadingTimerRef.current);
+        loadingProgressRef.current = 100;
         setLoadingProgress(100);
         loadingDoneTimeoutRef.current = setTimeout(() => {
           startCountdownSequence();
         }, 280);
       } else {
+        loadingProgressRef.current = currentPct;
         setLoadingProgress(currentPct);
       }
     }, 105);
@@ -416,11 +466,12 @@ export default function HulkSmashGame({ onClose }) {
       clearInterval(loadingTimerRef.current);
       clearTimeout(loadingDoneTimeoutRef.current);
     };
-  }, [gameState, startCountdownSequence]);
+  }, [gameState, showHowToPlay, showSoundboard, showAvatarPicker, startCountdownSequence]);
 
   const handleSkipLoading = () => {
     clearInterval(loadingTimerRef.current);
     clearTimeout(loadingDoneTimeoutRef.current);
+    loadingProgressRef.current = 100;
     setLoadingProgress(100);
     startCountdownSequence();
   };
@@ -439,9 +490,9 @@ export default function HulkSmashGame({ onClose }) {
           clearInterval(gameTimerRef.current);
           return 0;
         }
-        if (prev <= 8) {
-          try { hulkAudio.playTimerTick(true); } catch { }
-          if (prev % 3 === 0) {
+        if (prev <= 10) {
+          try { hulkAudio.playTimerTick(prev <= 6); } catch { }
+          if (prev <= 8 && prev % 3 === 0) {
             setDialogue(HULK_DIALOGUES.lowTime[Math.floor(Math.random() * HULK_DIALOGUES.lowTime.length)]);
           }
         }
@@ -453,12 +504,19 @@ export default function HulkSmashGame({ onClose }) {
   }, [gameState]);
 
   useEffect(() => {
+    if (gameState !== 'playing') return;
+    const buffTicker = setInterval(() => {
+      setOverchargeMs((prev) => (prev > 100 ? prev - 100 : 0));
+      setFreezeMs((prev) => (prev > 100 ? prev - 100 : 0));
+    }, 100);
+    return () => clearInterval(buffTicker);
+  }, [gameState]);
+
+  useEffect(() => {
     if (timeLeft === 0 && gameState === 'playing') {
       clearInterval(spawnTimerRef.current);
-      clearTimeout(overchargeTimeoutRef.current);
-      clearTimeout(freezeTimeoutRef.current);
-      setIsOverchargeActive(false);
-      setIsTimeFrozen(false);
+      setOverchargeMs(0);
+      setFreezeMs(0);
       setGameState('gameover');
       try {
         hulkAudio.playGameOver();
@@ -486,12 +544,15 @@ export default function HulkSmashGame({ onClose }) {
 
     spawnTimerRef.current = setInterval(() => {
       setSlots((currentSlots) =>
-        spawnArenaWave(currentSlots, currentLevel, { isTimeFrozen: isTimeFrozenRef.current })
+        spawnArenaWave(currentSlots, currentLevel, {
+          isTimeFrozen: isTimeFrozenRef.current,
+          excludeAvatarId: activeAvatar?.id,
+        })
       );
     }, spawnInterval);
 
     return () => clearInterval(spawnTimerRef.current);
-  }, [gameState, currentLevel]);
+  }, [gameState, currentLevel, activeAvatar]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -551,12 +612,18 @@ export default function HulkSmashGame({ onClose }) {
           floatText: `+${guaranteedPts} TEAM-UP`,
           isPositive: true,
         });
+
+        scheduleTimeout(() => {
+          if (gameStateRef.current !== 'playing') return;
+          setSlots((cur) =>
+            spawnArenaWave(cur, currentLevel, {
+              isTimeFrozen: isTimeFrozenRef.current,
+              excludeAvatarId: activeAvatar?.id,
+            })
+          );
+        }, 280);
       } else if (assist.id === 'ironman-overcharge') {
-        clearTimeout(overchargeTimeoutRef.current);
-        setIsOverchargeActive(true);
-        overchargeTimeoutRef.current = setTimeout(() => {
-          setIsOverchargeActive(false);
-        }, 5000);
+        setOverchargeMs(5000);
 
         spawnImpactVisuals(centerX, centerY, {
           word: 'STARK 2X OVERCHARGE',
@@ -565,11 +632,7 @@ export default function HulkSmashGame({ onClose }) {
           isPositive: true,
         });
       } else if (assist.id === 'strange-timestasis') {
-        clearTimeout(freezeTimeoutRef.current);
-        setIsTimeFrozen(true);
-        freezeTimeoutRef.current = setTimeout(() => {
-          setIsTimeFrozen(false);
-        }, 4000);
+        setFreezeMs(4000);
 
         spawnImpactVisuals(centerX, centerY, {
           word: 'TIME STASIS',
@@ -579,7 +642,7 @@ export default function HulkSmashGame({ onClose }) {
         });
       }
     },
-    [gameState, teamUpCharge, combo, isOverchargeActive, triggerScreenShake, spawnImpactVisuals]
+    [gameState, teamUpCharge, combo, isOverchargeActive, currentLevel, activeAvatar, triggerScreenShake, spawnImpactVisuals, scheduleTimeout]
   );
 
   useEffect(() => {
@@ -593,7 +656,12 @@ export default function HulkSmashGame({ onClose }) {
         } else if (gameState === 'playing') {
           setGameState('paused');
         } else if (gameState === 'paused') {
-          setSlots((prev) => spawnArenaWave(prev.map(() => null), currentLevel, { forceInitial: true }));
+          setSlots((prev) =>
+            spawnArenaWave(prev.map(() => null), currentLevel, {
+              forceInitial: true,
+              excludeAvatarId: activeAvatar?.id,
+            })
+          );
           setGameState('playing');
         } else {
           onClose();
@@ -612,7 +680,7 @@ export default function HulkSmashGame({ onClose }) {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [gameState, showHowToPlay, showSoundboard, showAvatarPicker, currentLevel, closeModalsSafely, handleTriggerHeroAssist, onClose]);
+  }, [gameState, showHowToPlay, showSoundboard, showAvatarPicker, currentLevel, activeAvatar, closeModalsSafely, handleTriggerHeroAssist, onClose]);
 
   const handleSmashSlot = (index, e) => {
     if (gameState !== 'playing') return;
@@ -620,11 +688,27 @@ export default function HulkSmashGame({ onClose }) {
     const target = slots[index];
     if (!target || target.isSmashed) return;
 
+    const hasRemainingTarget = slots.some(
+      (s, i) => i !== index && s && s.type === 'smash' && !s.isSmashed
+    );
+
     setSlots((prev) => {
       const copy = [...prev];
       if (copy[index]) copy[index] = { ...copy[index], isSmashed: true };
       return copy;
     });
+
+    if (target.type === 'smash' && !hasRemainingTarget) {
+      scheduleTimeout(() => {
+        if (gameStateRef.current !== 'playing') return;
+        setSlots((cur) =>
+          spawnArenaWave(cur, currentLevel, {
+            isTimeFrozen: isTimeFrozenRef.current,
+            excludeAvatarId: activeAvatar?.id,
+          })
+        );
+      }, 240);
+    }
 
     setTotalClicks((prev) => prev + 1);
 
@@ -752,13 +836,12 @@ export default function HulkSmashGame({ onClose }) {
       role="dialog"
       aria-modal="true"
       aria-label="Hulk Smash Mayhem Mini-Game"
-      className={`fixed inset-0 z-50 bg-[#050608] flex flex-col justify-between overflow-hidden select-none transition-colors duration-300 ${
-        isTimeFrozen
-          ? 'ring-2 ring-inset ring-[#34D399]/60'
-          : isOverchargeActive
-            ? 'ring-2 ring-inset ring-[#D4AF37]/60'
-            : ''
-      }`}
+      className={`fixed inset-0 z-50 bg-[#050608] flex flex-col justify-between overflow-hidden select-none transition-colors duration-300 ${isTimeFrozen
+        ? 'ring-2 ring-inset ring-[#34D399]/60'
+        : isOverchargeActive
+          ? 'ring-2 ring-inset ring-[#D4AF37]/60'
+          : ''
+        }`}
     >
       {/* Subtle Film-Still Cinema Backdrop */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -837,11 +920,10 @@ export default function HulkSmashGame({ onClose }) {
             type="button"
             onClick={() => setVoiceEnabled((prev) => !prev)}
             aria-label={voiceEnabled ? 'Disable voice lines' : 'Enable voice lines'}
-            className={`hidden sm:inline-flex items-center gap-1 px-2 py-1.5 border rounded-[2px] text-[10px] font-mono uppercase transition-colors cursor-pointer ${
-              voiceEnabled
-                ? 'border-[#34D399]/60 bg-[#0F1B16] text-[#34D399]'
-                : 'border-[#272D38] bg-[#0D1015] text-[#7A818D] hover:text-white'
-            }`}
+            className={`hidden sm:inline-flex items-center gap-1 px-2 py-1.5 border rounded-[2px] text-[10px] font-mono uppercase transition-colors cursor-pointer ${voiceEnabled
+              ? 'border-[#34D399]/60 bg-[#0F1B16] text-[#34D399]'
+              : 'border-[#272D38] bg-[#0D1015] text-[#7A818D] hover:text-white'
+              }`}
             title="Toggle English SpeechSynthesis Announcer"
           >
             {voiceEnabled ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5" />}
@@ -966,26 +1048,35 @@ export default function HulkSmashGame({ onClose }) {
          ═════════════════════════════════════════════════════════════════════ */}
       {gameState === 'countdown' && (
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center relative z-20">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-8 bg-[#2C333E]" />
+          <div className="flex items-center gap-3 mb-4">
+            <span className="h-px w-8 sm:w-12 bg-[#2C333E]" />
             <span className="text-[10px] font-mono tracking-[0.28em] text-[#8E94A0] uppercase">
               {activeAvatar.name.toUpperCase()} DEPLOYING WITH HULK
             </span>
-            <span className="h-px w-8 bg-[#2C333E]" />
+            <span className="h-px w-8 sm:w-12 bg-[#2C333E]" />
           </div>
 
           <div
             key={countdownNumber}
-            className={`font-cinematic font-black tracking-tight leading-none text-center select-none countdown-zoom ${
-              countdownNumber === 'HULK SMASH!'
-                ? 'text-4xl sm:text-7xl md:text-8xl text-[#34D399]'
-                : 'text-7xl sm:text-9xl md:text-[11rem] text-metallic'
-            }`}
+            className={`font-trailer font-normal leading-none text-center select-none countdown-zoom ${countdownNumber === 'HULK SMASH!'
+              ? 'text-6xl sm:text-8xl md:text-[10rem] tracking-[0.06em] text-[#34D399] drop-shadow-[0_0_32px_rgba(52,211,153,0.4)]'
+              : 'text-8xl sm:text-[10.5rem] md:text-[13rem] tracking-[0.04em] text-metallic drop-shadow-[0_12px_32px_rgba(0,0,0,0.85)]'
+              }`}
           >
             {countdownNumber}
           </div>
 
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-4 text-[10px] font-mono uppercase tracking-[0.2em] text-[#8E94A0]">
+          <span className="mt-3 text-[10px] sm:text-xs font-hud font-bold tracking-[0.34em] uppercase text-[#9CA3AF]">
+            {countdownNumber === 3
+              ? 'CALIBRATING GAMMA IMPACT'
+              : countdownNumber === 2
+                ? 'HOSTILE SIGNATURES LOCKED'
+                : countdownNumber === 1
+                  ? 'ALLIES SHIELDED — READY'
+                  : 'SMASH ACTIVATED — ENGAGE!'}
+          </span>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-[10px] font-mono uppercase tracking-[0.2em] text-[#8E94A0]">
             <span>
               <strong className="text-[#34D399] font-semibold">STRIKE</strong> HOSTILES
             </span>
@@ -1002,9 +1093,8 @@ export default function HulkSmashGame({ onClose }) {
          ═════════════════════════════════════════════════════════════════════ */}
       {(gameState === 'playing' || gameState === 'paused') && (
         <div
-          className={`w-full max-w-5xl mx-auto px-2.5 sm:px-6 pt-2.5 pb-2.5 flex flex-col justify-between flex-1 min-h-0 relative z-20 transition-transform ${
-            screenShake ? 'screen-shake-smash' : ''
-          }`}
+          className={`w-full max-w-5xl mx-auto px-2.5 sm:px-6 pt-2.5 pb-2.5 flex flex-col justify-between flex-1 min-h-0 relative z-20 transition-transform ${screenShake ? 'screen-shake-smash' : ''
+            }`}
         >
           {/* Top Architectural HUD Bar */}
           <div className="border border-[#1D222B] bg-[#0A0C10]/95 rounded-[2px] grid grid-cols-12 items-stretch shrink-0 divide-x divide-[#1A1F28]">
@@ -1016,15 +1106,14 @@ export default function HulkSmashGame({ onClose }) {
                     SCORE
                   </span>
                   {isOverchargeActive && (
-                    <span className="px-1 py-0.2 bg-[#D4AF37] text-black text-[8px] font-mono font-bold rounded-[1px]">
-                      2X STARK
+                    <span className="px-1.5 py-0.2 bg-[#D4AF37] text-black text-[8px] font-mono font-bold rounded-[1px] tabular-nums">
+                      2X {(overchargeMs / 1000).toFixed(1)}s
                     </span>
                   )}
                 </div>
                 <span
-                  className={`text-lg sm:text-3xl font-sans font-bold tracking-tight tabular-nums block leading-none mt-0.5 ${
-                    isOverchargeActive ? 'text-[#D4AF37]' : 'text-white'
-                  }`}
+                  className={`text-2xl sm:text-4xl font-hud font-extrabold tracking-wide tabular-nums block leading-none mt-0.5 ${isOverchargeActive ? 'text-[#D4AF37]' : 'text-white'
+                    }`}
                 >
                   {score.toLocaleString()}
                 </span>
@@ -1035,7 +1124,7 @@ export default function HulkSmashGame({ onClose }) {
                   STREAK
                 </span>
                 <span
-                  className="text-xs sm:text-sm font-mono font-bold tracking-wider"
+                  className="text-sm sm:text-base font-hud font-bold tracking-wider tabular-nums"
                   style={{ color: combo >= 5 ? '#34D399' : '#D1D5DB' }}
                 >
                   x{combo}
@@ -1083,17 +1172,16 @@ export default function HulkSmashGame({ onClose }) {
             {/* Right: Countdown Clock + Pause */}
             <div className="col-span-7 md:col-span-3 px-3 py-2 flex items-center justify-end gap-3">
               <div className="text-right">
-                <span className="text-[8.5px] font-mono text-[#7C828D] tracking-[0.2em] uppercase block">
-                  {isTimeFrozen ? 'STASIS' : 'REMAINING'}
+                <span className="text-[8.5px] font-mono text-[#7C828D] tracking-[0.2em] uppercase block tabular-nums">
+                  {isTimeFrozen ? `STASIS ${(freezeMs / 1000).toFixed(1)}s` : 'REMAINING'}
                 </span>
                 <span
-                  className={`text-lg sm:text-3xl font-sans font-bold tabular-nums leading-none inline-flex items-center gap-1 mt-0.5 ${
-                    isTimeFrozen
-                      ? 'text-[#60A5FA]'
-                      : timeLeft <= 8
-                        ? 'text-[#DC2626]'
-                        : 'text-white'
-                  }`}
+                  className={`text-2xl sm:text-4xl font-hud font-extrabold tracking-wide tabular-nums leading-none inline-flex items-center gap-1 mt-0.5 ${isTimeFrozen
+                    ? 'text-[#60A5FA]'
+                    : timeLeft <= 8
+                      ? 'text-[#DC2626]'
+                      : 'text-white'
+                    }`}
                 >
                   {isTimeFrozen && <Clock className="w-4 h-4 sm:w-5 sm:h-5" />}
                   {timeLeft}s
@@ -1138,16 +1226,14 @@ export default function HulkSmashGame({ onClose }) {
               </span>
               <div className="flex-1 h-[3px] bg-[#141820] overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-200 ${
-                    teamUpCharge >= 100 ? 'bg-[#34D399]' : 'bg-[#2C4A3A]'
-                  }`}
+                  className={`h-full transition-all duration-200 ${teamUpCharge >= 100 ? 'bg-[#34D399]' : 'bg-[#2C4A3A]'
+                    }`}
                   style={{ width: `${teamUpCharge}%` }}
                 />
               </div>
               <span
-                className={`text-[9px] font-mono font-semibold uppercase tracking-wider shrink-0 ${
-                  teamUpCharge >= 100 ? 'text-[#34D399]' : 'text-[#7C828D]'
-                }`}
+                className={`text-[9px] font-mono font-semibold uppercase tracking-wider shrink-0 ${teamUpCharge >= 100 ? 'text-[#34D399]' : 'text-[#7C828D]'
+                  }`}
               >
                 {teamUpCharge >= 100 ? 'READY [1/2/3]' : `${teamUpCharge}%`}
               </span>
@@ -1178,23 +1264,21 @@ export default function HulkSmashGame({ onClose }) {
                   onClick={(e) => handleSmashSlot(index, e)}
                   style={{ touchAction: 'manipulation' }}
                   aria-label={`${item.name} (${item.badge})`}
-                  className={`group relative rounded-[2px] border flex flex-col justify-between cursor-pointer transition-all duration-150 active:scale-95 overflow-hidden select-none text-left ${
-                    item.isSmashed
-                      ? 'scale-95 opacity-15 border-white/40'
-                      : isDecoy
-                        ? 'border-[#5C2428] hover:border-[#DC2626] bg-[#10090A]'
-                        : item.isBonus
-                          ? 'border-[#34D399] bg-[#08110D]'
-                          : 'border-[#254434] hover:border-[#34D399] bg-[#090D0B]'
-                  }`}
+                  className={`group relative rounded-[2px] border flex flex-col justify-between cursor-pointer transition-all duration-150 active:scale-95 overflow-hidden select-none text-left ${item.isSmashed
+                    ? 'scale-95 opacity-15 border-white/40'
+                    : isDecoy
+                      ? 'border-[#5C2428] hover:border-[#DC2626] bg-[#10090A]'
+                      : item.isBonus
+                        ? 'border-[#34D399] bg-[#08110D]'
+                        : 'border-[#254434] hover:border-[#34D399] bg-[#090D0B]'
+                    }`}
                 >
                   {/* Full-Bleed Still Portrait */}
                   <img
                     src={item.poster}
                     alt={item.name}
-                    className={`absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 ${
-                      isDecoy ? 'brightness-[0.72] saturate-[0.75]' : 'brightness-[0.88] contrast-110'
-                    }`}
+                    className={`absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 ${isDecoy ? 'brightness-[0.72] saturate-[0.75]' : 'brightness-[0.88] contrast-110'
+                      }`}
                   />
 
                   {/* Deep Cinema Contrast Scrim */}
@@ -1218,22 +1302,20 @@ export default function HulkSmashGame({ onClose }) {
                   {/* Top Classification Tag & Score Delta */}
                   <div className="relative z-10 w-full p-1.5 sm:p-2 flex items-center justify-between gap-1">
                     <span
-                      className={`inline-flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] uppercase tracking-[0.14em] truncate border ${
-                        isDecoy
-                          ? 'bg-[#7F1D1D]/90 border-[#DC2626]/60 text-white'
-                          : item.isBonus
-                            ? 'bg-[#34D399] border-[#34D399] text-[#050608]'
-                            : 'bg-[#0C1D15]/90 border-[#34D399]/50 text-[#34D399]'
-                      }`}
+                      className={`inline-flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] uppercase tracking-[0.14em] truncate border ${isDecoy
+                        ? 'bg-[#7F1D1D]/90 border-[#DC2626]/60 text-white'
+                        : item.isBonus
+                          ? 'bg-[#34D399] border-[#34D399] text-[#050608]'
+                          : 'bg-[#0C1D15]/90 border-[#34D399]/50 text-[#34D399]'
+                        }`}
                     >
                       {isDecoy ? <ShieldAlert className="w-2.5 h-2.5 shrink-0" /> : <Crosshair className="w-2.5 h-2.5 shrink-0" />}
                       <span className="truncate">{item.badge}</span>
                     </span>
 
                     <span
-                      className={`text-[8.5px] sm:text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] bg-black/80 border border-[#232832] shrink-0 ${
-                        isDecoy ? 'text-[#F87171]' : 'text-[#E5E7EB]'
-                      }`}
+                      className={`text-[8.5px] sm:text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[1px] bg-black/80 border border-[#232832] shrink-0 ${isDecoy ? 'text-[#F87171]' : 'text-[#E5E7EB]'
+                        }`}
                     >
                       {isDecoy ? `${item.penalty}` : `+${displayPoints}`}
                     </span>
@@ -1252,9 +1334,8 @@ export default function HulkSmashGame({ onClose }) {
                   {/* Razor-Thin Lifespan Progress Line */}
                   {!item.isSmashed && (
                     <div
-                      className={`target-fuse-bar absolute bottom-0 left-0 right-0 h-[2px] z-20 ${
-                        isDecoy ? 'bg-[#DC2626]' : 'bg-[#34D399]'
-                      }`}
+                      className={`target-fuse-bar absolute bottom-0 left-0 right-0 h-[2px] z-20 ${isDecoy ? 'bg-[#DC2626]' : 'bg-[#34D399]'
+                        }`}
                       style={{
                         animationDuration: `${item.lifespan || 2000}ms`,
                         animationPlayState: gameState === 'paused' || isTimeFrozen ? 'paused' : 'running',
@@ -1276,18 +1357,16 @@ export default function HulkSmashGame({ onClose }) {
                   type="button"
                   disabled={!isReady || gameState !== 'playing'}
                   onClick={() => handleTriggerHeroAssist(assist)}
-                  className={`relative flex items-center gap-2.5 p-1.5 sm:p-2 rounded-[2px] border text-left transition-colors overflow-hidden ${
-                    isReady
-                      ? 'bg-[#0D1512] border-[#34D399]/70 hover:border-[#34D399] cursor-pointer'
-                      : 'bg-[#090B0E] border-[#1A1E26] opacity-55 cursor-not-allowed'
-                  }`}
+                  className={`relative flex items-center gap-2.5 p-1.5 sm:p-2 rounded-[2px] border text-left transition-colors overflow-hidden ${isReady
+                    ? 'bg-[#0D1512] border-[#34D399]/70 hover:border-[#34D399] cursor-pointer'
+                    : 'bg-[#090B0E] border-[#1A1E26] opacity-55 cursor-not-allowed'
+                    }`}
                 >
                   <img
                     src={assist.poster}
                     alt={assist.heroName}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-[2px] object-cover object-top border shrink-0 ${
-                      isReady ? 'border-[#34D399]/60' : 'border-[#262B35] grayscale-[50%]'
-                    }`}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-[2px] object-cover object-top border shrink-0 ${isReady ? 'border-[#34D399]/60' : 'border-[#262B35] grayscale-[50%]'
+                      }`}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">
@@ -1295,11 +1374,10 @@ export default function HulkSmashGame({ onClose }) {
                         {assist.abilityName}
                       </span>
                       <span
-                        className={`hidden sm:inline-block px-1 py-0.2 text-[8px] font-mono font-semibold rounded-[1px] border ${
-                          isReady
-                            ? 'bg-[#ECEEF2] text-[#08090B] border-[#ECEEF2]'
-                            : 'bg-[#11141A] text-[#6B7280] border-[#222732]'
-                        }`}
+                        className={`hidden sm:inline-block px-1 py-0.2 text-[8px] font-mono font-semibold rounded-[1px] border ${isReady
+                          ? 'bg-[#ECEEF2] text-[#08090B] border-[#ECEEF2]'
+                          : 'bg-[#11141A] text-[#6B7280] border-[#222732]'
+                          }`}
                       >
                         [{assist.hotkey}]
                       </span>
@@ -1337,7 +1415,12 @@ export default function HulkSmashGame({ onClose }) {
               <button
                 type="button"
                 onClick={() => {
-                  setSlots((prev) => spawnArenaWave(prev.map(() => null), currentLevel, { forceInitial: true }));
+                  setSlots((prev) =>
+                    spawnArenaWave(prev.map(() => null), currentLevel, {
+                      forceInitial: true,
+                      excludeAvatarId: activeAvatar?.id,
+                    })
+                  );
                   setGameState('playing');
                 }}
                 className="w-full py-2.5 bg-[#ECEEF2] hover:bg-white text-[#08090B] font-mono font-bold text-xs uppercase tracking-[0.2em] transition-colors rounded-[2px] cursor-pointer"
@@ -1413,11 +1496,10 @@ export default function HulkSmashGame({ onClose }) {
                     key={cat}
                     type="button"
                     onClick={() => setAvatarCategory(cat)}
-                    className={`px-2 py-1 text-[9px] font-mono font-semibold uppercase rounded-[2px] border cursor-pointer transition-colors ${
-                      avatarCategory === cat
-                        ? 'bg-[#ECEEF2] text-[#08090B] border-[#ECEEF2]'
-                        : 'bg-[#0C0F14] text-[#8E94A0] border-[#212630] hover:text-white'
-                    }`}
+                    className={`px-2 py-1 text-[9px] font-mono font-semibold uppercase rounded-[2px] border cursor-pointer transition-colors ${avatarCategory === cat
+                      ? 'bg-[#ECEEF2] text-[#08090B] border-[#ECEEF2]'
+                      : 'bg-[#0C0F14] text-[#8E94A0] border-[#212630] hover:text-white'
+                      }`}
                   >
                     {cat}
                   </button>
@@ -1433,11 +1515,10 @@ export default function HulkSmashGame({ onClose }) {
                     key={char.id}
                     type="button"
                     onClick={() => handleSelectAvatar(char)}
-                    className={`group relative rounded-[2px] overflow-hidden border aspect-[3/4] text-left cursor-pointer transition-colors ${
-                      isSelected
-                        ? 'border-[#34D399]'
-                        : 'border-[#1E232C] hover:border-[#4B5565]'
-                    }`}
+                    className={`group relative rounded-[2px] overflow-hidden border aspect-[3/4] text-left cursor-pointer transition-colors ${isSelected
+                      ? 'border-[#34D399]'
+                      : 'border-[#1E232C] hover:border-[#4B5565]'
+                      }`}
                   >
                     <img
                       src={char.poster}
@@ -1646,11 +1727,10 @@ export default function HulkSmashGame({ onClose }) {
                     key={sfx.id}
                     type="button"
                     onClick={() => handleAuditionSound(sfx.id)}
-                    className={`p-2.5 rounded-[2px] border text-left transition-colors cursor-pointer flex items-center justify-between gap-2 ${
-                      isActive
-                        ? 'bg-[#101814] border-[#34D399]'
-                        : 'bg-[#0C0F14] border-[#1D222B] hover:border-[#3A4352]'
-                    }`}
+                    className={`p-2.5 rounded-[2px] border text-left transition-colors cursor-pointer flex items-center justify-between gap-2 ${isActive
+                      ? 'bg-[#101814] border-[#34D399]'
+                      : 'bg-[#0C0F14] border-[#1D222B] hover:border-[#3A4352]'
+                      }`}
                   >
                     <div className="min-w-0">
                       <span className="text-[8.5px] font-mono font-semibold uppercase block text-[#8E94A0]">
@@ -1684,11 +1764,10 @@ export default function HulkSmashGame({ onClose }) {
                       key={char.id}
                       type="button"
                       onClick={() => handleAuditionCharacterVoice(char.id)}
-                      className={`p-2 rounded-[2px] border text-left transition-colors cursor-pointer flex items-center justify-between gap-2 ${
-                        isActive
-                          ? 'bg-[#101814] border-[#34D399]'
-                          : 'bg-[#0C0F14] border-[#1D222B] hover:border-[#3A4352]'
-                      }`}
+                      className={`p-2 rounded-[2px] border text-left transition-colors cursor-pointer flex items-center justify-between gap-2 ${isActive
+                        ? 'bg-[#101814] border-[#34D399]'
+                        : 'bg-[#0C0F14] border-[#1D222B] hover:border-[#3A4352]'
+                        }`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <img
@@ -1800,7 +1879,7 @@ export default function HulkSmashGame({ onClose }) {
               </div>
             </div>
 
-            <div className="text-4xl sm:text-6xl font-sans font-bold text-metallic tracking-tight my-3 tabular-nums">
+            <div className="text-5xl sm:text-7xl font-hud font-extrabold text-metallic tracking-wide my-3 tabular-nums">
               {score.toLocaleString()}
             </div>
 
@@ -1827,23 +1906,23 @@ export default function HulkSmashGame({ onClose }) {
 
             <div className="grid grid-cols-5 gap-1.5 p-3 bg-[#060709] border border-[#191D24] rounded-[2px] mb-5 text-center">
               <div>
-                <span className="text-sm sm:text-lg font-sans font-bold text-white block">{targetsSmashed}</span>
+                <span className="text-base sm:text-xl font-hud font-bold text-white tabular-nums block">{targetsSmashed}</span>
                 <span className="text-[7px] font-mono text-[#7C828D] uppercase">STRUCK</span>
               </div>
               <div>
-                <span className="text-sm sm:text-lg font-sans font-bold text-[#F87171] block">{decoysHit}</span>
+                <span className="text-base sm:text-xl font-hud font-bold text-[#F87171] tabular-nums block">{decoysHit}</span>
                 <span className="text-[7px] font-mono text-[#7C828D] uppercase">ALLIES HIT</span>
               </div>
               <div>
-                <span className="text-sm sm:text-lg font-sans font-bold text-[#34D399] block">x{highestCombo}</span>
+                <span className="text-base sm:text-xl font-hud font-bold text-[#34D399] tabular-nums block">x{highestCombo}</span>
                 <span className="text-[7px] font-mono text-[#7C828D] uppercase">MAX STREAK</span>
               </div>
               <div>
-                <span className="text-sm sm:text-lg font-sans font-bold text-[#60A5FA] block">{teamUpsUsed}</span>
+                <span className="text-base sm:text-xl font-hud font-bold text-[#60A5FA] tabular-nums block">{teamUpsUsed}</span>
                 <span className="text-[7px] font-mono text-[#7C828D] uppercase">TEAM-UPS</span>
               </div>
               <div>
-                <span className="text-sm sm:text-lg font-sans font-bold text-white block">{accuracy}%</span>
+                <span className="text-base sm:text-xl font-hud font-bold text-white tabular-nums block">{accuracy}%</span>
                 <span className="text-[7px] font-mono text-[#7C828D] uppercase">ACCURACY</span>
               </div>
             </div>
@@ -1926,9 +2005,8 @@ export default function HulkSmashGame({ onClose }) {
           style={{ left: `${float.x}px`, top: `${float.y}px` }}
         >
           <div
-            className={`floating-score font-mono font-bold text-base sm:text-xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] whitespace-nowrap ${
-              float.isPositive ? 'text-[#34D399]' : 'text-[#F87171]'
-            }`}
+            className={`floating-score font-mono font-bold text-base sm:text-xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] whitespace-nowrap ${float.isPositive ? 'text-[#34D399]' : 'text-[#F87171]'
+              }`}
           >
             {float.text}
           </div>
