@@ -1,16 +1,31 @@
 /**
- * AVENGERS: DOOMSDAY — Seamless Orchestral Background Score Engine
- * Plays high-definition Stereo Orchestral Avengers-style BGM (/sounds/avengers-bgm.wav)
- * seamlessly in a sample-exact Web Audio loop with smooth volume ducking,
- * first-interaction browser unlock, and optional persistent custom MP3/WAV BGM override.
+ * AVENGERS: DOOMSDAY — Seamless Background Score Engine
+ * Supports instant streaming playback of the active BGM track (/sounds/user-bgm.mp3)
+ * plus seamless switching to the built-in Orchestral Score (/sounds/avengers-bgm.wav)
+ * or persistent custom browser-imported MP3/WAV files via IndexedDB.
  */
 
 import { useState, useEffect } from 'react';
 
 const BGM_ENABLED_KEY = 'doomsday_avengers_bgm_v1';
+const BGM_TRACK_KEY = 'doomsday_avengers_bgm_track_v1';
 const BGM_DB_NAME = 'doomsday_custom_bgm_v1';
 const BGM_STORE_NAME = 'customBgm';
-export const BGM_DEFAULT_PATH = '/sounds/avengers-bgm.wav';
+
+export const BGM_TRACKS = {
+  primary: {
+    id: 'primary',
+    label: 'Featured Theme',
+    path: '/sounds/user-bgm.mp3',
+  },
+  orchestral: {
+    id: 'orchestral',
+    label: 'Doomsday Orchestra',
+    path: '/sounds/avengers-bgm.wav',
+  },
+};
+
+export const BGM_DEFAULT_PATH = BGM_TRACKS.primary.path;
 
 function openBgmDB() {
   return new Promise((resolve) => {
@@ -33,19 +48,18 @@ function openBgmDB() {
 
 class AvengersBgmEngine {
   constructor() {
-    this.ctx = null;
-    this.gainNode = null;
-    this.source = null;
-    this.buffer = null;
-    this.rawArrayBuffer = null;
     this.htmlAudio = null;
+    this.activeUrl = null;
+    this.customBlobUrl = null;
+    this.rawArrayBuffer = null;
+    this.fadeInterval = null;
     this.enabled = this._loadInitialEnabled();
+    this.trackMode = this._loadInitialTrackMode();
     this.isPlaying = false;
     this.isDucked = false;
-    this.baseVolume = 0.42;
+    this.baseVolume = 0.44;
     this.duckedVolume = 0.16;
     this.customBgmName = null;
-    this.loadPromise = null;
     this.customChecked = false;
     this.subscribers = new Set();
     this._setupUnlockListeners();
@@ -55,10 +69,20 @@ class AvengersBgmEngine {
     if (typeof window === 'undefined' || !window.localStorage) return true;
     try {
       const saved = window.localStorage.getItem(BGM_ENABLED_KEY);
-      if (saved === null) return true; // Enabled by default
+      if (saved === null) return true;
       return saved === 'true';
     } catch {
       return true;
+    }
+  }
+
+  _loadInitialTrackMode() {
+    if (typeof window === 'undefined' || !window.localStorage) return 'primary';
+    try {
+      const saved = window.localStorage.getItem(BGM_TRACK_KEY);
+      return saved === 'orchestral' ? 'orchestral' : 'primary';
+    } catch {
+      return 'primary';
     }
   }
 
@@ -66,6 +90,13 @@ class AvengersBgmEngine {
     if (typeof window === 'undefined' || !window.localStorage) return;
     try {
       window.localStorage.setItem(BGM_ENABLED_KEY, String(val));
+    } catch { }
+  }
+
+  _persistTrackMode(val) {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(BGM_TRACK_KEY, val);
     } catch { }
   }
 
@@ -81,6 +112,7 @@ class AvengersBgmEngine {
   getSnapshot() {
     return {
       enabled: this.enabled,
+      trackMode: this.trackMode,
       isPlaying: this.isPlaying,
       isDucked: this.isDucked,
       customBgmName: this.customBgmName,
@@ -114,44 +146,33 @@ class AvengersBgmEngine {
     window.addEventListener('click', handleFirstGesture, { passive: true });
   }
 
-  _ensureContext() {
-    if (typeof window === 'undefined') return null;
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        try {
-          this.ctx = new AudioCtx();
-          this.gainNode = this.ctx.createGain();
-          this.gainNode.gain.setValueAtTime(0.001, this.ctx.currentTime);
-          this.gainNode.connect(this.ctx.destination);
-        } catch {
-          return null;
-        }
-      }
-    }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => { });
-    }
-    return this.ctx;
-  }
-
   _targetGain() {
-    if (!this.enabled) return 0.0001;
+    if (!this.enabled) return 0.0;
     return this.isDucked ? this.duckedVolume : this.baseVolume;
   }
 
-  _fadeTo(target, seconds = 0.65) {
-    if (this.gainNode && this.ctx) {
-      try {
-        const now = this.ctx.currentTime;
-        this.gainNode.gain.cancelScheduledValues(now);
-        this.gainNode.gain.setValueAtTime(Math.max(0.0001, this.gainNode.gain.value), now);
-        this.gainNode.gain.exponentialRampToValueAtTime(Math.max(0.0001, target), now + seconds);
-      } catch { }
+  _fadeTo(target, durationMs = 500, onDone = null) {
+    clearInterval(this.fadeInterval);
+    if (!this.htmlAudio) {
+      if (onDone) onDone();
+      return;
     }
-    if (this.htmlAudio) {
-      this.htmlAudio.volume = Math.min(1, Math.max(0, target));
-    }
+    const startVol = this.htmlAudio.volume;
+    const steps = Math.max(1, Math.round(durationMs / 30));
+    let step = 0;
+
+    this.fadeInterval = setInterval(() => {
+      step += 1;
+      const ratio = Math.min(1, step / steps);
+      const next = startVol + (target - startVol) * ratio;
+      if (this.htmlAudio) {
+        this.htmlAudio.volume = Math.min(1, Math.max(0, next));
+      }
+      if (step >= steps) {
+        clearInterval(this.fadeInterval);
+        if (onDone) onDone();
+      }
+    }, 30);
   }
 
   async _loadCustomIfAny() {
@@ -169,128 +190,71 @@ class AvengersBgmEngine {
       });
       if (record?.data) {
         this.rawArrayBuffer = record.data;
-        this.customBgmName = record.fileName || 'Custom Avengers BGM';
-        this.buffer = null;
+        this.customBgmName = record.fileName || 'Custom Track';
         this._notify();
       }
     } catch { }
   }
 
-  async _ensureBuffer() {
-    await this._loadCustomIfAny();
-    const ctx = this._ensureContext();
-    if (this.buffer) return this.buffer;
-
-    if (!this.rawArrayBuffer && typeof fetch !== 'undefined') {
-      if (!this.loadPromise) {
-        this.loadPromise = fetch(BGM_DEFAULT_PATH)
-          .then((res) => (res.ok ? res.arrayBuffer() : null))
-          .then((buf) => {
-            if (buf) this.rawArrayBuffer = buf;
-            return buf;
-          })
-          .catch(() => null);
+  _resolveSourceUrl() {
+    if (this.customBgmName && this.rawArrayBuffer) {
+      if (!this.customBlobUrl) {
+        this.customBlobUrl = URL.createObjectURL(new Blob([this.rawArrayBuffer]));
       }
-      await this.loadPromise;
+      return this.customBlobUrl;
     }
-
-    if (this.rawArrayBuffer && ctx && typeof ctx.decodeAudioData === 'function') {
-      try {
-        this.buffer = await ctx.decodeAudioData(this.rawArrayBuffer.slice(0));
-        return this.buffer;
-      } catch { }
-    }
-    return null;
+    return BGM_TRACKS[this.trackMode]?.path || BGM_DEFAULT_PATH;
   }
 
   async start() {
-    if (!this.enabled || typeof window === 'undefined') return false;
-    const ctx = this._ensureContext();
-    if (ctx && ctx.state === 'suspended') {
-      try {
-        await ctx.resume();
-      } catch { }
-    }
+    if (!this.enabled || typeof window === 'undefined' || typeof Audio === 'undefined') return false;
 
-    const buffer = await this._ensureBuffer();
+    await this._loadCustomIfAny();
     if (!this.enabled) return false;
 
-    if (buffer && ctx && ctx.state === 'running' && this.gainNode) {
-      try {
-        if (this.source) {
-          this.source.stop();
-          this.source.disconnect();
-        }
-      } catch { }
-      try {
+    const srcUrl = this._resolveSourceUrl();
+    try {
+      if (!this.htmlAudio || this.activeUrl !== srcUrl) {
         if (this.htmlAudio) {
-          this.htmlAudio.pause();
-          this.htmlAudio = null;
+          try { this.htmlAudio.pause(); } catch { }
         }
-      } catch { }
-
-      try {
-        const src = ctx.createBufferSource();
-        src.buffer = buffer;
-        src.loop = true;
-        src.connect(this.gainNode);
-        this.gainNode.gain.setValueAtTime(0.001, ctx.currentTime);
-        src.start(ctx.currentTime);
-        this.source = src;
-        this.isPlaying = true;
-        this._fadeTo(this._targetGain(), 0.9);
-        this._notify();
-        return true;
-      } catch { }
-    }
-
-    // Fallback HTMLAudioElement loop (supports default WAV & custom uploaded audio blobs)
-    if (typeof Audio !== 'undefined') {
-      try {
-        let srcUrl = BGM_DEFAULT_PATH;
-        if (this.customBgmName && this.rawArrayBuffer) {
-          if (this.customBlobUrl) {
-            try { URL.revokeObjectURL(this.customBlobUrl); } catch { }
+        const el = new Audio(srcUrl);
+        el.loop = true;
+        el.preload = 'auto';
+        el.volume = 0.01;
+        // Fallback cleanly to built-in orchestral loop if local MP3 is absent
+        el.addEventListener('error', () => {
+          if (srcUrl !== BGM_TRACKS.orchestral.path && !this.customBgmName) {
+            this.trackMode = 'orchestral';
+            this.activeUrl = BGM_TRACKS.orchestral.path;
+            el.src = BGM_TRACKS.orchestral.path;
+            if (this.enabled) el.play().catch(() => { });
           }
-          this.customBlobUrl = URL.createObjectURL(new Blob([this.rawArrayBuffer]));
-          srcUrl = this.customBlobUrl;
-        }
-        if (!this.htmlAudio || this.htmlAudio.src !== srcUrl) {
-          if (this.htmlAudio) {
-            try { this.htmlAudio.pause(); } catch { }
-          }
-          this.htmlAudio = new Audio(srcUrl);
-          this.htmlAudio.loop = true;
-        }
-        this.htmlAudio.volume = this._targetGain();
-        await this.htmlAudio.play();
-        this.isPlaying = true;
-        this._notify();
-        return true;
-      } catch { }
-    }
+        });
+        this.htmlAudio = el;
+        this.activeUrl = srcUrl;
+      }
 
-    return false;
+      await this.htmlAudio.play();
+      this.isPlaying = true;
+      this._fadeTo(this._targetGain(), 550);
+      this._notify();
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   stop() {
-    this._fadeTo(0.0001, 0.28);
-    const oldSrc = this.source;
-    this.source = null;
+    clearInterval(this.fadeInterval);
     this.isPlaying = false;
-    if (oldSrc) {
-      setTimeout(() => {
+    this._fadeTo(0.0, 260, () => {
+      if (this.htmlAudio && !this.enabled) {
         try {
-          oldSrc.stop();
-          oldSrc.disconnect();
+          this.htmlAudio.pause();
         } catch { }
-      }, 300);
-    }
-    if (this.htmlAudio) {
-      try {
-        this.htmlAudio.pause();
-      } catch { }
-    }
+      }
+    });
     this._notify();
   }
 
@@ -311,29 +275,43 @@ class AvengersBgmEngine {
     this.toggle();
   }
 
+  setTrackMode(mode) {
+    const valid = mode === 'orchestral' ? 'orchestral' : 'primary';
+    if (this.trackMode === valid && !this.customBgmName) return;
+    this.trackMode = valid;
+    this._persistTrackMode(valid);
+    if (this.customBgmName) {
+      this.customBgmName = null;
+      if (this.customBlobUrl) {
+        try { URL.revokeObjectURL(this.customBlobUrl); } catch { }
+        this.customBlobUrl = null;
+      }
+    }
+    if (this.htmlAudio) {
+      try { this.htmlAudio.pause(); } catch { }
+      this.htmlAudio = null;
+      this.activeUrl = null;
+    }
+    this.enabled = true;
+    this._persistEnabled(true);
+    this._notify();
+    this.start();
+  }
+
   setDucked(duck) {
     const next = !!duck;
     if (this.isDucked === next) return;
     this.isDucked = next;
     if (this.isPlaying && this.enabled) {
-      this._fadeTo(this._targetGain(), 0.45);
+      this._fadeTo(this._targetGain(), 400);
     }
     this._notify();
   }
 
   async importCustomBgm(file) {
     if (!file) return { ok: false, error: 'No file selected' };
-    const ctx = this._ensureContext();
     try {
       const arrBuf = await file.arrayBuffer();
-      let decoded = null;
-      if (ctx && typeof ctx.decodeAudioData === 'function') {
-        try {
-          decoded = await ctx.decodeAudioData(arrBuf.slice(0));
-        } catch {
-          // Will fall back to HTMLAudioElement playback via Blob URL if browser container isn't WebAudio-decodable
-        }
-      }
       const db = await openBgmDB();
       if (db) {
         await new Promise((resolve) => {
@@ -344,9 +322,13 @@ class AvengersBgmEngine {
           tx.onerror = () => resolve(false);
         });
       }
+      if (this.customBlobUrl) {
+        try { URL.revokeObjectURL(this.customBlobUrl); } catch { }
+      }
       this.rawArrayBuffer = arrBuf;
-      this.buffer = decoded;
+      this.customBlobUrl = URL.createObjectURL(new Blob([arrBuf]));
       this.customBgmName = file.name;
+      this.activeUrl = null;
       this.enabled = true;
       this._persistEnabled(true);
       await this.start();
@@ -369,10 +351,13 @@ class AvengersBgmEngine {
         });
       } catch { }
     }
+    if (this.customBlobUrl) {
+      try { URL.revokeObjectURL(this.customBlobUrl); } catch { }
+      this.customBlobUrl = null;
+    }
     this.customBgmName = null;
     this.rawArrayBuffer = null;
-    this.buffer = null;
-    this.loadPromise = null;
+    this.activeUrl = null;
     if (this.enabled) {
       await this.start();
     }
@@ -393,6 +378,7 @@ export function useAvengersBgm() {
     ...snap,
     toggle: () => avengersBgm.toggle(),
     setEnabled: (v) => avengersBgm.setEnabled(v),
+    setTrackMode: (m) => avengersBgm.setTrackMode(m),
     setDucked: (v) => avengersBgm.setDucked(v),
     importCustomBgm: (f) => avengersBgm.importCustomBgm(f),
     clearCustomBgm: () => avengersBgm.clearCustomBgm(),

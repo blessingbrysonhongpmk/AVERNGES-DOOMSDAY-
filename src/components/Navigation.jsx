@@ -1,7 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Home, Film, Users, Newspaper, Gamepad2, Upload, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Volume2,
+  VolumeX,
+  Home,
+  Film,
+  Users,
+  Newspaper,
+  Gamepad2,
+  Upload,
+  RotateCcw,
+  SlidersHorizontal,
+  Music,
+  Check,
+} from 'lucide-react';
 import { useClockAudio } from '../utils/audio.js';
-import { useAvengersBgm } from '../utils/bgm.js';
+import { useAvengersBgm, BGM_TRACKS } from '../utils/bgm.js';
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Home', icon: Home },
@@ -14,17 +27,21 @@ const NAV_ITEMS = [
 export default function Navigation() {
   const [activeSection, setActiveSection] = useState('overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [audioMenuOpen, setAudioMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { enabled: soundEnabled, toggle: toggleSound } = useClockAudio();
   const {
     enabled: bgmEnabled,
+    trackMode,
     isPlaying: bgmPlaying,
     customBgmName,
     toggle: toggleBgm,
+    setTrackMode,
     importCustomBgm,
     clearCustomBgm,
   } = useAvengersBgm();
   const [bgmUploadError, setBgmUploadError] = useState('');
+  const audioMenuRef = useRef(null);
 
   const handleNavbarBgmUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -37,6 +54,18 @@ export default function Navigation() {
       setTimeout(() => setBgmUploadError(''), 3000);
     }
   };
+
+  // Close Studio Audio Drawer when clicking outside
+  useEffect(() => {
+    if (!audioMenuOpen) return;
+    const onOutside = (e) => {
+      if (audioMenuRef.current && !audioMenuRef.current.contains(e.target)) {
+        setAudioMenuOpen(false);
+      }
+    };
+    window.addEventListener('pointerdown', onOutside);
+    return () => window.removeEventListener('pointerdown', onOutside);
+  }, [audioMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,7 +129,6 @@ export default function Navigation() {
         <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1 sm:gap-2">
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
-            const Icon = item.icon;
             return (
               <a
                 key={item.id}
@@ -121,128 +149,221 @@ export default function Navigation() {
           })}
         </nav>
 
-        {/* Right: Luxury Avengers BGM Rocker Console, Clock Sound Toggle & Mobile Menu */}
-        <div className="flex items-center gap-2">
-          {/* Machined Brushed-Metal Avengers BGM ON/OFF Hardware Switch */}
-          <button
-            type="button"
-            role="switch"
-            aria-checked={bgmEnabled}
-            onClick={toggleBgm}
-            aria-label={bgmEnabled ? 'Turn Avengers Background Music Off' : 'Turn Avengers Background Music On'}
-            title={
-              customBgmName
-                ? `BGM: ${customBgmName} (Click to turn ${bgmEnabled ? 'OFF' : 'ON'})`
-                : `Avengers Score BGM (Click to turn ${bgmEnabled ? 'OFF' : 'ON'})`
-            }
-            className={`group h-9 sm:h-10 pl-2.5 sm:pl-3 pr-1.5 rounded-[3px] border inline-flex items-center gap-2 sm:gap-3 transition-colors cursor-pointer select-none ${
+        {/* Right: Single Milled-Titanium BGM Capsule Console + Mobile Drawer */}
+        <div className="flex items-center gap-2 relative" ref={audioMenuRef}>
+          {/* Unified Luxury Audio Pill Capsule */}
+          <div
+            style={{
+              background: 'linear-gradient(180deg, #161920 0%, #0A0C10 100%)',
+            }}
+            className={`h-9 sm:h-10 rounded-full border inline-flex items-center overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_6px_20px_rgba(0,0,0,0.65)] transition-colors ${
               bgmEnabled
-                ? 'bg-[#0C120F] border-[#264633] hover:border-[#34D399]/70 text-white'
-                : 'bg-[#0B0D11] border-[#252A34] hover:border-[#3F4756] text-[#8E94A0]'
+                ? 'border-[#2D4D3B] hover:border-[#34D399]/75'
+                : 'border-[#282D38] hover:border-[#424B5C]'
             }`}
           >
-            {/* Studio Equalizer Bars */}
-            <div className="flex items-end gap-[2px] h-3.5 shrink-0" aria-hidden="true">
-              {[0, 140, 280, 90].map((delay, i) => (
-                <span
-                  key={delay}
-                  style={{
-                    animationDelay: `${delay}ms`,
-                    height: i === 1 ? '14px' : i === 3 ? '12px' : i === 0 ? '9px' : '10px',
-                  }}
-                  className={`w-[2.5px] rounded-[1px] transition-colors ${
-                    bgmEnabled && bgmPlaying
-                      ? 'bgm-eq-bar bg-[#22C55E]'
-                      : bgmEnabled
-                        ? 'bg-[#D1D5DB] opacity-75'
-                        : 'bg-[#3B4250] scale-y-[0.35]'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <div className="hidden xs:flex flex-col items-start text-left leading-none">
-              <span className="text-[7.5px] font-mono tracking-[0.18em] text-[#8A909C] uppercase mb-0.5">
-                {customBgmName ? 'CUSTOM SCORE' : 'AVENGERS BGM'}
-              </span>
-              <span className="text-[10px] font-display font-bold tracking-[0.12em] uppercase text-[#F3F4F6]">
-                {bgmEnabled ? (bgmPlaying ? 'SCORE LIVE' : 'TAP TO PLAY') : 'SCORE OFF'}
-              </span>
-            </div>
-
-            {/* Hardware Sliding ON / OFF Switch Housing */}
-            <div
-              className={`relative w-12 h-6 rounded-[2px] border p-0.5 flex items-center transition-colors ${
-                bgmEnabled
-                  ? 'bg-[#07140C] border-[#22C55E]/70 justify-end'
-                  : 'bg-[#060709] border-[#2A303C] justify-start'
-              }`}
-            >
-              <span
-                className={`h-full px-1.5 rounded-[1px] text-[9px] font-mono font-extrabold tracking-wider uppercase inline-flex items-center justify-center transition-all ${
-                  bgmEnabled
-                    ? 'bg-[#F3F4F6] text-[#08090B] shadow-sm'
-                    : 'bg-[#222733] text-[#9CA3AF]'
-                }`}
-              >
-                {bgmEnabled ? 'ON' : 'OFF'}
-              </span>
-            </div>
-          </button>
-
-          {/* Load Custom Authorized MP3/WAV BGM Button */}
-          <label
-            title={
-              bgmUploadError
-                ? bgmUploadError
-                : customBgmName
-                  ? `Replace custom BGM (${customBgmName})`
-                  : 'Load your own MP3 or WAV as sitewide Avengers BGM'
-            }
-            className="h-9 sm:h-10 px-2.5 bg-[#0D1015] hover:bg-[#171C25] border border-[#272D38] hover:border-[#34D399]/70 text-[#D1D5DB] hover:text-white rounded-[3px] transition-colors cursor-pointer inline-flex items-center gap-1.5 text-[9.5px] font-mono font-bold uppercase tracking-wider shrink-0"
-          >
-            <Upload className="w-3.5 h-3.5 text-[#34D399]" />
-            <span className="hidden xl:inline">{bgmUploadError ? 'ERROR' : 'LOAD BGM'}</span>
-            <input
-              type="file"
-              accept="audio/*"
-              aria-label="Upload custom Avengers BGM audio file"
-              onChange={handleNavbarBgmUpload}
-              className="sr-only"
-            />
-          </label>
-
-          {customBgmName && (
+            {/* Primary Hardware Toggle (ON / OFF) */}
             <button
               type="button"
-              onClick={() => clearCustomBgm()}
-              aria-label="Restore built-in Avengers BGM"
-              title={`Restore built-in score (currently playing ${customBgmName})`}
-              className="h-9 sm:h-10 w-9 sm:w-10 bg-[#0D1015] hover:bg-[#1B1214] border border-[#272D38] hover:border-[#DC2626]/70 text-[#9CA3AF] hover:text-[#F87171] rounded-[3px] transition-colors cursor-pointer inline-flex items-center justify-center shrink-0"
+              role="switch"
+              aria-checked={bgmEnabled}
+              onClick={toggleBgm}
+              aria-label={bgmEnabled ? 'Turn Background Music Off' : 'Turn Background Music On'}
+              title={`AVENGERS BGM (${bgmEnabled ? 'ON' : 'OFF'}) — Click to toggle`}
+              className="h-full pl-2 pr-2.5 sm:pl-2.5 sm:pr-3 inline-flex items-center gap-2.5 cursor-pointer select-none group focus:outline-none"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          )}
+              {/* Recessed Circular Waveform Gauge */}
+              <span
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border flex items-end justify-center gap-[2px] pb-1.5 px-1 shrink-0 transition-colors ${
+                  bgmEnabled
+                    ? 'bg-[#07110B] border-[#22C55E]/50'
+                    : 'bg-[#07080B] border-[#222731]'
+                }`}
+                aria-hidden="true"
+              >
+                {[0, 140, 260, 80, 190].map((delay, i) => (
+                  <span
+                    key={delay}
+                    style={{
+                      animationDelay: `${delay}ms`,
+                      height: i === 2 ? '11px' : i % 2 === 1 ? '9px' : '6px',
+                    }}
+                    className={`w-[1.8px] rounded-full transition-colors ${
+                      bgmEnabled && bgmPlaying
+                        ? 'bgm-eq-bar bg-[#34D399]'
+                        : bgmEnabled
+                          ? 'bg-[#D1D5DB]/80'
+                          : 'bg-[#3C4352] scale-y-[0.35]'
+                    }`}
+                  />
+                ))}
+              </span>
 
-          {/* Compact Clock Escapement SFX Button */}
-          <button
-            type="button"
-            onClick={toggleSound}
-            aria-label={soundEnabled ? 'Mute live mechanical clock' : 'Unmute live mechanical clock'}
-            className={`h-9 sm:h-10 px-2.5 text-[10px] font-mono tracking-wider transition-colors cursor-pointer inline-flex items-center gap-1.5 border rounded-[3px] ${
-              soundEnabled
-                ? 'border-[#2D3542] bg-[#12161E] text-[#F3F4F6] hover:border-[#4B5565]'
-                : 'border-[#1E222B] bg-[#0B0D11] text-[#777A80] hover:text-white'
-            }`}
-            title={soundEnabled ? 'Clock Tick Sound: ON' : 'Clock Tick Sound: OFF'}
-          >
-            {soundEnabled ? (
-              <Volume2 className="w-3.5 h-3.5 text-[#22C55E]" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5" />
-            )}
-            <span className="hidden lg:inline uppercase font-semibold">SFX</span>
-          </button>
+              {/* Clean Studio Track Label */}
+              <div className="hidden xs:flex flex-col items-start text-left leading-none">
+                <span className="text-[7.5px] font-mono tracking-[0.2em] text-[#8B92A0] uppercase mb-0.5">
+                  AVENGERS BGM
+                </span>
+                <span className="text-[10px] font-display font-bold tracking-[0.14em] uppercase text-[#F4F5F7]">
+                  {bgmEnabled ? (bgmPlaying ? 'LIVE' : 'READY') : 'MUTED'}
+                </span>
+              </div>
+
+              {/* Smooth Gliding Machined Rocker Pill */}
+              <span
+                className={`relative w-12 sm:w-14 h-6 rounded-full border p-0.5 flex items-center transition-colors duration-200 shadow-[inset_0_2px_5px_rgba(0,0,0,0.85)] ${
+                  bgmEnabled
+                    ? 'bg-[#0A2214] border-[#22C55E]/65'
+                    : 'bg-[#06070A] border-[#242934]'
+                }`}
+              >
+                <span
+                  className={`text-[7.5px] font-mono font-extrabold tracking-wider uppercase absolute transition-opacity duration-200 ${
+                    bgmEnabled ? 'left-1.5 text-[#4ADE80] opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  ON
+                </span>
+                <span
+                  className={`text-[7.5px] font-mono font-bold tracking-wider uppercase absolute right-1.5 transition-opacity duration-200 ${
+                    !bgmEnabled ? 'text-[#6B7280] opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  OFF
+                </span>
+
+                <span
+                  className={`w-5 h-4.5 rounded-full flex items-center justify-center transition-transform duration-200 shadow-md ${
+                    bgmEnabled
+                      ? 'translate-x-5.5 sm:translate-x-7.5 bg-[#F8FAFC]'
+                      : 'translate-x-0 bg-[#2C323F]'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      bgmEnabled ? 'bg-[#16A34A]' : 'bg-[#64748B]'
+                    }`}
+                  />
+                </span>
+              </span>
+            </button>
+
+            {/* Hairline Steel Divider + Studio Audio Drawer Trigger */}
+            <span className="w-px h-5 bg-[#242A35]" aria-hidden="true" />
+            <button
+              type="button"
+              onClick={() => setAudioMenuOpen((o) => !o)}
+              aria-expanded={audioMenuOpen}
+              aria-label="Open Studio Audio Options"
+              title="Audio Options: Switch Theme, Load Custom Audio & Clock SFX"
+              className={`h-full px-2.5 sm:px-3 inline-flex items-center justify-center transition-colors cursor-pointer ${
+                audioMenuOpen
+                  ? 'bg-[#1D232E] text-white'
+                  : 'text-[#8E95A2] hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Studio Audio Settings Popover */}
+          {audioMenuOpen && (
+            <div className="absolute right-0 top-12 sm:top-13 w-72 sm:w-80 bg-[#0A0C10]/98 backdrop-blur-xl border border-[#282F3C] rounded-[6px] shadow-[0_24px_60px_rgba(0,0,0,0.92)] p-4 z-50 text-left">
+              <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-[#1C2029]">
+                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#D1D5DB] uppercase inline-flex items-center gap-1.5">
+                  <Music className="w-3.5 h-3.5 text-[#34D399]" />
+                  <span>STUDIO AUDIO DECK</span>
+                </span>
+                <span className="text-[9px] font-mono text-[#6B7280] uppercase">
+                  {customBgmName ? 'CUSTOM' : trackMode === 'primary' ? 'TRACK I' : 'TRACK II'}
+                </span>
+              </div>
+
+              {/* Dual Built-In BGM Source Selector */}
+              <div className="space-y-1.5 mb-3.5">
+                <span className="text-[9px] font-mono tracking-[0.18em] text-[#7C828D] uppercase block">
+                  BACKGROUND TRACK
+                </span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {Object.values(BGM_TRACKS).map((trk) => {
+                    const active = !customBgmName && trackMode === trk.id;
+                    return (
+                      <button
+                        key={trk.id}
+                        type="button"
+                        onClick={() => setTrackMode(trk.id)}
+                        className={`h-9 px-2.5 rounded-[3px] border text-[10px] font-display font-bold tracking-wider uppercase inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                          active
+                            ? 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B]'
+                            : 'bg-[#101319] border-[#252B36] text-[#9CA3AF] hover:text-white hover:border-[#3D4554]'
+                        }`}
+                      >
+                        {active && <Check className="w-3 h-3 text-[#16A34A] stroke-[3]" />}
+                        <span className="truncate">{trk.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Custom MP3/WAV Uploader & Reset */}
+              <div className="flex items-center gap-1.5 mb-3.5">
+                <label className="flex-1 h-9 px-3 bg-[#101319] hover:bg-[#171C25] border border-[#272D39] hover:border-[#34D399]/70 text-[#E5E7EB] hover:text-white rounded-[3px] text-[10px] font-mono font-semibold uppercase tracking-wider cursor-pointer inline-flex items-center justify-center gap-1.5 transition-colors">
+                  <Upload className="w-3.5 h-3.5 text-[#34D399]" />
+                  <span className="truncate">{customBgmName ? customBgmName : 'LOAD CUSTOM AUDIO'}</span>
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    aria-label="Upload custom Avengers BGM audio file"
+                    onChange={handleNavbarBgmUpload}
+                    className="sr-only"
+                  />
+                </label>
+
+                {customBgmName && (
+                  <button
+                    type="button"
+                    onClick={() => clearCustomBgm()}
+                    aria-label="Restore default BGM"
+                    title="Restore default BGM track"
+                    className="h-9 w-9 bg-[#101319] hover:bg-[#1C1214] border border-[#272D39] hover:border-[#DC2626] text-[#9CA3AF] hover:text-[#F87171] rounded-[3px] inline-flex items-center justify-center cursor-pointer transition-colors"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {bgmUploadError && (
+                <p className="text-[10px] font-mono text-[#F87171] mb-2">{bgmUploadError}</p>
+              )}
+
+              {/* Mechanical Clock Tick SFX Row */}
+              <div className="pt-2.5 border-t border-[#1C2029] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  {soundEnabled ? (
+                    <Volume2 className="w-3.5 h-3.5 text-[#22C55E]" />
+                  ) : (
+                    <VolumeX className="w-3.5 h-3.5 text-[#6B7280]" />
+                  )}
+                  <span className="text-[10px] font-mono tracking-wider text-[#D1D5DB] uppercase">
+                    Clock Tick SFX
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={toggleSound}
+                  className={`h-7 px-3 rounded-full border text-[9px] font-mono font-bold uppercase tracking-wider cursor-pointer transition-colors ${
+                    soundEnabled
+                      ? 'bg-[#122619] border-[#22C55E]/70 text-[#4ADE80]'
+                      : 'bg-[#12151B] border-[#282E3A] text-[#8E95A2] hover:text-white'
+                  }`}
+                >
+                  {soundEnabled ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Mobile Menu Hamburger Button */}
           <button

@@ -135,6 +135,13 @@ async function run() {
   assert(bgmHeadRes.status === 200, 'HTTP 200 returned on /sounds/avengers-bgm.wav');
   const navSource = fs.readFileSync('src/components/Navigation.jsx', 'utf8');
   assert(navSource.includes('useAvengersBgm') && navSource.includes('AVENGERS BGM') && navSource.includes('importCustomBgm'), 'Navigation includes premium Avengers BGM ON/OFF switch & custom MP3/WAV uploader');
+  assert(fs.existsSync('public/sounds/user-bgm.mp3') && fs.statSync('public/sounds/user-bgm.mp3').size > 1000000, 'User uploaded BGM MP3 exists on disk');
+  const userBgmHeadRes = await new Promise((resolve, reject) => {
+    const req = http.request('http://localhost:3000/sounds/user-bgm.mp3', { method: 'HEAD' }, (res) => resolve({ status: res.statusCode }));
+    req.on('error', reject);
+    req.end();
+  });
+  assert(userBgmHeadRes.status === 200, 'HTTP 200 returned on /sounds/user-bgm.mp3');
   assert(fs.existsSync('public/hulk-doomsday-keyart.jpg') && fs.statSync('public/hulk-doomsday-keyart.jpg').size > 50000, 'Massive Hulk + Doomsday combination keyart exists on disk');
   const keyartRes = await new Promise((resolve, reject) => {
     const req = http.request('http://localhost:3000/hulk-doomsday-keyart.jpg', { method: 'HEAD' }, (res) => resolve({ status: res.statusCode }));

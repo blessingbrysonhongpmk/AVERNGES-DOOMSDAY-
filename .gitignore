@@ -26,3 +26,4 @@ dist-ssr
 # Backups & temp files
 *.orig.jpg
 *.tmp.jpg
+public/sounds/user-bgm.mp3
