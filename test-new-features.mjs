@@ -134,6 +134,15 @@ async function run() {
   assert(bgmHeadRes.status === 200, 'HTTP 200 returned on /sounds/avengers-bgm.wav');
   const navSource = fs.readFileSync('src/components/Navigation.jsx', 'utf8');
   assert(navSource.includes('useAvengersBgm') && navSource.includes('AVENGERS BGM'), 'Navigation includes premium Avengers BGM ON/OFF switch');
+  assert(fs.existsSync('public/hulk-doomsday-keyart.jpg') && fs.statSync('public/hulk-doomsday-keyart.jpg').size > 50000, 'Massive Hulk + Doomsday combination keyart exists on disk');
+  const keyartRes = await new Promise((resolve, reject) => {
+    const req = http.request('http://localhost:3000/hulk-doomsday-keyart.jpg', { method: 'HEAD' }, (res) => resolve({ status: res.statusCode }));
+    req.on('error', reject);
+    req.end();
+  });
+  assert(keyartRes.status === 200, 'HTTP 200 returned on /hulk-doomsday-keyart.jpg');
+  const bannerSource = fs.readFileSync('src/components/HulkSmashBanner.jsx', 'utf8');
+  assert(bannerSource.includes('lg:col-span-6') && bannerSource.includes('hulk-doomsday-keyart.jpg') && bannerSource.includes('PLAY HULK SMASH') && bannerSource.includes('SLOT 02'), 'HulkSmashBanner splits into two columns with Doomsday green CTA & blank reserved slot');
 
   console.log(`\n========================================`);
   console.log(`NEW FEATURES TESTS PASSED: ${passed}`);
