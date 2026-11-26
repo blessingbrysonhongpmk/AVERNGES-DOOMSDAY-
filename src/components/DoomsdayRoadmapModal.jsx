@@ -280,11 +280,10 @@ export default function DoomsdayRoadmapModal({
               role="tab"
               aria-selected={view === 'checklist'}
               onClick={() => handleViewChange('checklist')}
-              className={`relative h-12 sm:h-14 px-5 sm:px-9 rounded-[3px] inline-flex items-center justify-center gap-2.5 text-xs sm:text-base font-display font-bold tracking-[0.14em] uppercase transition-all cursor-pointer ${
-                view === 'checklist'
+              className={`relative h-12 sm:h-14 px-5 sm:px-9 rounded-[3px] inline-flex items-center justify-center gap-2.5 text-xs sm:text-base font-display font-bold tracking-[0.14em] uppercase transition-all cursor-pointer ${view === 'checklist'
                   ? 'bg-[#F3F4F6] text-[#08090B] shadow-[0_4px_14px_rgba(0,0,0,0.5)]'
                   : 'text-[#8F96A3] hover:text-white hover:bg-[#12151C]'
-              }`}
+                }`}
             >
               <ListChecks className={`w-4 h-4 sm:w-5 sm:h-5 ${view === 'checklist' ? 'text-[#08090B]' : 'text-[#8F96A3]'}`} />
               <span>CHECKLIST</span>
@@ -298,11 +297,10 @@ export default function DoomsdayRoadmapModal({
               role="tab"
               aria-selected={view === 'timeline'}
               onClick={() => handleViewChange('timeline')}
-              className={`relative h-12 sm:h-14 px-5 sm:px-9 rounded-[3px] inline-flex items-center justify-center gap-2.5 text-xs sm:text-base font-display font-bold tracking-[0.14em] uppercase transition-all cursor-pointer ${
-                view === 'timeline'
+              className={`relative h-12 sm:h-14 px-5 sm:px-9 rounded-[3px] inline-flex items-center justify-center gap-2.5 text-xs sm:text-base font-display font-bold tracking-[0.14em] uppercase transition-all cursor-pointer ${view === 'timeline'
                   ? 'bg-[#F3F4F6] text-[#08090B] shadow-[0_4px_14px_rgba(0,0,0,0.5)]'
                   : 'text-[#8F96A3] hover:text-white hover:bg-[#12151C]'
-              }`}
+                }`}
             >
               <GitCommitVertical className={`w-4 h-4 sm:w-5 sm:h-5 ${view === 'timeline' ? 'text-[#08090B]' : 'text-[#8F96A3]'}`} />
               <span>TIMELINE</span>
@@ -403,22 +401,20 @@ export default function DoomsdayRoadmapModal({
                           <button
                             type="button"
                             onClick={() => onToggleLokiSeason('s1')}
-                            className={`h-11 px-3.5 border rounded-[3px] text-xs font-mono font-bold uppercase cursor-pointer ${
-                              lokiState.season1
+                            className={`h-11 px-3.5 border rounded-[3px] text-xs font-mono font-bold uppercase cursor-pointer ${lokiState.season1
                                 ? 'bg-[#132A1B] border-[#22C55E] text-[#4ADE80]'
                                 : 'bg-[#12151C] border-[#2E3442] text-[#D1D5DB]'
-                            }`}
+                              }`}
                           >
                             {lokiState.season1 ? '✓ S1' : 'S1'}
                           </button>
                           <button
                             type="button"
                             onClick={() => onToggleLokiSeason('s2')}
-                            className={`h-11 px-3.5 border rounded-[3px] text-xs font-mono font-bold uppercase cursor-pointer ${
-                              lokiState.season2
+                            className={`h-11 px-3.5 border rounded-[3px] text-xs font-mono font-bold uppercase cursor-pointer ${lokiState.season2
                                 ? 'bg-[#132A1B] border-[#22C55E] text-[#4ADE80]'
                                 : 'bg-[#12151C] border-[#2E3442] text-[#D1D5DB]'
-                            }`}
+                              }`}
                           >
                             {lokiState.season2 ? '✓ S2' : 'S2'}
                           </button>
@@ -533,11 +529,10 @@ export default function DoomsdayRoadmapModal({
                           playClick();
                           setFilterMode(tab.id);
                         }}
-                        className={`h-11 px-4 sm:px-6 text-xs sm:text-sm font-display font-bold tracking-[0.1em] uppercase rounded-[3px] transition-colors cursor-pointer ${
-                          active
+                        className={`h-11 px-4 sm:px-6 text-xs sm:text-sm font-display font-bold tracking-[0.1em] uppercase rounded-[3px] transition-colors cursor-pointer ${active
                             ? 'bg-[#F3F4F6] text-[#08090B]'
                             : 'text-[#8F96A3] hover:text-white hover:bg-[#14171F]'
-                        }`}
+                          }`}
                       >
                         {tab.label}
                       </button>
@@ -580,13 +575,12 @@ export default function DoomsdayRoadmapModal({
                         key={item.id}
                         ref={(el) => { rowRefs.current[item.id] = el; }}
                         onMouseEnter={() => setHoveredPoster(item.poster)}
-                        className={`relative overflow-hidden bg-[#0B0D12]/95 border rounded-[3px] transition-colors ${
-                          done
+                        className={`relative overflow-hidden bg-[#0B0D12]/95 border rounded-[3px] transition-colors ${done
                             ? 'border-[#1F4A31]'
                             : isFocused
                               ? 'border-[#E5E7EB]'
                               : 'border-[#202530] hover:border-[#374050]'
-                        }`}
+                          }`}
                       >
                         {/* Architectural Index Watermark */}
                         <span
@@ -604,11 +598,10 @@ export default function DoomsdayRoadmapModal({
                               onClick={() => handleToggleItem(item)}
                               aria-pressed={done}
                               aria-label={`${done ? 'Uncheck' : 'Mark'} ${item.title} watched`}
-                              className={`w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-[3px] border-2 inline-flex items-center justify-center transition-colors cursor-pointer mt-0.5 ${
-                                done
+                              className={`w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-[3px] border-2 inline-flex items-center justify-center transition-colors cursor-pointer mt-0.5 ${done
                                   ? 'bg-[#16A34A] border-[#22C55E] text-white'
                                   : 'bg-[#08090B] border-[#384050] hover:border-[#D1D5DB] text-transparent hover:text-[#6B7280]'
-                              }`}
+                                }`}
                             >
                               <Check className="w-5 h-5 stroke-[3]" />
                             </button>
@@ -641,9 +634,8 @@ export default function DoomsdayRoadmapModal({
                               </div>
 
                               <h4
-                                className={`text-base sm:text-xl font-cinematic font-bold tracking-wide leading-snug mb-1 ${
-                                  done ? 'text-[#D1FAE5]' : 'text-white'
-                                }`}
+                                className={`text-base sm:text-xl font-cinematic font-bold tracking-wide leading-snug mb-1 ${done ? 'text-[#D1FAE5]' : 'text-white'
+                                  }`}
                               >
                                 {item.title}
                               </h4>
@@ -659,11 +651,10 @@ export default function DoomsdayRoadmapModal({
                                     type="button"
                                     onClick={() => onToggleLokiSeason('s1')}
                                     aria-pressed={!!lokiState.season1}
-                                    className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${
-                                      lokiState.season1
+                                    className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${lokiState.season1
                                         ? 'bg-[#16A34A] border-[#22C55E] text-white'
                                         : 'bg-[#08090B] border-[#303746] text-[#C4C9D4] hover:border-[#9CA3AF]'
-                                    }`}
+                                      }`}
                                   >
                                     <Check className={`w-4 h-4 ${lokiState.season1 ? 'opacity-100' : 'opacity-30'}`} />
                                     <span>SEASON 1 (2021)</span>
@@ -673,11 +664,10 @@ export default function DoomsdayRoadmapModal({
                                     type="button"
                                     onClick={() => onToggleLokiSeason('s2')}
                                     aria-pressed={!!lokiState.season2}
-                                    className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${
-                                      lokiState.season2
+                                    className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${lokiState.season2
                                         ? 'bg-[#16A34A] border-[#22C55E] text-white'
                                         : 'bg-[#08090B] border-[#303746] text-[#C4C9D4] hover:border-[#9CA3AF]'
-                                    }`}
+                                      }`}
                                   >
                                     <Check className={`w-4 h-4 ${lokiState.season2 ? 'opacity-100' : 'opacity-30'}`} />
                                     <span>SEASON 2 (2023)</span>
@@ -692,11 +682,10 @@ export default function DoomsdayRoadmapModal({
                             <button
                               type="button"
                               onClick={() => handleToggleItem(item)}
-                              className={`h-11 px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase inline-flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-                                done
+                              className={`h-11 px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase inline-flex items-center justify-center gap-2 transition-colors cursor-pointer ${done
                                   ? 'bg-[#132A1B] border-[#22C55E]/70 text-[#4ADE80] hover:bg-[#193824]'
                                   : 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B] hover:bg-white'
-                              }`}
+                                }`}
                             >
                               {done && <Check className="w-4 h-4 stroke-[2.5]" />}
                               <span>{done ? 'WATCHED' : 'CHECK OFF'}</span>
@@ -760,11 +749,10 @@ export default function DoomsdayRoadmapModal({
                     playClick();
                     setSelectedEra('all');
                   }}
-                  className={`h-11 px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer inline-flex items-center gap-2 ${
-                    selectedEra === 'all'
+                  className={`h-11 px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer inline-flex items-center gap-2 ${selectedEra === 'all'
                       ? 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B]'
                       : 'bg-[#0D0F14] border-[#262B36] text-[#9BA1AE] hover:text-white hover:border-[#4B5565]'
-                  }`}
+                    }`}
                 >
                   <Compass className="w-4 h-4" />
                   <span>ALL ERAS (I–IV)</span>
@@ -779,11 +767,10 @@ export default function DoomsdayRoadmapModal({
                         playClick();
                         setSelectedEra(era.id);
                       }}
-                      className={`h-11 px-4 sm:px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer ${
-                        active
+                      className={`h-11 px-4 sm:px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer ${active
                           ? 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B]'
                           : 'bg-[#0D0F14] border-[#262B36] text-[#9BA1AE] hover:text-white hover:border-[#4B5565]'
-                      }`}
+                        }`}
                     >
                       {era.index} · {era.years}
                     </button>
@@ -851,17 +838,15 @@ export default function DoomsdayRoadmapModal({
                               {!isLastInEra && (
                                 <div
                                   aria-hidden="true"
-                                  className={`absolute -left-[17px] sm:-left-[28px] top-8 -bottom-7 w-[2px] ${
-                                    done ? 'bg-[#22C55E]/75' : 'bg-[#222630]'
-                                  }`}
+                                  className={`absolute -left-[17px] sm:-left-[28px] top-8 -bottom-7 w-[2px] ${done ? 'bg-[#22C55E]/75' : 'bg-[#222630]'
+                                    }`}
                                 />
                               )}
 
                               {/* Desktop Left Year & Continuity Gutter */}
                               <div className="hidden sm:flex flex-col items-end text-right absolute -left-44 top-4 w-32 pr-4">
-                                <span className={`font-hud text-2xl font-extrabold tracking-wide tabular-nums leading-none ${
-                                  done ? 'text-[#4ADE80]' : 'text-white'
-                                }`}>
+                                <span className={`font-hud text-2xl font-extrabold tracking-wide tabular-nums leading-none ${done ? 'text-[#4ADE80]' : 'text-white'
+                                  }`}>
                                   {item.year}
                                 </span>
                                 <span className="text-[10px] font-mono text-[#7D8490] uppercase tracking-wider mt-1.5 leading-tight">
@@ -874,20 +859,18 @@ export default function DoomsdayRoadmapModal({
                                 type="button"
                                 onClick={() => handleToggleItem(item)}
                                 aria-label={`Toggle timeline node ${item.title}`}
-                                className={`absolute -left-[29px] sm:-left-[40px] top-4 w-7 h-7 rounded-[3px] border-2 inline-flex items-center justify-center transition-all cursor-pointer z-10 ${
-                                  done
+                                className={`absolute -left-[29px] sm:-left-[40px] top-4 w-7 h-7 rounded-[3px] border-2 inline-flex items-center justify-center transition-all cursor-pointer z-10 ${done
                                     ? 'bg-[#16A34A] border-[#4ADE80] text-white shadow-[0_0_12px_rgba(34,197,94,0.3)]'
                                     : 'bg-[#08090B] border-[#4B5565] hover:border-white text-transparent'
-                                }`}
+                                  }`}
                               >
                                 <Check className="w-4 h-4 stroke-[3]" />
                               </button>
 
                               {/* Theatrical Collector Timeline Card */}
                               <div
-                                className={`group relative overflow-hidden bg-[#0B0D12]/95 border rounded-[3px] p-4 sm:p-5 transition-all ${
-                                  done ? 'border-[#1F4A31]' : 'border-[#202530] hover:border-[#394254]'
-                                }`}
+                                className={`group relative overflow-hidden bg-[#0B0D12]/95 border rounded-[3px] p-4 sm:p-5 transition-all ${done ? 'border-[#1F4A31]' : 'border-[#202530] hover:border-[#394254]'
+                                  }`}
                               >
                                 {/* Subtle Poster Backdrop Atmosphere Inside Card */}
                                 <img
@@ -948,11 +931,10 @@ export default function DoomsdayRoadmapModal({
                                           <button
                                             type="button"
                                             onClick={() => onToggleLokiSeason('s1')}
-                                            className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${
-                                              lokiState.season1
+                                            className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${lokiState.season1
                                                 ? 'bg-[#16A34A] border-[#22C55E] text-white'
                                                 : 'bg-[#08090B] border-[#303746] text-[#C4C9D4] hover:border-[#9CA3AF]'
-                                            }`}
+                                              }`}
                                           >
                                             <Check className={`w-4 h-4 ${lokiState.season1 ? 'opacity-100' : 'opacity-30'}`} />
                                             <span>SEASON 1</span>
@@ -960,11 +942,10 @@ export default function DoomsdayRoadmapModal({
                                           <button
                                             type="button"
                                             onClick={() => onToggleLokiSeason('s2')}
-                                            className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${
-                                              lokiState.season2
+                                            className={`h-11 px-4 rounded-[3px] border text-xs font-display font-bold tracking-[0.1em] uppercase inline-flex items-center gap-2 transition-colors cursor-pointer ${lokiState.season2
                                                 ? 'bg-[#16A34A] border-[#22C55E] text-white'
                                                 : 'bg-[#08090B] border-[#303746] text-[#C4C9D4] hover:border-[#9CA3AF]'
-                                            }`}
+                                              }`}
                                           >
                                             <Check className={`w-4 h-4 ${lokiState.season2 ? 'opacity-100' : 'opacity-30'}`} />
                                             <span>SEASON 2</span>
@@ -978,11 +959,10 @@ export default function DoomsdayRoadmapModal({
                                     <button
                                       type="button"
                                       onClick={() => handleToggleItem(item)}
-                                      className={`h-11 px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase inline-flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-                                        done
+                                      className={`h-11 px-5 rounded-[3px] border text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase inline-flex items-center justify-center gap-2 transition-colors cursor-pointer ${done
                                           ? 'bg-[#132A1B] border-[#22C55E]/75 text-[#4ADE80] hover:bg-[#193824]'
                                           : 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B] hover:bg-white'
-                                      }`}
+                                        }`}
                                     >
                                       {done && <Check className="w-4 h-4 stroke-[2.5]" />}
                                       <span>{done ? 'WATCHED' : 'MARK WATCHED'}</span>

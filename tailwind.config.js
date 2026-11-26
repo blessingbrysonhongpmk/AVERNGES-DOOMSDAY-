@@ -46,16 +46,34 @@ export default {
       },
       fontFamily: {
         cinematic: ['Cinzel', 'Trajan Pro', 'Bodoni Moda', 'Georgia', 'serif'],
-        trailer: ['Bebas Neue', 'Barlow Condensed', 'Impact', 'sans-serif'],
-        hud: ['Barlow Condensed', 'Space Grotesk', 'sans-serif'],
-        display: ['Space Grotesk', 'Inter', 'sans-serif'],
-        mono: ['Space Grotesk', 'JetBrains Mono', 'monospace'],
-        body: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        trailer: ['Bebas Neue', 'Oswald', 'Barlow Condensed', 'Impact', 'sans-serif'],
+        hud: ['Barlow Condensed', 'Oswald', 'sans-serif'],
+        display: ['Montserrat', 'Plus Jakarta Sans', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'SFMono-Regular', 'Consolas', 'monospace'],
+        body: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
       },
       letterSpacing: {
         widest: '0.25em',
         epic: '0.35em',
         titan: '0.5em',
+      },
+      borderRadius: {
+        xs: '2px',
+      },
+      scale: {
+        106: '1.06',
+        108: '1.08',
+      },
+      brightness: {
+        65: '.65',
+        85: '.85',
+      },
+      contrast: {
+        120: '1.2',
+      },
+      spacing: {
+        13: '3.25rem',
       },
     },
   },

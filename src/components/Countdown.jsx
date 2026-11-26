@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { useCountdown } from '../hooks/useCountdown';
 import { CONFIG, getCountdownMilestone } from '../data/config.js';
 import { useClockAudio } from '../utils/audio.js';
@@ -52,11 +52,26 @@ export default function Countdown() {
   const { days, isArrived, formatted } = useCountdown(CONFIG.release.targetIsoString);
   const [bgError, setBgError] = useState(false);
   const { enabled: soundEnabled, tick: playTick } = useClockAudio();
+  const lastTickSecondRef = useRef(null);
+  const prevSoundEnabledRef = useRef(soundEnabled);
 
   useEffect(() => {
-    if (soundEnabled && !isArrived && formatted.seconds !== undefined) {
-      playTick(Number(formatted.seconds));
+    const justEnabled = !prevSoundEnabledRef.current && soundEnabled;
+    prevSoundEnabledRef.current = soundEnabled;
+
+    if (!soundEnabled || isArrived || formatted.seconds === undefined) {
+      if (!soundEnabled) lastTickSecondRef.current = null;
+      return;
     }
+
+    const sec = Number(formatted.seconds);
+    if (justEnabled) {
+      lastTickSecondRef.current = sec;
+      return;
+    }
+    if (lastTickSecondRef.current === sec) return;
+    lastTickSecondRef.current = sec;
+    playTick(sec, { isCountdown: true });
   }, [formatted.seconds, soundEnabled, isArrived, playTick]);
 
   const milestone = getCountdownMilestone(days, isArrived);

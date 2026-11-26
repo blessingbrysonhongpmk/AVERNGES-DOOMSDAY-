@@ -13,6 +13,7 @@ import {
 } from '../data/hulkGameData';
 import { hulkAudio, SOUND_CATALOG, STUDIO_SFX_PATHS } from '../utils/hulkAudio';
 import { useAvengersBgm } from '../utils/bgm.js';
+import { useGameBgm, gameBgm } from '../utils/gameBgm.js';
 import {
   X,
   Volume2,
@@ -167,13 +168,23 @@ export default function HulkSmashGame({ onClose }) {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const {
-    enabled: bgmEnabled,
-    isPlaying: bgmPlaying,
     customBgmName,
-    toggle: toggleBgm,
     importCustomBgm,
     clearCustomBgm,
   } = useAvengersBgm();
+
+  const {
+    enabled: gameBgmEnabled,
+    isPlaying: gameBgmPlaying,
+    toggle: toggleGameBgm,
+  } = useGameBgm();
+
+  useEffect(() => {
+    gameBgm.start('hulk');
+    return () => {
+      gameBgm.stop();
+    };
+  }, []);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSoundboard, setShowSoundboard] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
@@ -948,23 +959,23 @@ export default function HulkSmashGame({ onClose }) {
           <button
             type="button"
             role="switch"
-            aria-checked={bgmEnabled}
-            onClick={toggleBgm}
-            aria-label={bgmEnabled ? 'Turn Avengers BGM Off' : 'Turn Avengers BGM On'}
-            className={`hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 border rounded-[3px] text-[9.5px] font-mono font-bold uppercase transition-colors cursor-pointer ${bgmEnabled
+            aria-checked={gameBgmEnabled}
+            onClick={toggleGameBgm}
+            aria-label={gameBgmEnabled ? 'Turn Hulk Arena BGM Off' : 'Turn Hulk Arena BGM On'}
+            className={`hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 border rounded-[3px] text-[9.5px] font-mono font-bold uppercase transition-colors cursor-pointer ${gameBgmEnabled
                 ? 'border-[#264633] bg-[#0B120E] text-white'
                 : 'border-[#272D38] bg-[#0B0D11] text-[#7A818D] hover:text-white'
               }`}
-            title="Toggle Avengers Orchestral Background Score"
+            title="Toggle Hulk Arena Game BGM"
           >
             <div className="flex items-end gap-[1.5px] h-2.5" aria-hidden="true">
               {[0, 120, 240].map((d, idx) => (
                 <span
                   key={d}
                   style={{ animationDelay: `${d}ms`, height: idx === 1 ? '10px' : '7px' }}
-                  className={`w-[2px] rounded-[1px] ${bgmEnabled && bgmPlaying
+                  className={`w-[2px] rounded-[1px] ${gameBgmEnabled && gameBgmPlaying
                       ? 'bgm-eq-bar bg-[#22C55E]'
-                      : bgmEnabled
+                      : gameBgmEnabled
                         ? 'bg-[#D1D5DB]'
                         : 'bg-[#3B4250]'
                     }`}
@@ -973,10 +984,10 @@ export default function HulkSmashGame({ onClose }) {
             </div>
             <span>BGM</span>
             <span
-              className={`px-1.5 py-0.5 rounded-[2px] text-[8.5px] font-extrabold leading-none ${bgmEnabled ? 'bg-[#F3F4F6] text-[#08090B]' : 'bg-[#1D222C] text-[#9CA3AF]'
+              className={`px-1.5 py-0.5 rounded-[2px] text-[8.5px] font-extrabold leading-none ${gameBgmEnabled ? 'bg-[#F3F4F6] text-[#08090B]' : 'bg-[#1D222C] text-[#9CA3AF]'
                 }`}
             >
-              {bgmEnabled ? 'ON' : 'OFF'}
+              {gameBgmEnabled ? 'ON' : 'OFF'}
             </span>
           </button>
 
@@ -1701,7 +1712,7 @@ export default function HulkSmashGame({ onClose }) {
           7. SOUND VAULT, 51 VOICES & CUSTOM AUDIO IMPORTER MODAL
          ═════════════════════════════════════════════════════════════════════ */}
       {showSoundboard && (
-        <div className="absolute inset-0 z-40 bg-black/92 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div className="absolute inset-0 z-40 bg-black/[0.92] backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <div className="max-w-3xl w-full bg-[#090B0F] border border-[#252B36] p-5 sm:p-7 rounded-[2px] shadow-2xl text-left relative my-auto max-h-[90vh] overflow-y-auto">
             <button
               type="button"

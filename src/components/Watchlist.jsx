@@ -212,7 +212,7 @@ export default function Watchlist() {
       <CinematicAtmosphere
         poster="/doomsday-ensemble-poster.jpg"
         videoWebm="/videos/doomsday-roadmap-cinematic.webm"
-        videoSrc="/videos/doomsday-roadmap-cinematic.mp4"
+        videoSrc="/videos/roadmap-atmosphere.mp4"
         overlayOpacity="bg-[#08090B]/88"
         accentGlow="emerald"
         showParticles={true}

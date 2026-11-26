@@ -161,8 +161,8 @@ export default function MovieDetailModal({
                       onClick={() => onToggleLokiSeason('s1')}
                       aria-pressed={!!lokiSeasons?.s1}
                       className={`flex items-center justify-center gap-2 py-2 px-3 border text-xs font-mono tracking-wider transition-colors ${lokiSeasons?.s1
-                          ? 'border-[#E62429] bg-[#E62429] text-white font-bold'
-                          : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036] hover:text-[#F5F5F5]'
+                        ? 'border-[#E62429] bg-[#E62429] text-white font-bold'
+                        : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036] hover:text-[#F5F5F5]'
                         }`}
                     >
                       <div className={`w-3.5 h-3.5 border flex items-center justify-center ${lokiSeasons?.s1 ? 'border-[#E62429] bg-[#E62429]' : 'border-[#383E42]'
@@ -177,8 +177,8 @@ export default function MovieDetailModal({
                       onClick={() => onToggleLokiSeason('s2')}
                       aria-pressed={!!lokiSeasons?.s2}
                       className={`flex items-center justify-center gap-2 py-2 px-3 border text-xs font-mono tracking-wider transition-colors ${lokiSeasons?.s2
-                          ? 'border-[#E62429] bg-[#E62429] text-white font-bold'
-                          : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036] hover:text-[#F5F5F5]'
+                        ? 'border-[#E62429] bg-[#E62429] text-white font-bold'
+                        : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036] hover:text-[#F5F5F5]'
                         }`}
                     >
                       <div className={`w-3.5 h-3.5 border flex items-center justify-center ${lokiSeasons?.s2 ? 'border-[#E62429] bg-[#E62429]' : 'border-[#383E42]'
@@ -196,8 +196,8 @@ export default function MovieDetailModal({
                   onClick={() => onToggleStandard(item.id)}
                   aria-pressed={isCompleted}
                   className={`w-full flex items-center justify-center gap-2.5 py-2.5 px-4 border text-xs font-mono tracking-widest uppercase transition-colors duration-150 ${isCompleted
-                      ? 'border-[#E62429] bg-[#E62429] text-white font-bold'
-                      : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036] hover:text-[#F5F5F5]'
+                    ? 'border-[#E62429] bg-[#E62429] text-white font-bold'
+                    : 'border-[#1E2024] bg-[#08090B] text-[#777A80] hover:border-[#2D3036] hover:text-[#F5F5F5]'
                     }`}
                 >
                   <div className={`w-4 h-4 border flex items-center justify-center ${isCompleted ? 'border-white bg-white' : 'border-[#383E42]'

@@ -1,26 +1,35 @@
 /**
  * AVENGERS: DOOMSDAY — Seamless Background Score Engine
- * Supports instant streaming playback of the active BGM track (/sounds/user-bgm.mp3)
- * plus seamless switching to the built-in Orchestral Score (/sounds/avengers-bgm.wav)
- * or persistent custom browser-imported MP3/WAV files via IndexedDB.
+ * Defaults to the newly installed alternative score (/sounds/user-bgm-alt.mp3),
+ * with seamless track switching to Theme I (/sounds/user-bgm.mp3), built-in
+ * Orchestral Score (/sounds/avengers-bgm.wav), or persistent IndexedDB custom uploads.
  */
 
 import { useState, useEffect } from 'react';
 
 const BGM_ENABLED_KEY = 'doomsday_avengers_bgm_v1';
 const BGM_TRACK_KEY = 'doomsday_avengers_bgm_track_v1';
+const BGM_VOLUME_KEY = 'doomsday_avengers_bgm_vol_v1';
 const BGM_DB_NAME = 'doomsday_custom_bgm_v1';
 const BGM_STORE_NAME = 'customBgm';
 
 export const BGM_TRACKS = {
   primary: {
     id: 'primary',
-    label: 'Featured Theme',
+    label: 'Alt Theme',
+    shortTag: 'ALT',
+    path: '/sounds/user-bgm-alt.mp3',
+  },
+  classic: {
+    id: 'classic',
+    label: 'Theme I',
+    shortTag: 'I',
     path: '/sounds/user-bgm.mp3',
   },
   orchestral: {
     id: 'orchestral',
-    label: 'Doomsday Orchestra',
+    label: 'Orchestra',
+    shortTag: 'ORCH',
     path: '/sounds/avengers-bgm.wav',
   },
 };
@@ -57,8 +66,8 @@ class AvengersBgmEngine {
     this.trackMode = this._loadInitialTrackMode();
     this.isPlaying = false;
     this.isDucked = false;
-    this.baseVolume = 0.44;
-    this.duckedVolume = 0.16;
+    this.pausedForGame = false;
+    this.baseVolume = this._loadInitialVolume();
     this.customBgmName = null;
     this.customChecked = false;
     this.subscribers = new Set();
@@ -80,9 +89,20 @@ class AvengersBgmEngine {
     if (typeof window === 'undefined' || !window.localStorage) return 'primary';
     try {
       const saved = window.localStorage.getItem(BGM_TRACK_KEY);
-      return saved === 'orchestral' ? 'orchestral' : 'primary';
+      return saved && BGM_TRACKS[saved] ? saved : 'primary';
     } catch {
       return 'primary';
+    }
+  }
+
+  _loadInitialVolume() {
+    if (typeof window === 'undefined' || !window.localStorage) return 0.46;
+    try {
+      const saved = parseFloat(window.localStorage.getItem(BGM_VOLUME_KEY));
+      if (!Number.isNaN(saved) && saved >= 0.05 && saved <= 1) return saved;
+      return 0.46;
+    } catch {
+      return 0.46;
     }
   }
 
@@ -97,6 +117,13 @@ class AvengersBgmEngine {
     if (typeof window === 'undefined' || !window.localStorage) return;
     try {
       window.localStorage.setItem(BGM_TRACK_KEY, val);
+    } catch { }
+  }
+
+  _persistVolume(val) {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(BGM_VOLUME_KEY, String(val));
     } catch { }
   }
 
@@ -115,6 +142,7 @@ class AvengersBgmEngine {
       trackMode: this.trackMode,
       isPlaying: this.isPlaying,
       isDucked: this.isDucked,
+      volume: this.baseVolume,
       customBgmName: this.customBgmName,
     };
   }
@@ -131,7 +159,7 @@ class AvengersBgmEngine {
     if (typeof window === 'undefined') return;
 
     const handleFirstGesture = () => {
-      if (this.enabled && !this.isPlaying) {
+      if (this.enabled && !this.pausedForGame && !this.isPlaying) {
         this.start();
       }
       if (this.isPlaying) {
@@ -148,7 +176,7 @@ class AvengersBgmEngine {
 
   _targetGain() {
     if (!this.enabled) return 0.0;
-    return this.isDucked ? this.duckedVolume : this.baseVolume;
+    return this.isDucked ? Math.min(0.18, this.baseVolume * 0.36) : this.baseVolume;
   }
 
   _fadeTo(target, durationMs = 500, onDone = null) {
@@ -207,10 +235,10 @@ class AvengersBgmEngine {
   }
 
   async start() {
-    if (!this.enabled || typeof window === 'undefined' || typeof Audio === 'undefined') return false;
+    if (!this.enabled || this.pausedForGame || typeof window === 'undefined' || typeof Audio === 'undefined') return false;
 
     await this._loadCustomIfAny();
-    if (!this.enabled) return false;
+    if (!this.enabled || this.pausedForGame) return false;
 
     const srcUrl = this._resolveSourceUrl();
     try {
@@ -222,7 +250,7 @@ class AvengersBgmEngine {
         el.loop = true;
         el.preload = 'auto';
         el.volume = 0.01;
-        // Fallback cleanly to built-in orchestral loop if local MP3 is absent
+        // Fallback cleanly to built-in orchestral loop if primary audio file is unavailable
         el.addEventListener('error', () => {
           if (srcUrl !== BGM_TRACKS.orchestral.path && !this.customBgmName) {
             this.trackMode = 'orchestral';
@@ -275,8 +303,19 @@ class AvengersBgmEngine {
     this.toggle();
   }
 
+  setVolume(vol) {
+    const clamped = Math.min(1, Math.max(0.05, Number(vol) || 0.46));
+    this.baseVolume = clamped;
+    this._persistVolume(clamped);
+    if (this.htmlAudio && this.enabled) {
+      clearInterval(this.fadeInterval);
+      this.htmlAudio.volume = this._targetGain();
+    }
+    this._notify();
+  }
+
   setTrackMode(mode) {
-    const valid = mode === 'orchestral' ? 'orchestral' : 'primary';
+    const valid = BGM_TRACKS[mode] ? mode : 'primary';
     if (this.trackMode === valid && !this.customBgmName) return;
     this.trackMode = valid;
     this._persistTrackMode(valid);
@@ -302,10 +341,33 @@ class AvengersBgmEngine {
     const next = !!duck;
     if (this.isDucked === next) return;
     this.isDucked = next;
-    if (this.isPlaying && this.enabled) {
+    if (this.isPlaying && this.enabled && !this.pausedForGame) {
       this._fadeTo(this._targetGain(), 400);
     }
     this._notify();
+  }
+
+  setPausedForGame(paused) {
+    const next = !!paused;
+    if (this.pausedForGame === next) return;
+    this.pausedForGame = next;
+    if (next) {
+      this.isPlaying = false;
+      this._fadeTo(0, 160);
+      setTimeout(() => {
+        if (this.pausedForGame && this.htmlAudio && !this.htmlAudio.paused) {
+          try {
+            this.htmlAudio.pause();
+          } catch {}
+        }
+      }, 170);
+      this._notify();
+    } else {
+      this._notify();
+      if (this.enabled) {
+        this.start();
+      }
+    }
   }
 
   async importCustomBgm(file) {
@@ -379,7 +441,9 @@ export function useAvengersBgm() {
     toggle: () => avengersBgm.toggle(),
     setEnabled: (v) => avengersBgm.setEnabled(v),
     setTrackMode: (m) => avengersBgm.setTrackMode(m),
+    setVolume: (v) => avengersBgm.setVolume(v),
     setDucked: (v) => avengersBgm.setDucked(v),
+    setPausedForGame: (p) => avengersBgm.setPausedForGame(p),
     importCustomBgm: (f) => avengersBgm.importCustomBgm(f),
     clearCustomBgm: () => avengersBgm.clearCustomBgm(),
   };

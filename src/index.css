@@ -31,12 +31,21 @@
   body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-optical-sizing: auto;
+    font-feature-settings: "kern" 1, "liga" 1;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.014em;
     line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-feature-settings: "kern" 1, "liga" 1;
   }
 
   ::selection {
@@ -473,9 +482,12 @@
 }
 
 @keyframes bgmEqPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scaleY(0.32);
   }
+
   50% {
     transform: scaleY(1);
   }
@@ -484,6 +496,247 @@
 .bgm-eq-bar {
   transform-origin: bottom center;
   animation: bgmEqPulse 0.85s ease-in-out infinite;
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   MCU ULTIMATE QUIZ — AAA GAMING SUITE & VAULT ANIMATIONS
+   ═════════════════════════════════════════════════════════════════ */
+
+/* Chamfered Cyber-Panels */
+.clip-chamfer-btn {
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.clip-chamfer-card {
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+}
+
+.clip-hex-badge {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+.clip-vault-cell {
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+/* Animated Shimmer Sweep across Metallic Cards */
+@keyframes quizShimmerSweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-shimmer-sweep {
+  animation: quizShimmerSweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Ambient Floating Particles */
+@keyframes particleFloatSlow {
+
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: translateY(-25px) translateX(12px);
+    opacity: 0.8;
+  }
+}
+
+.animate-particle-float {
+  animation: particleFloatSlow 6s ease-in-out infinite;
+}
+
+/* Pulsing Radiant Emerald Energy Glow */
+@keyframes emeraldEnergyPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.25), inset 0 0 10px rgba(34, 197, 94, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 35px rgba(34, 197, 94, 0.55), inset 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+}
+
+.animate-emerald-pulse {
+  animation: emeraldEnergyPulse 2.4s ease-in-out infinite;
+}
+
+/* Radiant Gold Vault Core Pulse */
+@keyframes goldVaultPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.3), inset 0 0 12px rgba(234, 179, 8, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 45px rgba(234, 179, 8, 0.65), inset 0 0 24px rgba(234, 179, 8, 0.35);
+  }
+}
+
+.animate-gold-vault {
+  animation: goldVaultPulse 2.8s ease-in-out infinite;
+}
+
+/* HUD Scanning Radar Trace Line */
+@keyframes hudRadarScan {
+  0% {
+    top: -10%;
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0.6;
+  }
+
+  70% {
+    opacity: 0.6;
+  }
+
+  100% {
+    top: 110%;
+    opacity: 0;
+  }
+}
+
+.animate-hud-scan {
+  animation: hudRadarScan 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Subtle 3D Card Hover Depth */
+.quiz-3d-card {
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s ease;
+  transform-style: preserve-3d;
+}
+
+.quiz-3d-card:hover {
+  transform: translateY(-2px) scale(1.008);
+}
+
+/* ── MASS THUMBNAIL GATEWAY EFFECTS ── */
+@keyframes cosmicOrbitSlow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-cosmic-orbit {
+  animation: cosmicOrbitSlow 28s linear infinite;
+}
+
+.animate-cosmic-orbit-reverse {
+  animation: cosmicOrbitSlow 20s linear infinite reverse;
+}
+
+@keyframes gammaSparkFloat {
+
+  0%,
+  100% {
+    transform: translateY(0px) scale(0.9);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translateY(-14px) scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+.animate-gamma-spark {
+  animation: gammaSparkFloat 3.6s ease-in-out infinite;
+}
+
+/* Specular light sweep on AAA CTA buttons when card hovered */
+.mass-cta-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.mass-cta-btn::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -120%;
+  width: 55%;
+  height: 140%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.26) 50%, transparent 100%);
+  transform: skewX(-22deg);
+  transition: left 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.group:hover .mass-cta-btn::after,
+.mass-cta-btn:hover::after {
+  left: 165%;
+}
+
+/* Holo scanlines slow scroll */
+@keyframes holoScanScroll {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 0 24px;
+  }
+}
+
+.animate-holo-scanlines {
+  animation: holoScanScroll 1.8s linear infinite;
+}
+
+/* ── INFINITY REWARD VAULT ANIMATIONS & 3D CARD LIGHTING ── */
+@keyframes vaultStoneUnlockPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) translateY(24px);
+    filter: brightness(2);
+  }
+
+  65% {
+    opacity: 1;
+    transform: scale(1.07) translateY(-4px);
+    filter: brightness(1.25);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+}
+
+.animate-vault-unlock {
+  animation: vaultStoneUnlockPop 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes vaultShockwaveExpand {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: scale(2.15);
+    opacity: 0;
+  }
+}
+
+.animate-vault-shockwave {
+  animation: vaultShockwaveExpand 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Respect motion preferences */

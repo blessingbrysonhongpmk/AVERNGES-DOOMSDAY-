@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Navigation from './components/Navigation';
 import Countdown from './components/Countdown';
 import HulkSmashBanner from './components/HulkSmashBanner';
@@ -8,18 +8,24 @@ import CharacterDatabase from './components/CharacterDatabase';
 import Intelligence from './components/Intelligence';
 import { loadAmbientMode, saveAmbientMode } from './utils/storage';
 import { avengersBgm } from './utils/bgm.js';
+import { clockAudio } from './utils/audio.js';
+
+const McuQuizExperience = lazy(() => import('./components/quiz/McuQuizExperience'));
 
 export default function App() {
   const [ambientMode, setAmbientMode] = useState(() => loadAmbientMode());
   const [isGameOpen, setIsGameOpen] = useState(false);
+  const [quizModalMode, setQuizModalMode] = useState(null); // null | 'intro' | 'vault'
 
   useEffect(() => {
     saveAmbientMode(ambientMode);
   }, [ambientMode]);
 
   useEffect(() => {
-    avengersBgm.setDucked(isGameOpen);
-  }, [isGameOpen]);
+    const isAnyGameOpen = isGameOpen || quizModalMode !== null;
+    avengersBgm.setPausedForGame(isAnyGameOpen);
+    clockAudio.setPausedForGame(isAnyGameOpen);
+  }, [isGameOpen, quizModalMode]);
 
   const toggleAmbientMode = () => {
     setAmbientMode((prev) => (prev === 'normal' ? 'cinematic' : 'normal'));
@@ -41,8 +47,14 @@ export default function App() {
         {/* 1. Hero & Live Broadcast Countdown (PROTECTED) */}
         <Countdown />
 
-        {/* 2. Hulk Smash Mayhem — Premium Mini Arcade Game Entry (Immediately Below Hero) */}
-        <HulkSmashBanner onPlay={() => setIsGameOpen(true)} isGameOpen={isGameOpen} />
+        {/* 2. Hulk Smash Mayhem + MCU Ultimate Quiz (Immediately Below Hero) */}
+        <HulkSmashBanner
+          onPlay={() => setIsGameOpen(true)}
+          isGameOpen={isGameOpen}
+          onOpenQuiz={() => setQuizModalMode('intro')}
+          onOpenQuizVault={() => setQuizModalMode('vault')}
+          isQuizOpen={quizModalMode !== null}
+        />
 
         {/* 3. Road to Doomsday — Theatrical Watchlist */}
         <Watchlist />
@@ -96,6 +108,16 @@ export default function App() {
       {/* ── HULK SMASH MAYHEM FULL INTERACTIVE MINI-GAME EXPERIENCE ── */}
       {isGameOpen && (
         <HulkSmashGame onClose={() => setIsGameOpen(false)} />
+      )}
+
+      {/* ── MCU ULTIMATE QUIZ EXPERIENCE (ISOLATED LAZY MODULE) ── */}
+      {quizModalMode && (
+        <Suspense fallback={<div className="fixed inset-0 z-50 bg-[#06070A]" />}>
+          <McuQuizExperience
+            initialView={quizModalMode}
+            onClose={() => setQuizModalMode(null)}
+          />
+        </Suspense>
       )}
     </div>
   );

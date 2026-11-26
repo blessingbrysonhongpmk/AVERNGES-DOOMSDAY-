@@ -43,7 +43,7 @@ export default function FinalCountdown() {
       {/* Background Cinematic Atmosphere */}
       <CinematicAtmosphere
         poster="/doctor-doom-stained-glass.jpg"
-        overlayOpacity="bg-[#07080A]/92"
+        overlayOpacity="bg-[#07080A]/[0.92]"
         accentGlow="emerald"
       />
 

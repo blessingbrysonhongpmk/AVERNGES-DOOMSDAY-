@@ -12,6 +12,7 @@ import {
   SlidersHorizontal,
   Music,
   Check,
+  Clock,
 } from 'lucide-react';
 import { useClockAudio } from '../utils/audio.js';
 import { useAvengersBgm, BGM_TRACKS } from '../utils/bgm.js';
@@ -19,10 +20,55 @@ import { useAvengersBgm, BGM_TRACKS } from '../utils/bgm.js';
 const NAV_ITEMS = [
   { id: 'overview', label: 'Home', icon: Home },
   { id: 'watchlist', label: 'Road to Doomsday', icon: Film },
-  { id: 'characters', label: 'Character Database', icon: Users },
-  { id: 'intelligence', label: 'Doomsday Intelligence', icon: Newspaper },
+  { id: 'characters', label: 'Characters', icon: Users },
+  { id: 'intelligence', label: 'Intelligence', icon: Newspaper },
   { id: 'game-mayhem', label: 'Game Zone', icon: Gamepad2 },
 ];
+
+/**
+ * Custom metallic Avengers 'A' insignia mark (replaces generic circular text badge).
+ */
+function AvengersEmblemSvg() {
+  return (
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 64 64"
+      fill="none"
+      className="shrink-0 drop-shadow-[0_0_8px_rgba(34,197,94,0.28)]"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="navAvSilver" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="48%" stopColor="#D1D5DB" />
+          <stop offset="100%" stopColor="#64748B" />
+        </linearGradient>
+        <linearGradient id="navAvGreen" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#4ADE80" />
+          <stop offset="100%" stopColor="#15803D" />
+        </linearGradient>
+      </defs>
+      {/* Signature open-bottom Avengers orbital arc */}
+      <path
+        d="M19.5 47.5A21.5 21.5 0 1 1 49 38"
+        stroke="url(#navAvGreen)"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+      <circle cx="32" cy="32" r="21.5" stroke="url(#navAvSilver)" strokeWidth="1.2" strokeOpacity="0.38" />
+      {/* Sculpted Avengers "A" letterform + forward arrow crossbar */}
+      <path
+        d="M34.5 9L14.5 52H22.2L27.4 40.5H36.8L38.4 44.5H45.2L37.8 9H34.5ZM29.8 34.8L34.4 22.8L36.2 34.8H29.8Z"
+        fill="url(#navAvSilver)"
+      />
+      <path
+        d="M25 36.2H39.5L43.5 39.2L39.5 42.2H25V36.2Z"
+        fill="url(#navAvGreen)"
+      />
+    </svg>
+  );
+}
 
 export default function Navigation() {
   const [activeSection, setActiveSection] = useState('overview');
@@ -34,12 +80,15 @@ export default function Navigation() {
     enabled: bgmEnabled,
     trackMode,
     isPlaying: bgmPlaying,
+    volume: bgmVolume,
     customBgmName,
     toggle: toggleBgm,
     setTrackMode,
+    setVolume,
     importCustomBgm,
     clearCustomBgm,
   } = useAvengersBgm();
+  const activeTrack = BGM_TRACKS[trackMode] || BGM_TRACKS.primary;
   const [bgmUploadError, setBgmUploadError] = useState('');
   const audioMenuRef = useRef(null);
 
@@ -55,7 +104,6 @@ export default function Navigation() {
     }
   };
 
-  // Close Studio Audio Drawer when clicking outside
   useEffect(() => {
     if (!audioMenuOpen) return;
     const onOutside = (e) => {
@@ -93,7 +141,7 @@ export default function Navigation() {
     setMobileMenuOpen(false);
     const target = document.getElementById(id);
     if (target) {
-      const headerOffset = 60;
+      const headerOffset = 64;
       const elementPosition = target.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
       window.scrollTo({
@@ -105,28 +153,28 @@ export default function Navigation() {
 
   return (
     <header
-      className={`sticky top-0 left-0 right-0 z-40 h-13 sm:h-14 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#060709]/95 backdrop-blur-md border-b border-[#1E2024] shadow-xl'
-          : 'bg-[#060709]/80 backdrop-blur-sm border-b border-[#1E2024]/60'
-      }`}
+      className={`sticky top-0 left-0 right-0 z-40 h-14 sm:h-[62px] transition-all duration-300 ${scrolled
+          ? 'bg-[#050608]/[0.96] backdrop-blur-md border-b border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.85)]'
+          : 'bg-[#060709]/85 backdrop-blur-sm border-b border-white/[0.05]'
+        }`}
     >
-      <div className="container-fluid container-xl mx-auto px-3 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+      <div className="container-fluid container-xl mx-auto px-3 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-4">
 
-        {/* Left: Brand Monogram Identity */}
+        {/* Left: Bespoke Avengers Emblem SVG + Crisp DOOMSDAY Wordmark Only */}
         <a
           href="#overview"
           onClick={(e) => scrollToSection(e, 'overview')}
-          className="text-xs xs:text-sm font-cinematic font-bold tracking-[0.14em] sm:tracking-[0.18em] text-[#F5F5F5] hover:text-white uppercase transition-colors select-none flex items-center gap-2 truncate group"
+          aria-label="Doomsday Home"
+          className="inline-flex items-center gap-2.5 shrink-0 select-none group"
         >
-          <span className="w-5 h-5 rounded-full bg-[#10B981]/20 border border-[#10B981] flex items-center justify-center text-[10px] text-[#22C55E] group-hover:shadow-[0_0_10px_rgba(34,197,94,0.6)] shrink-0 font-bold">
-            A
+          <AvengersEmblemSvg />
+          <span className="text-[14px] sm:text-[16px] font-cinematic font-black tracking-[0.28em] text-metallic group-hover:brightness-110 uppercase whitespace-nowrap leading-none pt-0.5">
+            DOOMSDAY
           </span>
-          <span className="truncate">AVENGERS: DOOMSDAY</span>
         </a>
 
-        {/* Center: Desktop Cinematic Navigation Tabs */}
-        <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1 sm:gap-2">
+        {/* Center: Clean Editorial Single-Line Navigation (Zero AI Pill Boxes / No Wrapping) */}
+        <nav aria-label="Main Navigation" className="hidden md:flex items-center h-full gap-4 lg:gap-7">
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
             return (
@@ -134,133 +182,95 @@ export default function Navigation() {
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={(e) => scrollToSection(e, item.id)}
-                className={`relative px-3 py-1.5 text-xs font-mono transition-all duration-200 flex items-center gap-1.5 rounded-xs ${
-                  isActive
-                    ? 'text-white font-semibold bg-[#111318] border border-[#232630] shadow-sm'
-                    : 'text-[#8C9098] hover:text-white hover:bg-[#0D0E12]'
-                }`}
+                className={`relative h-full inline-flex items-center whitespace-nowrap text-[11px] lg:text-xs font-display tracking-[0.14em] uppercase transition-colors duration-200 ${isActive
+                    ? 'text-white font-semibold'
+                    : 'text-[#848A94] hover:text-[#E5E7EB] font-medium'
+                  }`}
               >
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] shadow-[0_0_8px_rgba(34,197,94,0.9)] shrink-0" />
-                )}
                 <span>{item.label}</span>
+                {isActive && (
+                  <span
+                    className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#34D399] to-transparent shadow-[0_0_10px_rgba(52,211,153,0.75)]"
+                    aria-hidden="true"
+                  />
+                )}
               </a>
             );
           })}
         </nav>
 
-        {/* Right: Single Milled-Titanium BGM Capsule Console + Mobile Drawer */}
-        <div className="flex items-center gap-2 relative" ref={audioMenuRef}>
-          {/* Unified Luxury Audio Pill Capsule */}
-          <div
-            style={{
-              background: 'linear-gradient(180deg, #161920 0%, #0A0C10 100%)',
-            }}
-            className={`h-9 sm:h-10 rounded-full border inline-flex items-center overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_6px_20px_rgba(0,0,0,0.65)] transition-colors ${
-              bgmEnabled
-                ? 'border-[#2D4D3B] hover:border-[#34D399]/75'
-                : 'border-[#282D38] hover:border-[#424B5C]'
-            }`}
-          >
-            {/* Primary Hardware Toggle (ON / OFF) */}
+        {/* Right: Minimalist Architectural Audio Rail + Studio Mixer Trigger */}
+        <div className="flex items-center gap-2 relative shrink-0" ref={audioMenuRef}>
+          <div className="h-9 rounded-[4px] border border-white/[0.1] bg-[#0B0D12]/90 inline-flex items-center divide-x divide-white/[0.08] shadow-inner">
+            {/* Website Countdown Clock Switch */}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={soundEnabled}
+              onClick={toggleSound}
+              aria-label={soundEnabled ? 'Mute website countdown clock sound' : 'Enable website countdown clock sound'}
+              title={`Website Timer Clock Sound (${soundEnabled ? 'ON' : 'OFF'} — Active on website countdown only, paused in game)`}
+              className={`h-full px-2.5 sm:px-3 inline-flex items-center gap-1.5 text-[10px] font-mono tracking-[0.12em] uppercase cursor-pointer transition-colors whitespace-nowrap ${soundEnabled
+                  ? 'text-[#4ADE80] bg-[#22C55E]/[0.07]'
+                  : 'text-[#7B818C] hover:text-[#D1D5DB]'
+                }`}
+            >
+              <Clock className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xl:inline">{soundEnabled ? 'TICK ON' : 'CLOCK'}</span>
+            </button>
+
+            {/* Primary Avengers Score (BGM) Toggle */}
             <button
               type="button"
               role="switch"
               aria-checked={bgmEnabled}
               onClick={toggleBgm}
-              aria-label={bgmEnabled ? 'Turn Background Music Off' : 'Turn Background Music On'}
+              aria-label={bgmEnabled ? 'Turn AVENGERS BGM Off' : 'Turn AVENGERS BGM On'}
               title={`AVENGERS BGM (${bgmEnabled ? 'ON' : 'OFF'}) — Click to toggle`}
-              className="h-full pl-2 pr-2.5 sm:pl-2.5 sm:pr-3 inline-flex items-center gap-2.5 cursor-pointer select-none group focus:outline-none"
-            >
-              {/* Recessed Circular Waveform Gauge */}
-              <span
-                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border flex items-end justify-center gap-[2px] pb-1.5 px-1 shrink-0 transition-colors ${
-                  bgmEnabled
-                    ? 'bg-[#07110B] border-[#22C55E]/50'
-                    : 'bg-[#07080B] border-[#222731]'
+              className={`h-full px-2.5 sm:px-3.5 inline-flex items-center gap-2 text-[10px] font-mono tracking-[0.14em] uppercase cursor-pointer transition-colors whitespace-nowrap ${bgmEnabled
+                  ? 'text-white bg-[#22C55E]/[0.09]'
+                  : 'text-[#7B818C] hover:text-[#E5E7EB]'
                 }`}
-                aria-hidden="true"
-              >
-                {[0, 140, 260, 80, 190].map((delay, i) => (
+            >
+              <span className="inline-flex items-end gap-[2px] h-3 w-3.5 justify-center" aria-hidden="true">
+                {[0, 140, 260].map((delay, i) => (
                   <span
                     key={delay}
                     style={{
                       animationDelay: `${delay}ms`,
-                      height: i === 2 ? '11px' : i % 2 === 1 ? '9px' : '6px',
+                      height: i === 1 ? '11px' : '7px',
                     }}
-                    className={`w-[1.8px] rounded-full transition-colors ${
-                      bgmEnabled && bgmPlaying
+                    className={`w-[2px] rounded-full ${bgmEnabled && bgmPlaying
                         ? 'bgm-eq-bar bg-[#34D399]'
                         : bgmEnabled
-                          ? 'bg-[#D1D5DB]/80'
-                          : 'bg-[#3C4352] scale-y-[0.35]'
-                    }`}
+                          ? 'bg-[#86EFAC]'
+                          : 'bg-[#4B5563]'
+                      }`}
                   />
                 ))}
               </span>
-
-              {/* Clean Studio Track Label */}
-              <div className="hidden xs:flex flex-col items-start text-left leading-none">
-                <span className="text-[7.5px] font-mono tracking-[0.2em] text-[#8B92A0] uppercase mb-0.5">
-                  AVENGERS BGM
-                </span>
-                <span className="text-[10px] font-display font-bold tracking-[0.14em] uppercase text-[#F4F5F7]">
-                  {bgmEnabled ? (bgmPlaying ? 'LIVE' : 'READY') : 'MUTED'}
-                </span>
-              </div>
-
-              {/* Smooth Gliding Machined Rocker Pill */}
+              <span className="font-bold">BGM</span>
               <span
-                className={`relative w-12 sm:w-14 h-6 rounded-full border p-0.5 flex items-center transition-colors duration-200 shadow-[inset_0_2px_5px_rgba(0,0,0,0.85)] ${
-                  bgmEnabled
-                    ? 'bg-[#0A2214] border-[#22C55E]/65'
-                    : 'bg-[#06070A] border-[#242934]'
-                }`}
+                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] ${bgmEnabled
+                    ? 'text-[#4ADE80] bg-[#14532D]/50'
+                    : 'text-[#6B7280] bg-white/[0.04]'
+                  }`}
               >
-                <span
-                  className={`text-[7.5px] font-mono font-extrabold tracking-wider uppercase absolute transition-opacity duration-200 ${
-                    bgmEnabled ? 'left-1.5 text-[#4ADE80] opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  ON
-                </span>
-                <span
-                  className={`text-[7.5px] font-mono font-bold tracking-wider uppercase absolute right-1.5 transition-opacity duration-200 ${
-                    !bgmEnabled ? 'text-[#6B7280] opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  OFF
-                </span>
-
-                <span
-                  className={`w-5 h-4.5 rounded-full flex items-center justify-center transition-transform duration-200 shadow-md ${
-                    bgmEnabled
-                      ? 'translate-x-5.5 sm:translate-x-7.5 bg-[#F8FAFC]'
-                      : 'translate-x-0 bg-[#2C323F]'
-                  }`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      bgmEnabled ? 'bg-[#16A34A]' : 'bg-[#64748B]'
-                    }`}
-                  />
-                </span>
+                {bgmEnabled ? (bgmPlaying ? 'LIVE' : 'ON') : 'OFF'}
               </span>
             </button>
 
-            {/* Hairline Steel Divider + Studio Audio Drawer Trigger */}
-            <span className="w-px h-5 bg-[#242A35]" aria-hidden="true" />
+            {/* Audio Settings Drawer Button */}
             <button
               type="button"
               onClick={() => setAudioMenuOpen((o) => !o)}
               aria-expanded={audioMenuOpen}
               aria-label="Open Studio Audio Options"
-              title="Audio Options: Switch Theme, Load Custom Audio & Clock SFX"
-              className={`h-full px-2.5 sm:px-3 inline-flex items-center justify-center transition-colors cursor-pointer ${
-                audioMenuOpen
-                  ? 'bg-[#1D232E] text-white'
-                  : 'text-[#8E95A2] hover:text-white hover:bg-white/[0.04]'
-              }`}
+              title="Audio Deck: Switch Score Tracks, Master Volume & Clock SFX"
+              className={`h-full px-2.5 sm:px-3 inline-flex items-center justify-center transition-colors cursor-pointer ${audioMenuOpen
+                  ? 'bg-white/[0.1] text-white'
+                  : 'text-[#848A94] hover:text-white'
+                }`}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
             </button>
@@ -268,23 +278,23 @@ export default function Navigation() {
 
           {/* Studio Audio Settings Popover */}
           {audioMenuOpen && (
-            <div className="absolute right-0 top-12 sm:top-13 w-72 sm:w-80 bg-[#0A0C10]/98 backdrop-blur-xl border border-[#282F3C] rounded-[6px] shadow-[0_24px_60px_rgba(0,0,0,0.92)] p-4 z-50 text-left">
+            <div className="absolute right-0 top-12 sm:top-14 w-72 sm:w-80 bg-[#0A0C10]/[0.98] backdrop-blur-xl border border-[#282F3C] rounded-[6px] shadow-[0_24px_70px_rgba(0,0,0,0.95)] p-4 z-50 text-left">
               <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-[#1C2029]">
                 <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#D1D5DB] uppercase inline-flex items-center gap-1.5">
                   <Music className="w-3.5 h-3.5 text-[#34D399]" />
                   <span>STUDIO AUDIO DECK</span>
                 </span>
-                <span className="text-[9px] font-mono text-[#6B7280] uppercase">
-                  {customBgmName ? 'CUSTOM' : trackMode === 'primary' ? 'TRACK I' : 'TRACK II'}
+                <span className="text-[9px] font-mono text-[#34D399] uppercase">
+                  {customBgmName ? 'CUSTOM' : activeTrack.shortTag}
                 </span>
               </div>
 
-              {/* Dual Built-In BGM Source Selector */}
+              {/* Tri-Source Built-In BGM Switcher */}
               <div className="space-y-1.5 mb-3.5">
                 <span className="text-[9px] font-mono tracking-[0.18em] text-[#7C828D] uppercase block">
-                  BACKGROUND TRACK
+                  BACKGROUND SCORE
                 </span>
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-3 gap-1.5">
                   {Object.values(BGM_TRACKS).map((trk) => {
                     const active = !customBgmName && trackMode === trk.id;
                     return (
@@ -292,18 +302,34 @@ export default function Navigation() {
                         key={trk.id}
                         type="button"
                         onClick={() => setTrackMode(trk.id)}
-                        className={`h-9 px-2.5 rounded-[3px] border text-[10px] font-display font-bold tracking-wider uppercase inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
-                          active
-                            ? 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B]'
+                        className={`h-9 px-2 rounded-[3px] border text-[9.5px] font-display font-bold tracking-wider uppercase inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${active
+                            ? 'bg-[#F3F4F6] border-[#F3F4F6] text-[#08090B] shadow-sm'
                             : 'bg-[#101319] border-[#252B36] text-[#9CA3AF] hover:text-white hover:border-[#3D4554]'
-                        }`}
+                          }`}
                       >
-                        {active && <Check className="w-3 h-3 text-[#16A34A] stroke-[3]" />}
+                        {active && <Check className="w-3 h-3 text-[#16A34A] stroke-[3] shrink-0" />}
                         <span className="truncate">{trk.label}</span>
                       </button>
                     );
                   })}
                 </div>
+              </div>
+
+              {/* Master Volume Level Fader */}
+              <div className="mb-3.5 p-2.5 bg-[#0E1117] border border-[#1E242E] rounded-[3px]">
+                <div className="flex items-center justify-between mb-1.5 text-[9px] font-mono uppercase">
+                  <span className="text-[#8C9098] tracking-wider">MASTER GAIN</span>
+                  <span className="text-[#34D399] font-bold">{Math.round((bgmVolume ?? 0.46) * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={5}
+                  max={100}
+                  value={Math.round((bgmVolume ?? 0.46) * 100)}
+                  onChange={(e) => setVolume(Number(e.target.value) / 100)}
+                  aria-label="Background music volume"
+                  className="w-full h-1.5 accent-[#22C55E] cursor-pointer bg-[#1F242E] rounded-lg"
+                />
               </div>
 
               {/* Custom MP3/WAV Uploader & Reset */}
@@ -337,7 +363,7 @@ export default function Navigation() {
                 <p className="text-[10px] font-mono text-[#F87171] mb-2">{bgmUploadError}</p>
               )}
 
-              {/* Mechanical Clock Tick SFX Row */}
+              {/* Mechanical Timer Clock Tick SFX Row */}
               <div className="pt-2.5 border-t border-[#1C2029] flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {soundEnabled ? (
@@ -346,18 +372,17 @@ export default function Navigation() {
                     <VolumeX className="w-3.5 h-3.5 text-[#6B7280]" />
                   )}
                   <span className="text-[10px] font-mono tracking-wider text-[#D1D5DB] uppercase">
-                    Clock Tick SFX
+                    Timer Clock SFX
                   </span>
                 </div>
 
                 <button
                   type="button"
                   onClick={toggleSound}
-                  className={`h-7 px-3 rounded-full border text-[9px] font-mono font-bold uppercase tracking-wider cursor-pointer transition-colors ${
-                    soundEnabled
+                  className={`h-7 px-3 rounded-[3px] border text-[9px] font-mono font-bold uppercase tracking-wider cursor-pointer transition-colors ${soundEnabled
                       ? 'bg-[#122619] border-[#22C55E]/70 text-[#4ADE80]'
                       : 'bg-[#12151B] border-[#282E3A] text-[#8E95A2] hover:text-white'
-                  }`}
+                    }`}
                 >
                   {soundEnabled ? 'ON' : 'OFF'}
                 </button>
@@ -389,8 +414,8 @@ export default function Navigation() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-13 bg-[#08090B]/98 border-b border-[#1E2024] p-4 shadow-2xl backdrop-blur-xl animate-fade-in z-50">
-          <nav className="flex flex-col gap-1.5">
+        <div className="md:hidden fixed inset-x-0 top-14 sm:top-[62px] bg-[#060709]/[0.98] border-b border-white/[0.08] p-4 shadow-2xl backdrop-blur-xl animate-fade-in z-50">
+          <nav className="flex flex-col gap-1">
             {NAV_ITEMS.map((item) => {
               const isActive = activeSection === item.id;
               const Icon = item.icon;
@@ -399,19 +424,15 @@ export default function Navigation() {
                   key={item.id}
                   href={`#${item.id}`}
                   onClick={(e) => scrollToSection(e, item.id)}
-                  className={`flex items-center justify-between min-h-[44px] px-3.5 py-2 text-xs font-mono tracking-wider uppercase transition-colors border rounded-xs ${
-                    isActive
-                      ? 'border-[#22C55E]/50 bg-[#22C55E]/10 text-white font-bold'
+                  className={`flex items-center justify-between min-h-[44px] px-3.5 py-2 text-xs font-display tracking-[0.14em] uppercase transition-colors border-l-2 ${isActive
+                      ? 'border-[#34D399] bg-white/[0.04] text-white font-semibold'
                       : 'border-transparent text-[#8C9098] hover:text-white'
-                  }`}
+                    }`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <Icon className="w-4 h-4 text-[#8C9098]" />
                     <span>{item.label}</span>
                   </div>
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] shadow-[0_0_8px_rgba(34,197,94,0.9)]" />
-                  )}
                 </a>
               );
             })}
