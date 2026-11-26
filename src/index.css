@@ -31,7 +31,7 @@
   body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    font-family: 'Satoshi', 'Switzer', system-ui, -apple-system, sans-serif;
     font-optical-sizing: auto;
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;

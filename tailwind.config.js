@@ -45,14 +45,14 @@ export default {
         }
       },
       fontFamily: {
-        cinematic: ['Cinzel', 'Trajan Pro', 'Bodoni Moda', 'Georgia', 'serif'],
-        editorial: ['Cormorant Garamond', 'Cinzel', 'Georgia', 'serif'],
-        trailer: ['Bebas Neue', 'Oswald', 'Barlow Condensed', 'Impact', 'sans-serif'],
-        hud: ['Barlow Condensed', 'Oswald', 'sans-serif'],
-        display: ['Manrope', 'Barlow Condensed', 'sans-serif'],
-        mono: ['Barlow Semi Condensed', 'Barlow Condensed', 'sans-serif'],
-        body: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        cinematic: ['Cinzel', 'Clash Display', 'Trajan Pro', 'Georgia', 'serif'],
+        editorial: ['Clash Display', 'Cinzel', 'Georgia', 'serif'],
+        trailer: ['Bebas Neue', 'Roboto Condensed', 'Barlow Condensed', 'Impact', 'sans-serif'],
+        hud: ['Roboto Condensed', 'Barlow Condensed', 'sans-serif'],
+        display: ['Clash Grotesk', 'Satoshi', 'sans-serif'],
+        mono: ['Clash Grotesk', 'Roboto Condensed', 'sans-serif'],
+        body: ['Satoshi', 'Switzer', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Satoshi', 'Switzer', 'system-ui', '-apple-system', 'sans-serif'],
       },
       letterSpacing: {
         widest: '0.25em',
