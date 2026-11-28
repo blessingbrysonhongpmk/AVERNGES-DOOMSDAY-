@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Trophy, ChevronRight, Users, Gamepad2, Sparkles } from 'lucide-react';
 import { FEATURED_GAME_CAST, ALL_AVATARS, HULK_PROFILE } from '../data/hulkGameData.js';
 import { hulkAudio } from '../utils/hulkAudio.js';
@@ -50,6 +50,35 @@ export default function HulkSmashBanner({ onPlay, isGameOpen, onOpenQuiz, onOpen
   const heroCount = ALL_AVATARS.length;
   const showSmash = activeFilter === 'all' || activeFilter === 'smash';
   const showQuiz = activeFilter === 'all' || activeFilter === 'quiz';
+  const thumbRef = useRef(null);
+  const rafRef = useRef(null);
+
+  const handleThumbMouseMove = (e) => {
+    const el = thumbRef.current;
+    if (!el || window.matchMedia?.('(hover: none), (pointer: coarse)').matches) return;
+    const rect = el.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+    const nx = (xPct - 50) / 50;
+    const ny = (yPct - 50) / 50;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      el.style.setProperty('--mx', `${xPct.toFixed(2)}%`);
+      el.style.setProperty('--my', `${yPct.toFixed(2)}%`);
+      el.style.setProperty('--px', nx.toFixed(3));
+      el.style.setProperty('--py', ny.toFixed(3));
+    });
+  };
+
+  const handleThumbMouseLeave = () => {
+    const el = thumbRef.current;
+    if (!el) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    el.style.setProperty('--mx', '50%');
+    el.style.setProperty('--my', '50%');
+    el.style.setProperty('--px', '0');
+    el.style.setProperty('--py', '0');
+  };
 
   return (
     <section
@@ -170,24 +199,52 @@ export default function HulkSmashBanner({ onPlay, isGameOpen, onOpenQuiz, onOpen
                   aria-hidden="true"
                 />
 
-                {/* CINEMATIC BOX-ART THUMBNAIL STAGE */}
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#06080A]">
+                {/* CINEMATIC BOX-ART THUMBNAIL STAGE (3-Layer Parallax + Volumetric Beam) */}
+                <div
+                  ref={thumbRef}
+                  onMouseMove={handleThumbMouseMove}
+                  onMouseLeave={handleThumbMouseLeave}
+                  className="game-thumb-stage relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#06080A]"
+                >
+                  {/* Layer 1: Shadowed Doctor Doom Storm Background */}
                   <img
-                    src="/hulk-doomsday-keyart.jpg"
-                    alt="Hulk and Doctor Doom — Avengers Doomsday Simulation Key Art"
+                    src="/thumbnails/hulk-bg.webp"
+                    alt="Doctor Doom looming in dark storm background"
                     loading="lazy"
-                    className="w-full h-full object-cover object-top brightness-[0.98] contrast-[1.08] group-hover:scale-[1.045] transition-transform duration-700 ease-out"
+                    className="game-thumb-layer game-thumb-bg object-center"
                   />
 
-                  {/* Subtle Gamma Hover Lighting */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{
-                      background:
-                        'radial-gradient(circle at 46% 38%, rgba(34,197,94,0.22) 0%, transparent 56%)',
-                    }}
-                    aria-hidden="true"
+                  {/* Layer 2: Furious Veined Foreground Hulk Subject */}
+                  <img
+                    src="/thumbnails/hulk-subject.webp"
+                    alt="Hulk and Doctor Doom — Avengers Doomsday Simulation Key Art"
+                    loading="lazy"
+                    className="game-thumb-layer game-thumb-subject object-top"
                   />
+
+                  {/* Hidden Detail Reveal: Toxic-Green Gamma Cracks Inside Beam */}
+                  <img
+                    src="/thumbnails/hulk-cracks.webp"
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className="game-thumb-layer game-thumb-reveal game-thumb-reveal--hulk object-center"
+                  />
+
+                  {/* Layer 3: Floating Dust, Debris & Sparks */}
+                  <img
+                    src="/thumbnails/hulk-fx.webp"
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className="game-thumb-layer game-thumb-fx object-center"
+                  />
+
+                  {/* Peripheral Dimming Veil Outside Cursor Beam */}
+                  <div className="game-thumb-dim" aria-hidden="true" />
+
+                  {/* Cursor-Driven Toxic-Green Volumetric Light Cone */}
+                  <div className="game-thumb-beam game-thumb-beam--hulk" aria-hidden="true" />
 
                   {/* Seamless Theatrical Ink Vignette Melting Into Card Canvas */}
                   <div
@@ -201,17 +258,17 @@ export default function HulkSmashBanner({ onPlay, isGameOpen, onOpenQuiz, onOpen
 
                   {/* Top Box-Art Genre & High Score Rail (Single Line on All Phones) */}
                   <div className="absolute top-3 inset-x-3 sm:top-3.5 sm:inset-x-5 flex items-center justify-between gap-2 z-10">
-                    <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border-l-2 border-[#22C55E] text-[9px] sm:text-[10px] font-hud font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#D1FAE5] whitespace-nowrap">
+                    <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border-l-2 border-[#22C55E] text-[9px] sm:text-[10px] game-card-label text-[#D1FAE5] whitespace-nowrap">
                       ACTION ARENA<span className="hidden xs:inline"> &bull; 30S</span>
                     </span>
 
                     {highScore > 0 ? (
-                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.12] text-[9px] sm:text-[10px] font-hud font-bold uppercase tracking-[0.12em] sm:tracking-[0.16em] text-[#FACC15] inline-flex items-center gap-1 tabular-nums whitespace-nowrap">
+                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.12] text-[9px] sm:text-[10px] game-card-label text-[#FACC15] inline-flex items-center gap-1 tabular-nums whitespace-nowrap">
                         <Trophy className="w-3 h-3 text-[#EAB308] shrink-0" />
                         <span>BEST {highScore.toLocaleString()}</span>
                       </span>
                     ) : (
-                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.1] text-[9px] sm:text-[10px] font-hud font-semibold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-white/75 whitespace-nowrap">
+                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.1] text-[9px] sm:text-[10px] game-card-label text-white/75 whitespace-nowrap">
                         SECTOR 616
                       </span>
                     )}
@@ -222,12 +279,15 @@ export default function HulkSmashBanner({ onPlay, isGameOpen, onOpenQuiz, onOpen
                     <div className="flex items-stretch gap-2.5 sm:gap-3 min-w-0">
                       <span className="w-[3px] bg-[#22C55E] shrink-0" aria-hidden="true" />
                       <div className="min-w-0">
-                        <span className="text-[9.5px] sm:text-[10px] font-hud tracking-[0.2em] sm:tracking-[0.26em] text-[#86EFAC] uppercase block mb-0.5 font-bold">
+                        <span className="text-[9.5px] sm:text-[10px] game-card-label text-[#86EFAC] block mb-0.5">
                           NEURAL AI VOICES &bull; {heroCount} HEROES
                         </span>
-                        <h3 className="text-[30px] xs:text-[34px] sm:text-[44px] font-trailer font-normal tracking-[0.04em] text-white uppercase leading-[0.9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]">
-                          HULK SMASH MAYHEM
-                        </h3>
+                        <div className="relative overflow-hidden inline-block max-w-full">
+                          <h3 className="text-[30px] xs:text-[34px] sm:text-[44px] game-card-title game-card-title-fill--hulk uppercase leading-[0.9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]">
+                            HULK SMASH MAYHEM
+                          </h3>
+                          <span className="game-title-sweep" aria-hidden="true" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -235,7 +295,7 @@ export default function HulkSmashBanner({ onPlay, isGameOpen, onOpenQuiz, onOpen
 
                 {/* Machined Hardware Loadout & Action Dock */}
                 <div className="px-3.5 pb-4 pt-1.5 sm:px-5 sm:pb-5 sm:pt-2 flex flex-col justify-between flex-1 gap-3 sm:gap-3.5 bg-[#0B0C10]">
-                  <p className="text-[12.5px] sm:text-[13px] font-body text-[#A1A8B4] leading-[1.52]">
+                  <p className="text-[12.5px] sm:text-[13px] game-card-desc text-[#A1A8B4] leading-[1.52]">
                     Smash Doctor Doom&apos;s forces, Thanos echoes &amp; Void anomalies with {heroCount} Marvel Heroes and live AI voice lines.
                   </p>
 
@@ -264,10 +324,10 @@ export default function HulkSmashBanner({ onPlay, isGameOpen, onOpenQuiz, onOpen
                     </div>
 
                     <div className="pl-2 sm:pl-3 border-l border-white/[0.08] text-right min-w-0 flex-1">
-                      <span className="text-[8.5px] sm:text-[9.5px] font-hud font-semibold text-[#7D8594] uppercase tracking-[0.12em] sm:tracking-[0.18em] block truncate">
+                      <span className="text-[8.5px] sm:text-[9.5px] font-gameTech font-bold text-[#7D8594] uppercase tracking-[0.12em] sm:tracking-[0.18em] block truncate">
                         ACTIVE UNIT
                       </span>
-                      <span className="text-[10.5px] sm:text-[12px] font-hud font-bold text-white uppercase tracking-[0.06em] sm:tracking-[0.1em] inline-flex items-center justify-end gap-1 max-w-full truncate">
+                      <span className="text-[10.5px] sm:text-[12px] font-gameTech font-bold text-white uppercase tracking-[0.06em] sm:tracking-[0.1em] inline-flex items-center justify-end gap-1 max-w-full truncate">
                         <span className="w-1.5 h-1.5 bg-[#22C55E] inline-block shrink-0" />
                         <span className="truncate">{selectedAvatar.name}</span>
                       </span>

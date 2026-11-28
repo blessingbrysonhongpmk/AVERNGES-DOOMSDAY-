@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Trophy, ChevronRight, Zap } from 'lucide-react';
 import { loadQuizProgress, STONE_MILESTONES } from '../../utils/quizStorage.js';
 import { quizAudio } from '../../utils/quizAudio.js';
@@ -24,6 +24,36 @@ export default function McuQuizThumbnail({
   useEffect(() => {
     setProgress(loadQuizProgress());
   }, [isQuizOpen]);
+
+  const thumbRef = useRef(null);
+  const rafRef = useRef(null);
+
+  const handleThumbMouseMove = (e) => {
+    const el = thumbRef.current;
+    if (!el || window.matchMedia?.('(hover: none), (pointer: coarse)').matches) return;
+    const rect = el.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+    const nx = (xPct - 50) / 50;
+    const ny = (yPct - 50) / 50;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      el.style.setProperty('--mx', `${xPct.toFixed(2)}%`);
+      el.style.setProperty('--my', `${yPct.toFixed(2)}%`);
+      el.style.setProperty('--px', nx.toFixed(3));
+      el.style.setProperty('--py', ny.toFixed(3));
+    });
+  };
+
+  const handleThumbMouseLeave = () => {
+    const el = thumbRef.current;
+    if (!el) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    el.style.setProperty('--mx', '50%');
+    el.style.setProperty('--my', '50%');
+    el.style.setProperty('--px', '0');
+    el.style.setProperty('--py', '0');
+  };
 
   const handleEnterChallenge = () => {
     try { quizAudio.tick(); } catch { }
@@ -53,24 +83,55 @@ export default function McuQuizThumbnail({
           aria-hidden="true"
         />
 
-        {/* CINEMATIC BOX-ART THUMBNAIL STAGE */}
-        <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#060609]">
+        {/* CINEMATIC BOX-ART THUMBNAIL STAGE (3-Layer Parallax + Multi-Stone Beam) */}
+        <div
+          ref={thumbRef}
+          onMouseMove={handleThumbMouseMove}
+          onMouseLeave={handleThumbMouseLeave}
+          className="game-thumb-stage relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#060609]"
+        >
+          {/* Layer 1: Cosmic Multiverse Silhouettes & Volumetric Background */}
           <img
-            src="/mcu-quiz-keyart.jpg"
-            alt="MCU Ultimate Quiz — Cosmic Multiverse Portal & Infinity Stones"
+            src="/thumbnails/quiz-bg.webp"
+            alt="Hero and villain silhouettes in deep multiverse void"
             loading="lazy"
-            className="w-full h-full object-cover object-center brightness-[0.98] contrast-[1.08] group-hover:scale-[1.045] transition-transform duration-700 ease-out"
+            className="game-thumb-layer game-thumb-bg object-center"
           />
 
-          {/* Subtle Hover Cosmic Portal Glow */}
-          <div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-            style={{
-              background:
-                'radial-gradient(circle at 50% 48%, rgba(230,36,41,0.22) 0%, transparent 62%)',
-            }}
-            aria-hidden="true"
+          {/* Layer 2: Six-Stone Infinity Vortex Subject */}
+          <img
+            src="/thumbnails/quiz-subject.webp"
+            alt="MCU Ultimate Quiz — Cosmic Multiverse Portal & Infinity Stones"
+            loading="lazy"
+            className="game-thumb-layer game-thumb-subject object-center"
           />
+
+          {/* Hidden Detail Reveal: Glowing Infinity Stone Runes Inside Beam */}
+          <img
+            src="/thumbnails/quiz-runes.webp"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="game-thumb-layer game-thumb-reveal game-thumb-reveal--quiz object-center"
+          />
+
+          {/* Layer 3: Cosmic Particles & Volumetric Light Motes */}
+          <img
+            src="/thumbnails/quiz-fx.webp"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="game-thumb-layer game-thumb-fx object-center"
+          />
+
+          {/* Peripheral Dimming Veil Outside Cursor Beam */}
+          <div className="game-thumb-dim" aria-hidden="true" />
+
+          {/* Cursor-Driven Multi-Color Volumetric Light Cone Shifting Through 6 Stone Colors */}
+          <div className="game-thumb-beam" aria-hidden="true">
+            <div className="game-thumb-beam--quiz-base" />
+            <div className="game-thumb-beam--quiz-shift" />
+          </div>
 
           {/* Seamless Theatrical Ink Vignette Melting Into Card Canvas */}
           <div
@@ -84,17 +145,17 @@ export default function McuQuizThumbnail({
 
           {/* Top Box-Art Genre & Best Score Rail (Single Line on All Phones) */}
           <div className="absolute top-3 inset-x-3 sm:top-3.5 sm:inset-x-5 flex items-center justify-between gap-2 z-10">
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border-l-2 border-[#E62429] text-[9px] sm:text-[10px] font-hud font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#FECACA] whitespace-nowrap">
+            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border-l-2 border-[#E62429] text-[9px] sm:text-[10px] game-card-label text-[#FECACA] whitespace-nowrap">
               1000-Q<span className="hidden xs:inline"> &bull; EN / TANGLISH</span>
             </span>
 
             {progress.bestScore > 0 ? (
-              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.12] text-[9px] sm:text-[10px] font-hud font-bold uppercase tracking-[0.12em] sm:tracking-[0.16em] text-[#FACC15] inline-flex items-center gap-1 tabular-nums whitespace-nowrap">
+              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.12] text-[9px] sm:text-[10px] game-card-label text-[#FACC15] inline-flex items-center gap-1 tabular-nums whitespace-nowrap">
                 <Trophy className="w-3 h-3 text-[#EAB308] shrink-0" />
                 <span>BEST {progress.bestScore}/10</span>
               </span>
             ) : (
-              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.1] text-[9px] sm:text-[10px] font-hud font-semibold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-white/75 whitespace-nowrap">
+              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#080B0F]/85 backdrop-blur-md border border-white/[0.1] text-[9px] sm:text-[10px] game-card-label text-white/75 whitespace-nowrap">
                 STARK ARCHIVE
               </span>
             )}
@@ -105,12 +166,15 @@ export default function McuQuizThumbnail({
             <div className="flex items-stretch gap-2.5 sm:gap-3 min-w-0">
               <span className="w-[3px] bg-[#E62429] shrink-0" aria-hidden="true" />
               <div className="min-w-0">
-                <span className="text-[9.5px] sm:text-[10px] font-hud tracking-[0.2em] sm:tracking-[0.26em] text-[#FCA5A5] uppercase block mb-0.5 font-bold">
+                <span className="text-[9.5px] sm:text-[10px] game-card-label text-[#FCA5A5] block mb-0.5">
                   10 QUESTIONS. ONE TRUE FAN.
                 </span>
-                <h3 className="text-[30px] xs:text-[34px] sm:text-[44px] font-trailer font-normal tracking-[0.04em] text-white uppercase leading-[0.9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]">
-                  MCU ULTIMATE QUIZ
-                </h3>
+                <div className="relative overflow-hidden inline-block max-w-full">
+                  <h3 className="text-[30px] xs:text-[34px] sm:text-[44px] game-card-title game-card-title-fill--quiz uppercase leading-[0.9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]">
+                    MCU ULTIMATE QUIZ
+                  </h3>
+                  <span className="game-title-sweep" aria-hidden="true" />
+                </div>
               </div>
             </div>
           </div>
@@ -118,7 +182,7 @@ export default function McuQuizThumbnail({
 
         {/* Machined Gauntlet Loadout & Action Dock */}
         <div className="px-3.5 pb-4 pt-1.5 sm:px-5 sm:pb-5 sm:pt-2 flex flex-col justify-between flex-1 gap-3 sm:gap-3.5 bg-[#0B0C10]">
-          <p className="text-[12.5px] sm:text-[13px] font-body text-[#A1A8B4] leading-[1.52]">
+          <p className="text-[12.5px] sm:text-[13px] game-card-desc text-[#A1A8B4] leading-[1.52]">
             Challenge 1,000 canonical MCU questions—unlock all 6 Infinity Stones and face Iron Man&apos;s evaluation.
           </p>
 
@@ -148,10 +212,10 @@ export default function McuQuizThumbnail({
             </div>
 
             <div className="pl-2 sm:pl-3 border-l border-white/[0.08] text-right min-w-0 flex-1">
-              <span className="text-[8.5px] sm:text-[9.5px] font-hud font-semibold text-[#7D8594] uppercase tracking-[0.12em] sm:tracking-[0.18em] block truncate">
+              <span className="text-[8.5px] sm:text-[9.5px] font-gameTech font-bold text-[#7D8594] uppercase tracking-[0.12em] sm:tracking-[0.18em] block truncate">
                 GAUNTLET VAULT
               </span>
-              <span className="text-[10.5px] sm:text-[12px] font-hud font-bold text-white uppercase tracking-[0.06em] sm:tracking-[0.1em] tabular-nums block truncate">
+              <span className="text-[10.5px] sm:text-[12px] font-gameTech font-bold text-white uppercase tracking-[0.06em] sm:tracking-[0.1em] tabular-nums block truncate">
                 {progress.unlockedStones.length}/6 STONES
               </span>
             </div>

@@ -765,6 +765,290 @@
   display: none;
 }
 
+/* ── AAA Game Launcher Card Typography & Volumetric Spotlight System ── */
+.game-card-title {
+  font-family: 'Big Shoulders Display', 'Anton', 'Roboto Condensed', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.045em;
+}
+
+.game-card-title-fill--hulk {
+  background: linear-gradient(180deg, #FFFFFF 0%, #E2F8EA 56%, #86EFAC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-card-title-fill--quiz {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 56%, #FCA5A5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-card-label {
+  font-family: 'Rajdhani', 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.game-card-desc {
+  font-family: 'Inter Tight', 'Satoshi', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+.game-thumb-stage {
+  --mx: 50%;
+  --my: 50%;
+  --px: 0;
+  --py: 0;
+}
+
+.game-thumb-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+}
+
+.game-thumb-bg {
+  transform: scale(1.04) translate3d(0, 0, 0);
+}
+
+.game-thumb-subject {
+  transform: scale(1.04) translate3d(0, 0, 0);
+}
+
+.game-thumb-fx {
+  transform: scale(1.05) translate3d(0, 0, 0);
+}
+
+.game-thumb-stage:hover .game-thumb-bg {
+  transform: scale(1.04) translate3d(calc(var(--px) * -4px), calc(var(--py) * -3px), 0);
+}
+
+.game-thumb-stage:hover .game-thumb-subject {
+  transform: scale(1.04) translate3d(calc(var(--px) * 6px), calc(var(--py) * 5px), 0);
+}
+
+.game-thumb-stage:hover .game-thumb-fx {
+  transform: scale(1.05) translate3d(calc(var(--px) * 10px), calc(var(--py) * 8px), 0);
+}
+
+/* Dimming veil over unlit areas outside the spotlight beam */
+.game-thumb-dim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  will-change: opacity;
+  background: radial-gradient(
+    220px circle at var(--mx) var(--my),
+    rgba(0, 0, 0, 0) 0%,
+    rgba(3, 5, 8, 0.24) 48%,
+    rgba(3, 4, 7, 0.62) 100%
+  );
+}
+
+.game-thumb-stage:hover .game-thumb-dim {
+  opacity: 1;
+}
+
+/* Hidden cracks / stone runes revealed strictly under the cursor cone */
+.game-thumb-reveal {
+  opacity: 0;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(
+    205px circle at var(--mx) var(--my),
+    #000 0%,
+    rgba(0, 0, 0, 0.58) 44%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    205px circle at var(--mx) var(--my),
+    #000 0%,
+    rgba(0, 0, 0, 0.58) 44%,
+    transparent 78%
+  );
+  transform: scale(1.04) translate3d(0, 0, 0);
+}
+
+.game-thumb-stage:hover .game-thumb-reveal {
+  opacity: 0.96;
+}
+
+.game-thumb-stage:hover .game-thumb-reveal--hulk {
+  transform: scale(1.04) translate3d(calc(var(--px) * 6px), calc(var(--py) * 5px), 0);
+}
+
+.game-thumb-stage:hover .game-thumb-reveal--quiz {
+  transform: scale(1.04) translate3d(calc(var(--px) * 7px), calc(var(--py) * 5px), 0);
+}
+
+/* Cursor-driven volumetric spotlight cones */
+.game-thumb-beam {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 0.28s ease;
+  will-change: opacity;
+}
+
+.game-thumb-stage:hover .game-thumb-beam {
+  opacity: 1;
+}
+
+.game-thumb-beam--hulk {
+  background:
+    radial-gradient(
+      175px circle at var(--mx) var(--my),
+      rgba(134, 239, 172, 0.34) 0%,
+      rgba(34, 197, 94, 0.16) 45%,
+      transparent 78%
+    ),
+    conic-gradient(
+      from 142deg at var(--mx) var(--my),
+      transparent 0deg,
+      rgba(74, 222, 128, 0.24) 24deg,
+      rgba(167, 243, 208, 0.3) 38deg,
+      rgba(34, 197, 94, 0.18) 54deg,
+      transparent 82deg,
+      transparent 360deg
+    );
+}
+
+@keyframes quizSpectrumPhase {
+  0%,
+  100% {
+    opacity: 0;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(8deg) scale(1.02);
+  }
+}
+
+.game-thumb-beam--quiz-base {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      180px circle at var(--mx) var(--my),
+      rgba(96, 165, 250, 0.32) 0%,
+      rgba(250, 204, 21, 0.18) 38%,
+      rgba(239, 68, 68, 0.12) 64%,
+      transparent 82%
+    ),
+    conic-gradient(
+      from 145deg at var(--mx) var(--my),
+      transparent 0deg,
+      rgba(59, 130, 246, 0.24) 18deg,
+      rgba(234, 179, 8, 0.26) 36deg,
+      rgba(239, 68, 68, 0.22) 54deg,
+      transparent 80deg,
+      transparent 360deg
+    );
+}
+
+.game-thumb-beam--quiz-shift {
+  position: absolute;
+  inset: -4%;
+  will-change: opacity, transform;
+  background:
+    radial-gradient(
+      185px circle at var(--mx) var(--my),
+      rgba(168, 85, 247, 0.34) 0%,
+      rgba(34, 197, 94, 0.2) 38%,
+      rgba(249, 115, 22, 0.14) 64%,
+      transparent 82%
+    ),
+    conic-gradient(
+      from 145deg at var(--mx) var(--my),
+      transparent 0deg,
+      rgba(168, 85, 247, 0.26) 18deg,
+      rgba(34, 197, 94, 0.26) 36deg,
+      rgba(249, 115, 22, 0.24) 54deg,
+      transparent 80deg,
+      transparent 360deg
+    );
+}
+
+.game-thumb-stage:hover .game-thumb-beam--quiz-shift {
+  animation: quizSpectrumPhase 6.5s ease-in-out infinite;
+}
+
+/* One-time diagonal light-leak sweep across card title on hover */
+@keyframes gameTitleLightSweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-135%, 0, 0) skewX(-24deg);
+  }
+  20% {
+    opacity: 0.92;
+  }
+  75% {
+    opacity: 0.72;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(260%, 0, 0) skewX(-24deg);
+  }
+}
+
+.game-title-sweep {
+  position: absolute;
+  top: -15%;
+  left: 0;
+  width: 38%;
+  height: 130%;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.15) 65%,
+    transparent 100%
+  );
+  transform: translate3d(-135%, 0, 0) skewX(-24deg);
+}
+
+.game-thumb-stage:hover .game-title-sweep {
+  animation: gameTitleLightSweep 0.82s cubic-bezier(0.22, 1, 0.36, 1) 1 forwards;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .game-thumb-layer,
+  .game-thumb-reveal,
+  .game-thumb-dim,
+  .game-thumb-beam,
+  .game-title-sweep {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .game-thumb-reveal,
+  .game-thumb-dim,
+  .game-thumb-beam,
+  .game-title-sweep {
+    opacity: 0 !important;
+    display: none !important;
+  }
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 
@@ -775,5 +1059,20 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .game-thumb-layer,
+  .game-thumb-reveal,
+  .game-thumb-dim,
+  .game-thumb-beam,
+  .game-title-sweep {
+    transform: none !important;
+    animation: none !important;
+  }
+  .game-thumb-reveal,
+  .game-thumb-dim,
+  .game-thumb-beam,
+  .game-title-sweep {
+    opacity: 0 !important;
   }
 }
