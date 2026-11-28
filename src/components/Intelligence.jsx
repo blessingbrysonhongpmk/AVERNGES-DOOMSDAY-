@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useCountdown } from '../hooks/useCountdown';
 import { CONFIG } from '../data/config.js';
 import { clockAudio } from '../utils/audio.js';
@@ -13,15 +13,38 @@ import FanZoneHub from './fanverse/FanZoneHub';
 import TrailerCinemaModal from './fanverse/TrailerCinemaModal';
 
 const ARCHIVE_TABS = [
-  { id: 'timeline', label: 'MULTIVERSE CONNECTIONS' },
-  { id: 'theories', label: 'FAN THEORY LAB' },
-  { id: 'fanzone', label: 'TAMIL FAN ZONE' },
+  { id: 'timeline', num: 'FILE 01', label: 'MULTIVERSE CONNECTIONS' },
+  { id: 'theories', num: 'FILE 02', label: 'FAN THEORY LAB' },
+  { id: 'fanzone', num: 'FILE 03', label: 'TAMIL FAN ZONE' },
 ];
 
 export default function Intelligence() {
   const { formatted } = useCountdown(CONFIG.release.targetIsoString);
   const [theaterVideo, setTheaterVideo] = useState(null);
   const [hubTab, setHubTab] = useState('timeline');
+  const projectorZoneRef = useRef(null);
+  const projectorRafRef = useRef(null);
+
+  const handleProjectorMove = (e) => {
+    const el = projectorZoneRef.current;
+    if (!el || window.matchMedia?.('(hover: none), (pointer: coarse)').matches) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    if (projectorRafRef.current) cancelAnimationFrame(projectorRafRef.current);
+    projectorRafRef.current = requestAnimationFrame(() => {
+      el.style.setProperty('--mx', `${x.toFixed(2)}%`);
+      el.style.setProperty('--my', `${y.toFixed(2)}%`);
+    });
+  };
+
+  const handleProjectorLeave = () => {
+    const el = projectorZoneRef.current;
+    if (!el) return;
+    if (projectorRafRef.current) cancelAnimationFrame(projectorRafRef.current);
+    el.style.setProperty('--mx', '50%');
+    el.style.setProperty('--my', '50%');
+  };
 
   const handleMarkCalendar = () => {
     try { clockAudio.tick(0); } catch { }
@@ -47,11 +70,17 @@ export default function Intelligence() {
   return (
     <section
       id="intelligence"
+      ref={projectorZoneRef}
+      onMouseMove={handleProjectorMove}
+      onMouseLeave={handleProjectorLeave}
       aria-label="Tamil Fanverse — Multiverse Oru Tamil Vibe"
-      className="relative z-10 py-8 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-white/[0.08] bg-[#090A0D]"
+      className="fanverse-zine fanverse-projector-zone relative z-10 py-8 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-white/[0.1] overflow-x-clip"
     >
-      <div className="container-fluid container-xl mx-auto px-0 max-w-7xl">
-        {/* Main Marvel Studios Style Hero Stage */}
+      {/* Signature Warm Theatre Projector Light Cone (Hidden on Touch/Reduced Motion) */}
+      <div className="fanverse-projector-beam" aria-hidden="true" />
+
+      <div className="container-fluid container-xl mx-auto px-0 max-w-7xl relative z-10">
+        {/* Main FDFS Zine Hero + Perforated Theatre Ticket Countdown */}
         <TamilFanverseHero
           featuredVideo={FANVERSE_VIDEOS[0]}
           onPlayVideo={setTheaterVideo}
@@ -60,19 +89,19 @@ export default function Intelligence() {
           onJumpTo={jumpToModule}
         />
 
-        {/* Official Tamil Trailers & Verified Briefing Dispatch */}
+        {/* Official Tamil Trailers & Stamped Briefing Dispatch (Structure Preserved) */}
         <DoomsdayAlertDeck onOpenTrailer={setTheaterVideo} />
 
-        {/* Marvel.com Style Horizontal Movie Shelf: Tamil Dub Nostalgia */}
+        {/* Video-Store VHS Spine Wall + Cassette-Ticket Hybrid */}
         <TamilDubNostalgia />
 
-        {/* Marvel.com Signature Chamfered Character Grid */}
+        {/* Collector Trading Cards with Rarity Strips & 3D Foil Tilt */}
         <CharacterFilesGrid />
 
-        {/* Streamlined Interactive Hub: Timeline / Theory Desk / Tamil Fan Zone */}
-        <div id="fanverse-hub" className="pt-6 border-t border-white/[0.1] scroll-mt-24">
-          <div className="flex flex-wrap items-center gap-6 border-b border-white/[0.1] mb-8">
-            {ARCHIVE_TABS.map((t) => {
+        {/* Folder Cut-Out Tabs: Film-Strip Timeline / Investigation Corkboard / Fan Wall */}
+        <div id="fanverse-hub" className="pt-6 scroll-mt-24">
+          <div className="flex flex-wrap items-end gap-2 sm:gap-3 border-b-2 border-[var(--marvel-red)] mb-7">
+            {ARCHIVE_TABS.map((t, idx) => {
               const active = hubTab === t.id;
               return (
                 <button
@@ -82,12 +111,17 @@ export default function Intelligence() {
                     try { clockAudio.tick(0); } catch { }
                     setHubTab(t.id);
                   }}
-                  className={`pb-3 text-sm sm:text-base font-hud font-extrabold tracking-[0.16em] uppercase border-b-[3px] -mb-[1px] cursor-pointer transition-colors ${active
-                    ? 'border-[#E62429] text-white'
-                    : 'border-transparent text-[#8C9098] hover:text-white'
-                    }`}
+                  style={active ? undefined : { transform: `translateY(2px) rotate(${idx === 1 ? '0.6deg' : '-0.6deg'})` }}
+                  className={`fan-folder-tab relative px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm fan-font-mono font-bold cursor-pointer transition-all ${
+                    active
+                      ? 'bg-[var(--paper)] text-[#141210] z-10 translate-y-0 border-t-4 border-[var(--marvel-red)] shadow-[3px_-2px_0_rgba(0,0,0,0.45)]'
+                      : 'bg-[#13141B] hover:bg-[#1B1D27] text-[#B8B4AC] hover:text-[var(--ink)] border-t-2 border-white/15'
+                  }`}
                 >
-                  {t.label}
+                  <span className={`block text-[8.5px] leading-none mb-0.5 ${active ? 'text-[var(--marvel-red)]' : 'text-[#7C828E]'}`}>
+                    {t.num}
+                  </span>
+                  <span>{t.label}</span>
                 </button>
               );
             })}
