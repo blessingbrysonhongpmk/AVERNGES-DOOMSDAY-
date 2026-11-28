@@ -33,7 +33,7 @@ export default function App() {
 
   return (
     <div
-      className={`relative min-h-screen bg-[#08090B] text-[#F5F5F5] overflow-x-hidden ${ambientMode === 'cinematic' ? 'ambient-cinematic' : ''
+      className={`relative min-h-screen bg-[#08090B] text-[#F5F5F5] overflow-x-clip ${ambientMode === 'cinematic' ? 'ambient-cinematic' : ''
         }`}
     >
       {/* Atmospheric restrained film grain */}
@@ -68,8 +68,8 @@ export default function App() {
 
       {/* ── OFFICIAL STUDIO ARCHITECTURE FOOTER ── */}
       <footer className="border-t border-white/[0.08] bg-[#151515] text-[#9CA3AF]">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-white/[0.08]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-9 sm:py-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 pb-8 sm:pb-10 border-b border-white/[0.08]">
             {/* Left Studio Brand Block */}
             <div className="md:col-span-4 flex items-start gap-4">
               <div className="w-12 h-14 bg-[#E62429] text-white flex items-center justify-center font-cinematic font-black text-3xl shrink-0 marvel-btn-cut select-none">

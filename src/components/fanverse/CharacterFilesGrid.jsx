@@ -21,7 +21,7 @@ export default function CharacterFilesGrid() {
   }, [selectedChar]);
 
   return (
-    <div id="fanverse-characters" className="mb-14 sm:mb-16 scroll-mt-24">
+    <div id="fanverse-characters" className="mb-10 sm:mb-16 scroll-mt-24">
       {/* Studio Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
         <div>
@@ -44,7 +44,7 @@ export default function CharacterFilesGrid() {
             key={char.id}
             type="button"
             onClick={() => {
-              try { clockAudio.tick(0); } catch {}
+              try { clockAudio.tick(0); } catch { }
               setSelectedChar(char);
             }}
             className="marvel-chamfer text-left bg-[#151515] group cursor-pointer overflow-hidden flex flex-col focus:outline-none shadow-xl"
@@ -60,7 +60,7 @@ export default function CharacterFilesGrid() {
             </div>
 
             {/* Signature Marvel 4px Red Divider + Hover Curtain Plate */}
-            <div className="relative flex-1 p-3.5 sm:p-4 bg-[#151515] border-t-4 border-[#E62429] overflow-hidden flex flex-col justify-between min-h-[96px]">
+            <div className="relative flex-1 p-2.5 sm:p-4 bg-[#151515] border-t-4 border-[#E62429] overflow-hidden flex flex-col justify-between min-h-[78px] sm:min-h-[96px]">
               {/* Upward Marvel Red Curtain on Hover */}
               <div
                 aria-hidden="true"

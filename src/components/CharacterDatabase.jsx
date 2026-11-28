@@ -136,7 +136,7 @@ export default function CharacterDatabase() {
     <section
       id="characters"
       aria-label="Avengers Doomsday Character Database"
-      className="relative z-10 py-12 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-[#1E2024] bg-[#0A0B0E] overflow-hidden"
+      className="relative z-10 py-8 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-[#1E2024] bg-[#0A0B0E] overflow-hidden"
     >
       {/* Background Cinematic Atmosphere */}
       <CinematicAtmosphere
@@ -159,7 +159,7 @@ export default function CharacterDatabase() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start lg:items-center">
 
             {/* ── LEFT COLUMN: TITLES, SPOTLIGHT & INTERACTIVE CONTROLS ── */}
-            <div className="lg:col-span-5 flex flex-col justify-between">
+            <div className="lg:col-span-5 flex flex-col justify-between min-w-0">
 
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-2.5">
@@ -264,8 +264,8 @@ export default function CharacterDatabase() {
                             setDealKey((k) => k + 1);
                           }}
                           className={`px-2.5 py-1 text-[8.5px] xs:text-[9px] font-mono tracking-wider uppercase transition-colors cursor-pointer border rounded-xs inline-flex items-center gap-1.5 ${isActive
-                              ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E] font-bold shadow-[0_0_12px_rgba(34,197,94,0.12)]'
-                              : 'border-[#1E252D] bg-[#0E1015] text-[#9CA3AF] hover:text-white hover:border-[#383C46]'
+                            ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E] font-bold shadow-[0_0_12px_rgba(34,197,94,0.12)]'
+                            : 'border-[#1E252D] bg-[#0E1015] text-[#9CA3AF] hover:text-white hover:border-[#383C46]'
                             }`}
                         >
                           <span>{cat}</span>
@@ -302,8 +302,8 @@ export default function CharacterDatabase() {
                     setDealKey((k) => k + 1);
                   }}
                   className={`px-3.5 py-2 border text-[10px] font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer inline-flex items-center gap-1.5 rounded-xs ${viewMode === 'fan'
-                      ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E]'
-                      : 'bg-[#12141A] hover:bg-[#1A1C24] border-[#232731] hover:border-white/40 text-white'
+                    ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E]'
+                    : 'bg-[#12141A] hover:bg-[#1A1C24] border-[#232731] hover:border-white/40 text-white'
                     }`}
                 >
                   <Layers className="w-3.5 h-3.5 text-[#22C55E]" />
@@ -318,8 +318,8 @@ export default function CharacterDatabase() {
                     setDealKey((k) => k + 1);
                   }}
                   className={`px-3.5 py-2 border text-[10px] font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer inline-flex items-center gap-1.5 rounded-xs ${viewMode === 'grid'
-                      ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E]'
-                      : 'bg-[#12141A] hover:bg-[#1A1C24] border-[#232731] hover:border-white/40 text-white'
+                    ? 'border-[#22C55E] bg-[#22C55E]/15 text-[#22C55E]'
+                    : 'bg-[#12141A] hover:bg-[#1A1C24] border-[#232731] hover:border-white/40 text-white'
                     }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5 text-[#22C55E]" />
@@ -330,7 +330,7 @@ export default function CharacterDatabase() {
             </div>
 
             {/* ── RIGHT COLUMN: ACTIVE THEATRICAL REEL, 3D FAN, OR FULL GRID ── */}
-            <div className="lg:col-span-7 relative">
+            <div className="lg:col-span-7 relative min-w-0">
 
               {/* ── VIEW 1: HORIZONTAL REEL CAROUSEL ── */}
               {viewMode === 'carousel' && filteredCharacters.length > 0 && (

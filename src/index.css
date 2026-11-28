@@ -755,6 +755,16 @@
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
 }
 
+/* Hide scrollbars cleanly inside touch-scroll poster shelves */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Respect motion preferences */
 @media (prefers-reduced-motion: reduce) {
 

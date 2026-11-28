@@ -24,7 +24,7 @@ export default function Intelligence() {
   const [hubTab, setHubTab] = useState('timeline');
 
   const handleMarkCalendar = () => {
-    try { clockAudio.tick(0); } catch {}
+    try { clockAudio.tick(0); } catch { }
     const title = encodeURIComponent("Marvel Studios' Avengers: Doomsday Theatrical Premiere");
     const details = encodeURIComponent('Everything leads to Doomsday. The Multiverse war culminates in theaters worldwide.');
     const location = encodeURIComponent('Cinemas Worldwide');
@@ -33,7 +33,7 @@ export default function Intelligence() {
   };
 
   const jumpToModule = (elementId) => {
-    try { clockAudio.tick(0); } catch {}
+    try { clockAudio.tick(0); } catch { }
     if (elementId === 'fanverse-hub' || elementId === 'fanverse-fanzone') {
       setHubTab('fanzone');
     }
@@ -48,7 +48,7 @@ export default function Intelligence() {
     <section
       id="intelligence"
       aria-label="Tamil Fanverse — Multiverse Oru Tamil Vibe"
-      className="relative z-10 py-10 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-white/[0.08] bg-[#090A0D]"
+      className="relative z-10 py-8 sm:py-16 px-3 sm:px-6 lg:px-8 border-t border-white/[0.08] bg-[#090A0D]"
     >
       <div className="container-fluid container-xl mx-auto px-0 max-w-7xl">
         {/* Main Marvel Studios Style Hero Stage */}
@@ -79,14 +79,13 @@ export default function Intelligence() {
                   key={t.id}
                   type="button"
                   onClick={() => {
-                    try { clockAudio.tick(0); } catch {}
+                    try { clockAudio.tick(0); } catch { }
                     setHubTab(t.id);
                   }}
-                  className={`pb-3 text-sm sm:text-base font-hud font-extrabold tracking-[0.16em] uppercase border-b-[3px] -mb-[1px] cursor-pointer transition-colors ${
-                    active
-                      ? 'border-[#E62429] text-white'
-                      : 'border-transparent text-[#8C9098] hover:text-white'
-                  }`}
+                  className={`pb-3 text-sm sm:text-base font-hud font-extrabold tracking-[0.16em] uppercase border-b-[3px] -mb-[1px] cursor-pointer transition-colors ${active
+                    ? 'border-[#E62429] text-white'
+                    : 'border-transparent text-[#8C9098] hover:text-white'
+                    }`}
                 >
                   {t.label}
                 </button>

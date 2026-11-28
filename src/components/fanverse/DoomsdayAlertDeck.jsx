@@ -7,7 +7,7 @@ export default function DoomsdayAlertDeck({ onOpenTrailer }) {
   const [selectedVideo, setSelectedVideo] = useState(FANVERSE_VIDEOS[0]);
 
   return (
-    <div id="fanverse-alert" className="mb-14 sm:mb-16 scroll-mt-24">
+    <div id="fanverse-alert" className="mb-10 sm:mb-16 scroll-mt-24">
       {/* Marvel.com Editorial Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
         <div>
@@ -29,7 +29,7 @@ export default function DoomsdayAlertDeck({ onOpenTrailer }) {
         <div className="lg:col-span-7">
           <div
             onClick={() => {
-              try { clockAudio.tick(0); } catch {}
+              try { clockAudio.tick(0); } catch { }
               onOpenTrailer(selectedVideo);
             }}
             className="relative aspect-video w-full bg-black overflow-hidden cursor-pointer group border border-white/[0.08]"
@@ -86,7 +86,7 @@ export default function DoomsdayAlertDeck({ onOpenTrailer }) {
                   key={vid.id}
                   type="button"
                   onClick={() => {
-                    try { clockAudio.tick(0); } catch {}
+                    try { clockAudio.tick(0); } catch { }
                     if (active) onOpenTrailer(vid);
                     else setSelectedVideo(vid);
                   }}
@@ -97,23 +97,20 @@ export default function DoomsdayAlertDeck({ onOpenTrailer }) {
                       src={`https://i.ytimg.com/vi/${vid.youtubeId}/hqdefault.jpg`}
                       onError={(e) => { e.currentTarget.src = vid.fallbackImage; }}
                       alt={vid.tanglishTitle}
-                      className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
-                        active ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'
-                      }`}
+                      className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${active ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'
+                        }`}
                     />
                     <span className="absolute inset-0 flex items-center justify-center bg-black/25">
                       <Play className={`w-4 h-4 fill-white ${active ? 'text-white' : 'text-white/80'}`} />
                     </span>
                     <div
-                      className={`absolute bottom-0 inset-x-0 transition-all ${
-                        active ? 'h-[3px] bg-[#E62429]' : 'h-[2px] bg-white/0 group-hover:bg-white/40'
-                      }`}
+                      className={`absolute bottom-0 inset-x-0 transition-all ${active ? 'h-[3px] bg-[#E62429]' : 'h-[2px] bg-white/0 group-hover:bg-white/40'
+                        }`}
                     />
                   </div>
                   <span
-                    className={`text-[11px] font-hud font-bold uppercase tracking-wide block leading-tight ${
-                      active ? 'text-white' : 'text-[#9CA3AF] group-hover:text-white'
-                    }`}
+                    className={`text-[11px] font-hud font-bold uppercase tracking-wide block leading-tight ${active ? 'text-white' : 'text-[#9CA3AF] group-hover:text-white'
+                      }`}
                   >
                     {vid.id === 'final-trailer'
                       ? 'Final Trailer Tamil'
@@ -142,9 +139,8 @@ export default function DoomsdayAlertDeck({ onOpenTrailer }) {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span
-                    className={`text-[10px] font-hud font-bold tracking-[0.2em] uppercase ${
-                      isTheory ? 'text-[#F59E0B]' : 'text-[#E62429]'
-                    }`}
+                    className={`text-[10px] font-hud font-bold tracking-[0.2em] uppercase ${isTheory ? 'text-[#F59E0B]' : 'text-[#E62429]'
+                      }`}
                   >
                     {item.badge}
                   </span>

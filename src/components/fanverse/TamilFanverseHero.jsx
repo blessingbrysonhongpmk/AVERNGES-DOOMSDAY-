@@ -10,9 +10,9 @@ export default function TamilFanverseHero({
   onJumpTo,
 }) {
   return (
-    <div className="relative mb-12 sm:mb-16 border-b border-white/[0.08] bg-[#0B0C0F] overflow-hidden">
+    <div className="relative mb-9 sm:mb-16 border-b border-white/[0.08] bg-[#0B0C0F] overflow-hidden">
       {/* Studio Widescreen Key Art Composition */}
-      <div className="relative grid grid-cols-1 lg:grid-cols-12 min-h-[430px]">
+      <div className="relative grid grid-cols-1 lg:grid-cols-12 sm:min-h-[430px]">
         {/* Background Atmospheric Key Art */}
         <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
           <img
@@ -25,7 +25,7 @@ export default function TamilFanverseHero({
         </div>
 
         {/* Left Column: Pure Marvel Editorial Title Block */}
-        <div className="lg:col-span-7 relative z-10 px-5 sm:px-8 lg:px-10 py-8 sm:py-12 flex flex-col justify-center items-start text-left">
+        <div className="lg:col-span-7 relative z-10 px-4 sm:px-8 lg:px-10 py-6 sm:py-12 flex flex-col justify-center items-start text-left min-w-0">
           {/* Iconic Marvel Scarlet Eyebrow Rule */}
           <div className="flex items-center gap-3 mb-3">
             <span className="h-[3px] w-7 bg-[#E62429]" />
@@ -64,7 +64,7 @@ export default function TamilFanverseHero({
             <button
               type="button"
               onClick={() => {
-                try { clockAudio.tick(0); } catch {}
+                try { clockAudio.tick(0); } catch { }
                 onPlayVideo(featuredVideo);
               }}
               className="marvel-btn-cut px-6 py-3 bg-[#E62429] hover:bg-[#C8191E] text-white text-xs font-hud font-bold tracking-[0.2em] uppercase inline-flex items-center gap-2.5 cursor-pointer transition-colors"
@@ -85,7 +85,7 @@ export default function TamilFanverseHero({
             <button
               type="button"
               onClick={() => {
-                try { clockAudio.tick(0); } catch {}
+                try { clockAudio.tick(0); } catch { }
                 onJumpTo('fanverse-hub');
               }}
               className="px-2 py-2 text-[11px] font-hud font-bold tracking-[0.18em] text-[#D1D5DB] hover:text-white uppercase inline-flex items-center gap-1 cursor-pointer transition-colors group"
@@ -97,7 +97,7 @@ export default function TamilFanverseHero({
         </div>
 
         {/* Right Column: Doctor Doom Theatrical Portrait + Clean Matte Ticket Countdown */}
-        <div className="lg:col-span-5 relative z-10 p-5 sm:p-8 lg:p-8 flex flex-col justify-end lg:border-l border-white/[0.08] bg-black/35 backdrop-blur-[2px]">
+        <div className="lg:col-span-5 relative z-10 p-4 sm:p-8 lg:p-8 flex flex-col justify-end lg:border-l border-white/[0.08] bg-black/35 backdrop-blur-[2px] min-w-0">
           <div className="marvel-chamfer bg-[#121318] border border-white/[0.1] overflow-hidden shadow-2xl">
             <div className="relative aspect-[16/9] overflow-hidden bg-black">
               <img
@@ -140,9 +140,8 @@ export default function TamilFanverseHero({
                 ].map((u) => (
                   <div key={u.label}>
                     <span
-                      className={`text-base font-hud font-bold block tabular-nums leading-none ${
-                        u.accent ? 'text-[#E62429]' : 'text-white'
-                      }`}
+                      className={`text-base font-hud font-bold block tabular-nums leading-none ${u.accent ? 'text-[#E62429]' : 'text-white'
+                        }`}
                     >
                       {u.val}
                     </span>

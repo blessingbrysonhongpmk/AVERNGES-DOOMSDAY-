@@ -35,7 +35,7 @@ function AvengersEmblemSvg() {
       height="28"
       viewBox="0 0 64 64"
       fill="none"
-      className="shrink-0 drop-shadow-[0_0_8px_rgba(34,197,94,0.28)]"
+      className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 drop-shadow-[0_0_8px_rgba(34,197,94,0.28)]"
       aria-hidden="true"
     >
       <defs>
@@ -158,17 +158,17 @@ export default function Navigation() {
           : 'bg-[#060709]/85 backdrop-blur-sm border-b border-white/[0.05]'
         }`}
     >
-      <div className="container-fluid container-xl mx-auto px-3 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-4">
+      <div className="container-fluid container-xl mx-auto px-3 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-2 sm:gap-4">
 
         {/* Left: Bespoke Avengers Emblem SVG + Crisp DOOMSDAY Wordmark Only */}
         <a
           href="#overview"
           onClick={(e) => scrollToSection(e, 'overview')}
           aria-label="Doomsday Home"
-          className="inline-flex items-center gap-2.5 shrink-0 select-none group"
+          className="inline-flex items-center gap-1.5 sm:gap-2.5 shrink-0 select-none group"
         >
           <AvengersEmblemSvg />
-          <span className="text-[14px] sm:text-[16px] font-cinematic font-black tracking-[0.28em] text-metallic group-hover:brightness-110 uppercase whitespace-nowrap leading-none pt-0.5">
+          <span className="text-[13px] xs:text-[14px] sm:text-[16px] font-cinematic font-black tracking-[0.16em] sm:tracking-[0.28em] text-metallic group-hover:brightness-110 uppercase whitespace-nowrap leading-none pt-0.5">
             DOOMSDAY
           </span>
         </a>
@@ -200,8 +200,8 @@ export default function Navigation() {
         </nav>
 
         {/* Right: Minimalist Architectural Audio Rail + Studio Mixer Trigger */}
-        <div className="flex items-center gap-2 relative shrink-0" ref={audioMenuRef}>
-          <div className="h-9 rounded-[4px] border border-white/[0.1] bg-[#0B0D12]/90 inline-flex items-center divide-x divide-white/[0.08] shadow-inner">
+        <div className="flex items-center gap-1 sm:gap-2 relative shrink-0" ref={audioMenuRef}>
+          <div className="h-8 sm:h-9 rounded-[4px] border border-white/[0.1] bg-[#0B0D12]/90 inline-flex items-center divide-x divide-white/[0.08] shadow-inner">
             {/* Website Countdown Clock Switch */}
             <button
               type="button"
@@ -210,7 +210,7 @@ export default function Navigation() {
               onClick={toggleSound}
               aria-label={soundEnabled ? 'Mute website countdown clock sound' : 'Enable website countdown clock sound'}
               title={`Website Timer Clock Sound (${soundEnabled ? 'ON' : 'OFF'} — Active on website countdown only, paused in game)`}
-              className={`h-full px-2.5 sm:px-3 inline-flex items-center gap-1.5 text-[10px] font-mono tracking-[0.12em] uppercase cursor-pointer transition-colors whitespace-nowrap ${soundEnabled
+              className={`h-full px-2 sm:px-3 inline-flex items-center gap-1.5 text-[10px] font-mono tracking-[0.12em] uppercase cursor-pointer transition-colors whitespace-nowrap ${soundEnabled
                   ? 'text-[#4ADE80] bg-[#22C55E]/[0.07]'
                   : 'text-[#7B818C] hover:text-[#D1D5DB]'
                 }`}
@@ -227,12 +227,12 @@ export default function Navigation() {
               onClick={toggleBgm}
               aria-label={bgmEnabled ? 'Turn AVENGERS BGM Off' : 'Turn AVENGERS BGM On'}
               title={`AVENGERS BGM (${bgmEnabled ? 'ON' : 'OFF'}) — Click to toggle`}
-              className={`h-full px-2.5 sm:px-3.5 inline-flex items-center gap-2 text-[10px] font-mono tracking-[0.14em] uppercase cursor-pointer transition-colors whitespace-nowrap ${bgmEnabled
+              className={`h-full px-2 sm:px-3.5 inline-flex items-center gap-1.5 sm:gap-2 text-[9.5px] sm:text-[10px] font-mono tracking-[0.12em] sm:tracking-[0.14em] uppercase cursor-pointer transition-colors whitespace-nowrap ${bgmEnabled
                   ? 'text-white bg-[#22C55E]/[0.09]'
                   : 'text-[#7B818C] hover:text-[#E5E7EB]'
                 }`}
             >
-              <span className="inline-flex items-end gap-[2px] h-3 w-3.5 justify-center" aria-hidden="true">
+              <span className="inline-flex items-end gap-[2px] h-3 w-3 sm:w-3.5 justify-center" aria-hidden="true">
                 {[0, 140, 260].map((delay, i) => (
                   <span
                     key={delay}
@@ -251,7 +251,7 @@ export default function Navigation() {
               </span>
               <span className="font-bold">BGM</span>
               <span
-                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-[2px] ${bgmEnabled
+                className={`text-[8.5px] sm:text-[9px] font-bold px-1 sm:px-1.5 py-0.5 rounded-[2px] ${bgmEnabled
                     ? 'text-[#4ADE80] bg-[#14532D]/50'
                     : 'text-[#6B7280] bg-white/[0.04]'
                   }`}
@@ -267,7 +267,7 @@ export default function Navigation() {
               aria-expanded={audioMenuOpen}
               aria-label="Open Studio Audio Options"
               title="Audio Deck: Switch Score Tracks, Master Volume & Clock SFX"
-              className={`h-full px-2.5 sm:px-3 inline-flex items-center justify-center transition-colors cursor-pointer ${audioMenuOpen
+              className={`h-full px-2 sm:px-3 inline-flex items-center justify-center transition-colors cursor-pointer ${audioMenuOpen
                   ? 'bg-white/[0.1] text-white'
                   : 'text-[#848A94] hover:text-white'
                 }`}
@@ -396,7 +396,7 @@ export default function Navigation() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
-            className="md:hidden min-w-[40px] min-h-[40px] flex items-center justify-center text-[#777A80] hover:text-white transition-colors cursor-pointer select-none"
+            className="md:hidden w-9 h-9 flex items-center justify-center text-[#9CA3AF] hover:text-white transition-colors cursor-pointer select-none shrink-0"
           >
             {mobileMenuOpen ? (
               <span className="text-lg leading-none">✕</span>

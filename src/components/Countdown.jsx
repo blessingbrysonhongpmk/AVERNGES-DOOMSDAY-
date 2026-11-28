@@ -80,7 +80,7 @@ export default function Countdown() {
     <section
       id="overview"
       aria-label="Avengers Doomsday Countdown"
-      className="relative min-h-[88svh] sm:min-h-[94svh] flex flex-col items-center justify-center text-center overflow-hidden px-2 xs:px-3 sm:px-4"
+      className="relative min-h-[68svh] sm:min-h-[90svh] flex flex-col items-center justify-center text-center overflow-hidden px-2 xs:px-3 sm:px-4"
     >
       {/* ── Background Artwork (Doctor Doom Stained-Glass with dark falloff) ── */}
       {!bgError ? (
@@ -116,7 +116,7 @@ export default function Countdown() {
       )}
 
       {/* ── Hero Theatrical Content (Bootstrap Container Aligned) ── */}
-      <div className="container relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto pt-8 pb-10 sm:pt-14 sm:pb-16 px-2 sm:px-4">
+      <div className="container relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto pt-6 pb-8 sm:pt-14 sm:pb-16 px-2 sm:px-4">
 
         {/* Main Cinematic Title — Official Marvel Studios Avengers: Doomsday Emblem */}
         <div className="relative flex flex-col items-center justify-center text-center select-none mb-3 sm:mb-4 w-full">
@@ -195,7 +195,7 @@ export default function Countdown() {
 
       {/* Fade transition to following section */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-20 sm:h-24 pointer-events-none z-10"
+        className="absolute bottom-0 left-0 right-0 h-14 sm:h-24 pointer-events-none z-10"
         style={{ background: 'linear-gradient(to bottom, transparent, #08090B)' }}
         aria-hidden="true"
       />

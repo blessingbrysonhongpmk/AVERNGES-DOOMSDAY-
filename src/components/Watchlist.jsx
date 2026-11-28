@@ -206,7 +206,7 @@ export default function Watchlist() {
     <section
       id="watchlist"
       aria-label="Road to Doomsday Watchlist"
-      className="relative z-10 bg-[#08090B] border-t border-[#1E2024] px-3 sm:px-6 lg:px-8 py-10 sm:py-16 overflow-hidden"
+      className="relative z-10 bg-[#08090B] border-t border-[#1E2024] px-3 sm:px-6 lg:px-8 py-7 sm:py-16 overflow-hidden"
     >
       {/* Cinematic Full-Width Background Atmosphere */}
       <CinematicAtmosphere
@@ -226,11 +226,11 @@ export default function Watchlist() {
             - Left: Title, Subtitle, Watched Progress, Emerald Bar, Action Buttons
             - Right: Horizontal Theatrical Movie Reel with Circular Green Arrow ( > )
            ═════════════════════════════════════════════════════════════════════ */}
-        <div className="border border-[#1E252D] hover:border-[#10B981]/40 bg-[#0A0C10]/95 rounded-xs p-5 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.9)] transition-colors">
+        <div className="border border-[#1E252D] hover:border-[#10B981]/40 bg-[#0A0C10]/95 rounded-xs p-4 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.9)] transition-colors">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
 
             {/* ── LEFT COLUMN: TITLE, STATS, PROGRESS & ACTIONS ── */}
-            <div className="lg:col-span-4 flex flex-col justify-between">
+            <div className="lg:col-span-4 flex flex-col justify-between min-w-0">
               <div>
                 <h2 className="text-xl xs:text-2xl sm:text-3xl font-cinematic font-black tracking-tight text-white uppercase leading-tight mb-1">
                   YOUR ROAD TO DOOMSDAY
@@ -265,13 +265,13 @@ export default function Watchlist() {
                 <button
                   type="button"
                   onClick={() => openRoadmapScreen(null, 'checklist')}
-                  className="w-full h-12 px-5 bg-[#F3F4F6] hover:bg-white text-[#08090B] text-xs sm:text-sm font-display font-bold tracking-[0.12em] uppercase transition-colors cursor-pointer inline-flex items-center justify-between rounded-[3px] shadow-md"
+                  className="w-full h-11 sm:h-12 px-4 sm:px-5 bg-[#F3F4F6] hover:bg-white text-[#08090B] text-[11px] xs:text-xs sm:text-sm font-display font-bold tracking-[0.1em] sm:tracking-[0.12em] uppercase transition-colors cursor-pointer inline-flex items-center justify-between gap-2 whitespace-nowrap rounded-[3px] shadow-md"
                 >
-                  <span className="inline-flex items-center gap-2.5">
-                    <ListChecks className="w-4 h-4 text-[#16A34A]" />
-                    <span>OPEN ROADMAP &amp; TIMELINE</span>
+                  <span className="inline-flex items-center gap-2 min-w-0 truncate">
+                    <ListChecks className="w-4 h-4 text-[#16A34A] shrink-0" />
+                    <span className="truncate">OPEN ROADMAP &amp; TIMELINE</span>
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-[#08090B]" />
+                  <ArrowUpRight className="w-4 h-4 text-[#08090B] shrink-0" />
                 </button>
               </div>
 
@@ -309,7 +309,7 @@ export default function Watchlist() {
             </div>
 
             {/* ── RIGHT COLUMN: HORIZONTAL MOVIE REEL WITH CIRCULAR GREEN ( > ) ARROW ── */}
-            <div className="lg:col-span-8 relative flex items-center">
+            <div className="lg:col-span-8 relative flex items-center min-w-0">
 
               {/* Navigation Arrow ( < ) on Left */}
               {canScrollLeft && (
@@ -327,7 +327,7 @@ export default function Watchlist() {
               <div
                 ref={scrollContainerRef}
                 onScroll={checkScroll}
-                className="flex items-stretch gap-2.5 sm:gap-3 overflow-x-auto pb-2 scrollbar-none scroll-smooth w-full pr-10 sm:pr-12"
+                className="flex items-stretch gap-2.5 sm:gap-3 overflow-x-auto scrollbar-none scroll-smooth w-full pr-8 sm:pr-12"
               >
                 {WATCHLIST.map((item) => {
                   const isCompleted = item.isMultiSeason
@@ -410,7 +410,7 @@ export default function Watchlist() {
               <button
                 type="button"
                 onClick={() => scrollCarousel('right')}
-                className="absolute -right-2 sm:-right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#0C0F14]/95 border border-[#2D3542] hover:border-[#34D399] text-white hover:text-[#34D399] flex items-center justify-center transition-colors duration-200 shadow-xl cursor-pointer shrink-0"
+                className="absolute right-0 sm:-right-4 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#0C0F14]/95 border border-[#2D3542] hover:border-[#34D399] text-white hover:text-[#34D399] flex items-center justify-center transition-colors duration-200 shadow-xl cursor-pointer shrink-0"
                 title="Next Chapters"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />

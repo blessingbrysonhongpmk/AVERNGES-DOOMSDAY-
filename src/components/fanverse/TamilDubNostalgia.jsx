@@ -10,13 +10,13 @@ export default function TamilDubNostalgia() {
   const selected = TAMIL_DUB_MEMORIES.find((m) => m.id === activeId) || TAMIL_DUB_MEMORIES[0];
 
   const scrollRail = (dir) => {
-    try { clockAudio.tick(0); } catch {}
+    try { clockAudio.tick(0); } catch { }
     if (!railRef.current) return;
     railRef.current.scrollBy({ left: dir * 320, behavior: 'smooth' });
   };
 
   return (
-    <div id="fanverse-dubs" className="mb-14 sm:mb-16 scroll-mt-24">
+    <div id="fanverse-dubs" className="mb-10 sm:mb-16 scroll-mt-24">
       {/* Studio Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
         <div>
@@ -61,7 +61,7 @@ export default function TamilDubNostalgia() {
               key={movie.id}
               type="button"
               onClick={() => {
-                try { clockAudio.tick(0); } catch {}
+                try { clockAudio.tick(0); } catch { }
                 setActiveId(movie.id);
               }}
               className="snap-start shrink-0 w-[165px] sm:w-[185px] text-left group cursor-pointer focus:outline-none"
@@ -71,21 +71,18 @@ export default function TamilDubNostalgia() {
                   src={movie.poster}
                   alt={movie.title}
                   loading="lazy"
-                  className={`w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105 ${
-                    isSelected ? 'brightness-100' : 'brightness-90 group-hover:brightness-100'
-                  }`}
+                  className={`w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105 ${isSelected ? 'brightness-100' : 'brightness-90 group-hover:brightness-100'
+                    }`}
                 />
                 <div
-                  className={`absolute bottom-0 inset-x-0 transition-all ${
-                    isSelected ? 'h-1 bg-[#E62429]' : 'h-[2px] bg-white/0 group-hover:bg-[#E62429]'
-                  }`}
+                  className={`absolute bottom-0 inset-x-0 transition-all ${isSelected ? 'h-1 bg-[#E62429]' : 'h-[2px] bg-white/0 group-hover:bg-[#E62429]'
+                    }`}
                 />
               </div>
 
               <h4
-                className={`text-sm font-hud font-bold uppercase tracking-wide leading-tight transition-colors ${
-                  isSelected ? 'text-[#E62429]' : 'text-white group-hover:text-[#E62429]'
-                }`}
+                className={`text-sm font-hud font-bold uppercase tracking-wide leading-tight transition-colors ${isSelected ? 'text-[#E62429]' : 'text-white group-hover:text-[#E62429]'
+                  }`}
               >
                 {movie.title}
               </h4>
