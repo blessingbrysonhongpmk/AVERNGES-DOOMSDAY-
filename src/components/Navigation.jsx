@@ -19,10 +19,10 @@ import { useAvengersBgm, BGM_TRACKS } from '../utils/bgm.js';
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Home', icon: Home },
+  { id: 'game-mayhem', label: 'Games', icon: Gamepad2 },
   { id: 'watchlist', label: 'Road to Doomsday', icon: Film },
   { id: 'characters', label: 'Characters', icon: Users },
   { id: 'intelligence', label: 'Intelligence', icon: Newspaper },
-  { id: 'game-mayhem', label: 'Game Zone', icon: Gamepad2 },
 ];
 
 /**

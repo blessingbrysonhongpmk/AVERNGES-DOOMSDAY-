@@ -95,7 +95,7 @@ export default function App() {
               </h4>
               <ul className="space-y-2 text-xs font-hud tracking-wider uppercase">
                 <li><a href="#overview" className="hover:text-white transition-colors">Countdown Overview</a></li>
-                <li><a href="#games" className="hover:text-white transition-colors">Game Zone &amp; Quiz</a></li>
+                <li><a href="#game-mayhem" className="hover:text-white transition-colors">Games &amp; MCU Quiz</a></li>
                 <li><a href="#watchlist" className="hover:text-white transition-colors">Road to Doomsday</a></li>
                 <li><a href="#characters" className="hover:text-white transition-colors">Cast Database (31)</a></li>
               </ul>
